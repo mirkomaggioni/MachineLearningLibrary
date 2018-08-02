@@ -56,7 +56,7 @@ namespace MachineLearningLibraryTests
 		public void StochasticDualCoordinateAscentClassifierTest(float sepalLength, float sepalWidth, float petalLenght, float petalWidth, string label)
 		{
 			var irisdata = new IrisData() { SepalLength = sepalLength, SepalWidth = sepalWidth, PetalLength = petalLenght, PetalWidth = petalWidth };
-			var result = predictionService.MulticlassClassification(irisdata, MultiClassificationType.StochasticDualCoordinateAscentClassifier);
+			var result = predictionService.MulticlassClassification(irisdata);
 			Assert.AreEqual(result.PredictedLabels, label);
 		}
 	}

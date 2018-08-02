@@ -10,13 +10,15 @@ namespace MachineLearningLibraryTests
 		private PredictionService<IrisData, IrisLabelPrediction> predictionService = new PredictionService<IrisData, IrisLabelPrediction>();
 
 		[Test]
-		public void PriceEstimatorTest()
+		[TestCase("0", "0", "2018", 38000)]
+		[TestCase("0", "1", "2016", 28000)]
+		[TestCase("2", "0", "2018", 28000)]
+		[TestCase("3", "0", "2017", 13000)]
+		public void StochasticDualCoordinateAscentRegressorTest(string manufacturer, string color, string year, float minValue)
 		{
-			var car = new Car() { Manufacturer = "0", Color = "0", Year = "2017" };
-			var result = predictionService.PricePrediction(car);
-			Assert.IsNotNull(result);
-			Assert.AreNotEqual(result.Price, 0);
-			Assert.AreNotEqual(result.Price, 1);
+			var car = new Car() { Manufacturer = manufacturer, Color = color, Year = year };
+			var result = predictionService.Regression(car);
+			Assert.IsTrue(result.Price > minValue);
 		}
 	}
 }

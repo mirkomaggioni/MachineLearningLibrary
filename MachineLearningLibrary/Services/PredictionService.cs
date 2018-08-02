@@ -8,6 +8,17 @@ using System.Reflection;
 
 namespace MachineLearningLibrary.Services
 {
+	public enum RegressionType
+	{
+		StochasticDualCoordinateAscentRegressor,
+		FastTreeRegressor,
+		FastTreeTweedieRegressor,
+		OrdinaryLeastSquaresRegressor,
+		OnlineGradientDescentRegressor,
+		PoissonRegressor,
+		GeneralizedAdditiveModelRegressor
+	}
+
 	public enum MultiClassificationType
 	{
 		StochasticDualCoordinateAscentClassifier,
@@ -17,21 +28,42 @@ namespace MachineLearningLibrary.Services
 
 	public class PredictionService<T,TPrediction> where T : class where TPrediction : class, new()
 	{
-		public CarPricePrediction PricePrediction(Car car)
+		public CarPricePrediction Regression(Car car, RegressionType? regressionType = RegressionType.StochasticDualCoordinateAscentRegressor)
 		{
 			var pipeline = new LearningPipeline();
 			var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			pipeline.Add(new TextLoader($@"{dir}\cars.txt").CreateFrom<Car>(separator: ';'));
+			pipeline.Add(new TextLoader($@"{dir}\cars.txt").CreateFrom<Car>(separator: ','));
 			pipeline.Add(new ColumnCopier(("Price", "Label")));
 			pipeline.Add(new CategoricalOneHotVectorizer("Manufacturer", "Color", "Year"));
 			pipeline.Add(new ColumnConcatenator("Features", "Manufacturer", "Color", "Year"));
-			pipeline.Add(new FastTreeRegressor());
+
+			switch (regressionType)
+			{
+				case RegressionType.FastTreeRegressor:
+					pipeline.Add(new FastTreeRegressor());
+					break;
+				case RegressionType.FastTreeTweedieRegressor:
+					pipeline.Add(new FastTreeTweedieRegressor());
+					break;
+				case RegressionType.OnlineGradientDescentRegressor:
+					pipeline.Add(new OnlineGradientDescentRegressor());
+					break;
+				case RegressionType.PoissonRegressor:
+					pipeline.Add(new PoissonRegressor());
+					break;
+				case RegressionType.GeneralizedAdditiveModelRegressor:
+					pipeline.Add(new GeneralizedAdditiveModelRegressor());
+					break;
+				default:
+					pipeline.Add(new StochasticDualCoordinateAscentRegressor());
+					break;
+			}
 
 			var model = pipeline.Train<Car, CarPricePrediction>();
 			return model.Predict(car);
 		}
 
-		public TPrediction MulticlassClassification(T irisData, MultiClassificationType? type = MultiClassificationType.NaiveBayesClassifier)
+		public TPrediction MulticlassClassification(T irisData, MultiClassificationType? type = MultiClassificationType.StochasticDualCoordinateAscentClassifier)
 		{
 			var pipeline = new LearningPipeline();
 			var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
