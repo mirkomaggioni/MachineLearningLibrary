@@ -22,21 +22,18 @@ namespace MachineLearningLibrary.Models
 	public class Car
 	{
 		[Column("0")]
-		[VectorType(1000)]
-		public uint[] Manufacturer;
+		public string Manufacturer;
 		[Column("1")]
-		[VectorType(1000)]
-		public uint[] Color;
+		public string Color;
 		[Column("2")]
-		[VectorType(1000)]
-		public uint[] Year;
-		[Column("3", "Label")]
+		public string Year;
+		[Column("3")]
 		public float Price;
 	}
 
 	public class CarPricePrediction
 	{
-		[ColumnName("PredictedPrice")]
-		public float PredictedPrices;
+		[ColumnName("Score")]
+		public float Price;
 	}
 }

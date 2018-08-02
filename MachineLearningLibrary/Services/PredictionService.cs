@@ -15,10 +15,10 @@ namespace MachineLearningLibrary.Services
 			var pipeline = new LearningPipeline();
 			var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 			pipeline.Add(new TextLoader($@"{dir}\cars.txt").CreateFrom<Car>(separator: ';'));
-			pipeline.Add(new Dictionarizer("Label"));
+			pipeline.Add(new ColumnCopier(("Price", "Label")));
+			pipeline.Add(new CategoricalOneHotVectorizer("Manufacturer", "Color", "Year"));
 			pipeline.Add(new ColumnConcatenator("Features", "Manufacturer", "Color", "Year"));
-			pipeline.Add(new StochasticDualCoordinateAscentClassifier());
-			pipeline.Add(new PredictedLabelColumnOriginalValueConverter() { PredictedLabelColumn = "PredictedPrice" });
+			pipeline.Add(new FastTreeRegressor());
 
 			var model = pipeline.Train<Car, CarPricePrediction>();
 			return model.Predict(car);
