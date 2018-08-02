@@ -109,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\Car.cs" />
+    <Compile Include="Models\IrisData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\PredictionService.cs" />
   </ItemGroup>
