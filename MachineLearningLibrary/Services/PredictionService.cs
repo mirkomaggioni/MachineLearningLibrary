@@ -14,8 +14,6 @@ namespace MachineLearningLibrary.Services
 			var pipeline = new LearningPipeline();
 			var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 			pipeline.Add(new TextLoader($@"{dir}\cars.txt").CreateFrom<Car>(separator: ','));
-			pipeline.Add(new ColumnCopier(("Price", "Label")));
-			pipeline.Add(new CategoricalOneHotVectorizer("Manufacturer", "Color", "Year"));
 			pipeline.Add(new ColumnConcatenator("Features", "Manufacturer", "Color", "Year"));
 			pipeline.Add(algorythm);
 
