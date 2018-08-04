@@ -2,23 +2,6 @@
 
 namespace MachineLearningLibrary.Models
 {
-	public enum Manufacturer
-	{
-		Bmw,
-		Mercedes,
-		Volkswagen,
-		Fiat,
-		Kia
-	}
-
-	public enum Color
-	{
-		White,
-		Grey,
-		Black,
-		Red
-	}
-
 	public class Car
 	{
 		[Column("0")]

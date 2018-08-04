@@ -16,14 +16,13 @@ namespace MachineLearningLibrary.Models
 		[Column("3")]
 		public float PetalWidth;
 
-		[Column("4")]
-		[ColumnName("Label")]
-		public string Label;
+		[Column("4", "Label")]
+		public string Type;
 	}
 
-	public class IrisLabelPrediction
+	public class IrisTypePrediction
 	{
 		[ColumnName("PredictedLabel")]
-		public string PredictedLabels;
+		public string PredictedTypes;
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using MachineLearningLibrary.Models;
 using MachineLearningLibrary.Services;
+using Microsoft.ML.Trainers;
 using NUnit.Framework;
 
 namespace MachineLearningLibraryTests
@@ -7,7 +8,7 @@ namespace MachineLearningLibraryTests
 	[TestFixture]
 	public class MulticlassClassificationTests
 	{
-		private PredictionService<IrisData, IrisLabelPrediction> predictionService = new PredictionService<IrisData, IrisLabelPrediction>();
+		private PredictionService<IrisData, IrisTypePrediction> predictionService = new PredictionService<IrisData, IrisTypePrediction>();
 
 		[Test]
 		[TestCase(5.1f, 3.5f, 1.4f, 0.2f, "Iris-setosa")]
@@ -22,8 +23,8 @@ namespace MachineLearningLibraryTests
 		public void NaiveBayesClassifierTest(float sepalLength, float sepalWidth, float petalLenght, float petalWidth, string label)
 		{
 			var irisdata = new IrisData() { SepalLength = sepalLength, SepalWidth = sepalWidth, PetalLength = petalLenght, PetalWidth = petalWidth };
-			var result = predictionService.MulticlassClassification(irisdata, MultiClassificationType.NaiveBayesClassifier);
-			Assert.AreEqual(result.PredictedLabels, label);
+			var result = predictionService.MulticlassClassification(irisdata, new NaiveBayesClassifier());
+			Assert.AreEqual(result.PredictedTypes, label);
 		}
 
 		[Test]
@@ -39,8 +40,8 @@ namespace MachineLearningLibraryTests
 		public void LogisticRegressionClassifierTest(float sepalLength, float sepalWidth, float petalLenght, float petalWidth, string label)
 		{
 			var irisdata = new IrisData() { SepalLength = sepalLength, SepalWidth = sepalWidth, PetalLength = petalLenght, PetalWidth = petalWidth };
-			var result = predictionService.MulticlassClassification(irisdata, MultiClassificationType.LogisticRegressorClassifier);
-			Assert.AreEqual(result.PredictedLabels, label);
+			var result = predictionService.MulticlassClassification(irisdata, new LogisticRegressionClassifier());
+			Assert.AreEqual(result.PredictedTypes, label);
 		}
 
 		[Test]
@@ -56,8 +57,8 @@ namespace MachineLearningLibraryTests
 		public void StochasticDualCoordinateAscentClassifierTest(float sepalLength, float sepalWidth, float petalLenght, float petalWidth, string label)
 		{
 			var irisdata = new IrisData() { SepalLength = sepalLength, SepalWidth = sepalWidth, PetalLength = petalLenght, PetalWidth = petalWidth };
-			var result = predictionService.MulticlassClassification(irisdata);
-			Assert.AreEqual(result.PredictedLabels, label);
+			var result = predictionService.MulticlassClassification(irisdata, new StochasticDualCoordinateAscentClassifier());
+			Assert.AreEqual(result.PredictedTypes, label);
 		}
 	}
 }
