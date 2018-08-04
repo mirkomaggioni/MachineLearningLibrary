@@ -1,12 +1,15 @@
-﻿using Microsoft.ML;
+﻿using MachineLearningLibrary.Models;
+using Microsoft.ML;
 using Microsoft.ML.Data;
 using Microsoft.ML.Transforms;
+using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace MachineLearningLibrary.Services
 {
-	public class PredictionService<T,TPrediction> where T : class where TPrediction : class, new()
+	public class PredictionService<T,TPrediction> where T : class where TPrediction : LabelsScores, new()
 	{
 		public TPrediction Regression(T car, ILearningPipelineItem algorythm)
 		{
@@ -28,10 +31,23 @@ namespace MachineLearningLibrary.Services
 			pipeline.Add(new Dictionarizer("Label"));
 			pipeline.Add(new ColumnConcatenator("Features", "SepalLength", "SepalWidth", "PetalLength", "PetalWidth"));
 			pipeline.Add(algorythm);
-			pipeline.Add(new PredictedLabelColumnOriginalValueConverter() { PredictedLabelColumn = "PredictedLabel" });
+			pipeline.Add(new PredictedLabelColumnOriginalValueConverter { PredictedLabelColumn = "PredictedLabel" });
 
 			var model = pipeline.Train<T, TPrediction>();
-			return model.Predict(irisData);
+			var prediction = model.Predict(irisData);
+			model.TryGetScoreLabelNames(out string[] labelsScores);
+
+			foreach (var labelScore in labelsScores)
+			{
+
+			}
+
+			prediction.Scores = labelsScores.Select(ls => new LabelScore() {
+				Label = ls,
+				Score = prediction.Score[Array.IndexOf(labelsScores, ls)]
+			}).ToArray();
+
+			return prediction;
 		}
 	}
 }

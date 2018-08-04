@@ -58,7 +58,7 @@ namespace MachineLearningLibraryTests
 		{
 			var irisdata = new IrisData() { SepalLength = sepalLength, SepalWidth = sepalWidth, PetalLength = petalLenght, PetalWidth = petalWidth };
 			var result = predictionService.MulticlassClassification(irisdata, new StochasticDualCoordinateAscentClassifier());
-			Assert.AreEqual(result.PredictedTypes, label);
+			Assert.AreEqual(result.Scores[0].Label, label);
 		}
 	}
 }

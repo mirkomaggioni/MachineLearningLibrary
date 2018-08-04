@@ -20,9 +20,5 @@ namespace MachineLearningLibrary.Models
 		public string Type;
 	}
 
-	public class IrisTypePrediction
-	{
-		[ColumnName("PredictedLabel")]
-		public string PredictedTypes;
-	}
+	public class IrisTypePrediction : LabelsScores {}
 }
