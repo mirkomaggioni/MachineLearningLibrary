@@ -15,7 +15,6 @@ namespace MachineLearningLibrary.Services
 			pipeline.Add(new TextLoader($@"{dir}\cars.txt").CreateFrom<T>(separator: ','));
 			pipeline.Add(new ColumnConcatenator("Features", "Manufacturer", "Color", "Year"));
 			pipeline.Add(algorythm);
-			//pipeline.Add(new PredictedLabelColumnOriginalValueConverter() { PredictedLabelColumn = "PredictedLabel" });
 
 			var model = pipeline.Train<T, TPrediction>();
 			return model.Predict(car);
