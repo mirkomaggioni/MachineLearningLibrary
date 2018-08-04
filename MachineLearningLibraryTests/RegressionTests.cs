@@ -1,5 +1,4 @@
-﻿using System;
-using MachineLearningLibrary.Models;
+﻿using MachineLearningLibrary.Models;
 using MachineLearningLibrary.Services;
 using Microsoft.ML.Trainers;
 using NUnit.Framework;
@@ -9,7 +8,7 @@ namespace MachineLearningLibraryTests
 	[TestFixture]
 	public class RegressionTests
 	{
-		private PredictionService<IrisData, IrisTypePrediction> predictionService = new PredictionService<IrisData, IrisTypePrediction>();
+		private PredictionService<Car, CarPricePrediction> predictionService = new PredictionService<Car, CarPricePrediction>();
 
 		[Test]
 		[TestCase(0, 0, 2018, 38000)]
@@ -20,7 +19,7 @@ namespace MachineLearningLibraryTests
 		{
 			var car = new Car() { Manufacturer = manufacturer, Color = color, Year = year };
 			var result = predictionService.Regression(car, new StochasticDualCoordinateAscentRegressor());
-			Assert.IsTrue(result.Price > minValue);
+			Assert.IsTrue(result.PredictedPrices > minValue);
 		}
 
 		[Test]
@@ -32,7 +31,7 @@ namespace MachineLearningLibraryTests
 		{
 			var car = new Car() { Manufacturer = manufacturer, Color = color, Year = year };
 			var result = predictionService.Regression(car,new FastTreeRegressor());
-			Assert.IsTrue(result.Price > minValue);
+			Assert.IsTrue(result.PredictedPrices > minValue);
 		}
 
 		[Test]
@@ -44,7 +43,7 @@ namespace MachineLearningLibraryTests
 		{
 			var car = new Car() { Manufacturer = manufacturer, Color = color, Year = year };
 			var result = predictionService.Regression(car, new FastTreeTweedieRegressor());
-			Assert.IsTrue(result.Price > minValue);
+			Assert.IsTrue(result.PredictedPrices > minValue);
 		}
 
 		[Test]
@@ -56,7 +55,7 @@ namespace MachineLearningLibraryTests
 		{
 			var car = new Car() { Manufacturer = manufacturer, Color = color, Year = year };
 			var result = predictionService.Regression(car, new FastForestRegressor());
-			Assert.IsTrue(result.Price > minValue);
+			Assert.IsTrue(result.PredictedPrices > minValue);
 		}
 
 		[Test]
@@ -68,7 +67,7 @@ namespace MachineLearningLibraryTests
 		{
 			var car = new Car() { Manufacturer = manufacturer, Color = color, Year = year };
 			var result = predictionService.Regression(car, new OnlineGradientDescentRegressor());
-			Assert.IsTrue(result.Price > minValue);
+			Assert.IsTrue(result.PredictedPrices > minValue);
 		}
 
 		[Test]
@@ -80,7 +79,7 @@ namespace MachineLearningLibraryTests
 		{
 			var car = new Car() { Manufacturer = manufacturer, Color = color, Year = year };
 			var result = predictionService.Regression(car, new PoissonRegressor());
-			Assert.IsTrue(result.Price > minValue);
+			Assert.IsTrue(result.PredictedPrices > minValue);
 		}
 
 		[Test]
@@ -92,7 +91,7 @@ namespace MachineLearningLibraryTests
 		{
 			var car = new Car() { Manufacturer = manufacturer, Color = color, Year = year };
 			var result = predictionService.Regression(car, new GeneralizedAdditiveModelRegressor());
-			Assert.IsTrue(result.Price > minValue);
+			Assert.IsTrue(result.PredictedPrices > minValue);
 		}
 	}
 }

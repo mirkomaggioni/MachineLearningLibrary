@@ -1,5 +1,4 @@
-﻿using MachineLearningLibrary.Models;
-using Microsoft.ML;
+﻿using Microsoft.ML;
 using Microsoft.ML.Data;
 using Microsoft.ML.Transforms;
 using System.IO;
@@ -9,15 +8,16 @@ namespace MachineLearningLibrary.Services
 {
 	public class PredictionService<T,TPrediction> where T : class where TPrediction : class, new()
 	{
-		public CarPricePrediction Regression(Car car, ILearningPipelineItem algorythm)
+		public TPrediction Regression(T car, ILearningPipelineItem algorythm)
 		{
 			var pipeline = new LearningPipeline();
 			var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			pipeline.Add(new TextLoader($@"{dir}\cars.txt").CreateFrom<Car>(separator: ','));
+			pipeline.Add(new TextLoader($@"{dir}\cars.txt").CreateFrom<T>(separator: ','));
 			pipeline.Add(new ColumnConcatenator("Features", "Manufacturer", "Color", "Year"));
 			pipeline.Add(algorythm);
+			//pipeline.Add(new PredictedLabelColumnOriginalValueConverter() { PredictedLabelColumn = "PredictedLabel" });
 
-			var model = pipeline.Train<Car, CarPricePrediction>();
+			var model = pipeline.Train<T, TPrediction>();
 			return model.Predict(car);
 		}
 

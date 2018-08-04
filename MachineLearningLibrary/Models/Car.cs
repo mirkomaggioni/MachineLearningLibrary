@@ -17,6 +17,6 @@ namespace MachineLearningLibrary.Models
 	public class CarPricePrediction
 	{
 		[ColumnName("Score")]
-		public float Price;
+		public float PredictedPrices;
 	}
 }
