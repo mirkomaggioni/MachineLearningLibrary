@@ -9,9 +9,9 @@ using System.Reflection;
 
 namespace MachineLearningLibrary.Services
 {
-	public class PredictionService<T,TPrediction> where T : class where TPrediction : LabelsScores, new()
+	public class PredictionService
 	{
-		public TPrediction Regression(T car, ILearningPipelineItem algorythm)
+		public TPrediction Regression<T, TPrediction>(T car, ILearningPipelineItem algorythm) where T : class where TPrediction : class, new()
 		{
 			var pipeline = new LearningPipeline();
 			var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -23,7 +23,7 @@ namespace MachineLearningLibrary.Services
 			return model.Predict(car);
 		}
 
-		public TPrediction MulticlassClassification(T irisData, ILearningPipelineItem algorythm)
+		public TPrediction MulticlassClassification<T, TPrediction>(T irisData, ILearningPipelineItem algorythm) where T : class where TPrediction : MultipleScores, new()
 		{
 			var pipeline = new LearningPipeline();
 			var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -37,12 +37,7 @@ namespace MachineLearningLibrary.Services
 			var prediction = model.Predict(irisData);
 			model.TryGetScoreLabelNames(out string[] labelsScores);
 
-			foreach (var labelScore in labelsScores)
-			{
-
-			}
-
-			prediction.Scores = labelsScores.Select(ls => new LabelScore() {
+			prediction.Scores = labelsScores.Select(ls => new ScoreLabel() {
 				Label = ls,
 				Score = prediction.Score[Array.IndexOf(labelsScores, ls)]
 			}).ToArray();

@@ -20,5 +20,5 @@ namespace MachineLearningLibrary.Models
 		public string Type;
 	}
 
-	public class IrisTypePrediction : LabelsScores {}
+	public class IrisTypePrediction : MultipleScores {}
 }

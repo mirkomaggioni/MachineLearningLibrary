@@ -1,4 +1,5 @@
-﻿using MachineLearningLibrary.Models;
+﻿using System.Linq;
+using MachineLearningLibrary.Models;
 using MachineLearningLibrary.Services;
 using Microsoft.ML.Trainers;
 using NUnit.Framework;
@@ -8,7 +9,7 @@ namespace MachineLearningLibraryTests
 	[TestFixture]
 	public class MulticlassClassificationTests
 	{
-		private PredictionService<IrisData, IrisTypePrediction> predictionService = new PredictionService<IrisData, IrisTypePrediction>();
+		private PredictionService predictionService = new PredictionService();
 
 		[Test]
 		[TestCase(5.1f, 3.5f, 1.4f, 0.2f, "Iris-setosa")]
@@ -23,8 +24,8 @@ namespace MachineLearningLibraryTests
 		public void NaiveBayesClassifierTest(float sepalLength, float sepalWidth, float petalLenght, float petalWidth, string label)
 		{
 			var irisdata = new IrisData() { SepalLength = sepalLength, SepalWidth = sepalWidth, PetalLength = petalLenght, PetalWidth = petalWidth };
-			var result = predictionService.MulticlassClassification(irisdata, new NaiveBayesClassifier());
-			Assert.AreEqual(result.PredictedTypes, label);
+			var result = predictionService.MulticlassClassification<IrisData, IrisTypePrediction>(irisdata, new NaiveBayesClassifier());
+			Assert.AreEqual(result.Scores.OrderByDescending(s => s.Score).First().Label, label);
 		}
 
 		[Test]
@@ -40,8 +41,8 @@ namespace MachineLearningLibraryTests
 		public void LogisticRegressionClassifierTest(float sepalLength, float sepalWidth, float petalLenght, float petalWidth, string label)
 		{
 			var irisdata = new IrisData() { SepalLength = sepalLength, SepalWidth = sepalWidth, PetalLength = petalLenght, PetalWidth = petalWidth };
-			var result = predictionService.MulticlassClassification(irisdata, new LogisticRegressionClassifier());
-			Assert.AreEqual(result.PredictedTypes, label);
+			var result = predictionService.MulticlassClassification<IrisData, IrisTypePrediction>(irisdata, new LogisticRegressionClassifier());
+			Assert.AreEqual(result.Scores.OrderByDescending(s => s.Score).First().Label, label);
 		}
 
 		[Test]
@@ -57,8 +58,8 @@ namespace MachineLearningLibraryTests
 		public void StochasticDualCoordinateAscentClassifierTest(float sepalLength, float sepalWidth, float petalLenght, float petalWidth, string label)
 		{
 			var irisdata = new IrisData() { SepalLength = sepalLength, SepalWidth = sepalWidth, PetalLength = petalLenght, PetalWidth = petalWidth };
-			var result = predictionService.MulticlassClassification(irisdata, new StochasticDualCoordinateAscentClassifier());
-			Assert.AreEqual(result.Scores[0].Label, label);
+			var result = predictionService.MulticlassClassification<IrisData, IrisTypePrediction>(irisdata, new StochasticDualCoordinateAscentClassifier());
+			Assert.AreEqual(result.Scores.OrderByDescending(s => s.Score).First().Label, label);
 		}
 	}
 }

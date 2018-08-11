@@ -2,18 +2,24 @@
 
 namespace MachineLearningLibrary.Models
 {
-	public class LabelScore
+	public class ScoreLabel
 	{
 		public string Label { get; set; }
 		public float Score { get; set; }
 	}
 
-	public class LabelsScores
+	public class SingleScore
+	{
+		[ColumnName("Score")]
+		public float Score;
+	}
+
+	public class MultipleScores
 	{
 		[ColumnName("PredictedLabel")]
-		public string PredictedTypes;
+		public string PredictedLabel;
 		[ColumnName("Score")]
 		public float[] Score;
-		public LabelScore[] Scores { get; set; }
+		public ScoreLabel[] Scores { get; set; }
 	}
 }

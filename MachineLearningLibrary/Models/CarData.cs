@@ -2,7 +2,7 @@
 
 namespace MachineLearningLibrary.Models
 {
-	public class Car
+	public class CarData
 	{
 		[Column("0")]
 		public float Manufacturer;
@@ -14,9 +14,5 @@ namespace MachineLearningLibrary.Models
 		public float Price;
 	}
 
-	public class CarPricePrediction
-	{
-		[ColumnName("Score")]
-		public float PredictedPrices;
-	}
+	public class CarPricePrediction : SingleScore {}
 }
