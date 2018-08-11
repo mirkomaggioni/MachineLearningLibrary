@@ -18,7 +18,7 @@ namespace MachineLearningLibraryTests
 		public void Setup()
 		{
 			var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			_dataPath = $@"{dir}\data\taxi.csv";
+			_dataPath = $@"{dir}\traindata\taxi.csv";
 			_separator = ',';
 		}
 
