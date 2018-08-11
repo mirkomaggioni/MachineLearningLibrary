@@ -11,87 +11,75 @@ namespace MachineLearningLibraryTests
 		private PredictionService predictionService = new PredictionService();
 
 		[Test]
-		[TestCase(0, 0, 2018, 38000)]
-		[TestCase(0, 1, 2016, 28000)]
-		[TestCase(2, 0, 2018, 28000)]
-		[TestCase(3, 0, 2017, 13000)]
-		public void StochasticDualCoordinateAscentRegressorTest(float manufacturer, float color, float year, float minValue)
+		[TestCase("VTS", "1", 1, 1140, 3.75f, "CRD", 15.5f)]
+		[TestCase("VTS", "1", 1, 480, 2.72f, "CRD", 10.0f)]
+		[TestCase("VTS", "1", 1, 1680, 7.8f, "CSH", 26.5f)]
+		[TestCase("VTS", "1", 1, 600, 4.73f, "CSH", 14.5f)]
+		public void StochasticDualCoordinateAscentRegressorTest(string vendorId, string rateCode, float passengerCount, float tripTime, float tripDistance, string paymentType, float fareAmount)
 		{
-			var car = new CarData() { Manufacturer = manufacturer, Color = color, Year = year };
-			var result = predictionService.Regression<CarData, CarPricePrediction>(car, new StochasticDualCoordinateAscentRegressor());
-			Assert.IsTrue(result.Score > minValue);
+			var car = new TaxyData() { VendorId = vendorId, RateCode = rateCode, PassengerCount = passengerCount, TripTime = tripTime, TripDistance = tripDistance, PaymentType = paymentType };
+			var result = predictionService.Regression<TaxyData, TaxyTripFarePrediction>(car, new StochasticDualCoordinateAscentRegressor());
+			Assert.IsTrue(result.Score >= fareAmount);
 		}
 
 		[Test]
-		[TestCase(0, 0, 2018, 38000)]
-		[TestCase(0, 1, 2016, 28000)]
-		[TestCase(2, 0, 2018, 28000)]
-		[TestCase(3, 0, 2017, 13000)]
-		public void FastTreeRegressorTest(float manufacturer, float color, float year, float minValue)
+		[TestCase("VTS", "1", 1, 1140, 3.75f, "CRD", 15.5f)]
+		[TestCase("VTS", "1", 1, 480, 2.72f, "CRD", 10.0f)]
+		[TestCase("VTS", "1", 1, 1680, 7.8f, "CSH", 26.5f)]
+		[TestCase("VTS", "1", 1, 600, 4.73f, "CSH", 14.5f)]
+		public void FastTreeRegressorTest(string vendorId, string rateCode, float passengerCount, float tripTime, float tripDistance, string paymentType, float fareAmount)
 		{
-			var car = new CarData() { Manufacturer = manufacturer, Color = color, Year = year };
-			var result = predictionService.Regression<CarData, CarPricePrediction>(car,new FastTreeRegressor());
-			Assert.IsTrue(result.Score > minValue);
+			var car = new TaxyData() { VendorId = vendorId, RateCode = rateCode, PassengerCount = passengerCount, TripTime = tripTime, TripDistance = tripDistance, PaymentType = paymentType };
+			var result = predictionService.Regression<TaxyData, TaxyTripFarePrediction>(car,new FastTreeRegressor());
+			Assert.IsTrue(result.Score >= fareAmount);
 		}
 
 		[Test]
-		[TestCase(0, 0, 2018, 38000)]
-		[TestCase(0, 1, 2016, 28000)]
-		[TestCase(2, 0, 2018, 28000)]
-		[TestCase(3, 0, 2017, 13000)]
-		public void FastTreeTweedieRegressorTest(float manufacturer, float color, float year, float minValue)
+		[TestCase("VTS", "1", 1, 1140, 3.75f, "CRD", 15.5f)]
+		[TestCase("VTS", "1", 1, 480, 2.72f, "CRD", 10.0f)]
+		[TestCase("VTS", "1", 1, 1680, 7.8f, "CSH", 26.5f)]
+		[TestCase("VTS", "1", 1, 600, 4.73f, "CSH", 14.5f)]
+		public void FastTreeTweedieRegressorTest(string vendorId, string rateCode, float passengerCount, float tripTime, float tripDistance, string paymentType, float fareAmount)
 		{
-			var car = new CarData() { Manufacturer = manufacturer, Color = color, Year = year };
-			var result = predictionService.Regression<CarData, CarPricePrediction>(car, new FastTreeTweedieRegressor());
-			Assert.IsTrue(result.Score > minValue);
+			var car = new TaxyData() { VendorId = vendorId, RateCode = rateCode, PassengerCount = passengerCount, TripTime = tripTime, TripDistance = tripDistance, PaymentType = paymentType };
+			var result = predictionService.Regression<TaxyData, TaxyTripFarePrediction>(car, new FastTreeTweedieRegressor());
+			Assert.IsTrue(result.Score >= fareAmount);
 		}
 
 		[Test]
-		[TestCase(0, 0, 2018, 38000)]
-		[TestCase(0, 1, 2016, 28000)]
-		[TestCase(2, 0, 2018, 28000)]
-		[TestCase(3, 0, 2017, 13000)]
-		public void FastForestRegressorTest(float manufacturer, float color, float year, float minValue)
+		[TestCase("VTS", "1", 1, 1140, 3.75f, "CRD", 15.5f)]
+		[TestCase("VTS", "1", 1, 480, 2.72f, "CRD", 10.0f)]
+		[TestCase("VTS", "1", 1, 1680, 7.8f, "CSH", 26.5f)]
+		[TestCase("VTS", "1", 1, 600, 4.73f, "CSH", 14.5f)]
+		public void FastForestRegressorTest(string vendorId, string rateCode, float passengerCount, float tripTime, float tripDistance, string paymentType, float fareAmount)
 		{
-			var car = new CarData() { Manufacturer = manufacturer, Color = color, Year = year };
-			var result = predictionService.Regression<CarData, CarPricePrediction>(car, new FastForestRegressor());
-			Assert.IsTrue(result.Score > minValue);
+			var car = new TaxyData() { VendorId = vendorId, RateCode = rateCode, PassengerCount = passengerCount, TripTime = tripTime, TripDistance = tripDistance, PaymentType = paymentType };
+			var result = predictionService.Regression<TaxyData, TaxyTripFarePrediction>(car, new FastForestRegressor());
+			Assert.IsTrue(result.Score >= fareAmount);
 		}
 
 		[Test]
-		[TestCase(0, 0, 2018, 38000)]
-		[TestCase(0, 1, 2016, 28000)]
-		[TestCase(2, 0, 2018, 28000)]
-		[TestCase(3, 0, 2017, 13000)]
-		public void OnlineGradientDescentRegressorTest(float manufacturer, float color, float year, float minValue)
+		[TestCase("VTS", "1", 1, 1140, 3.75f, "CRD", 15.5f)]
+		[TestCase("VTS", "1", 1, 480, 2.72f, "CRD", 10.0f)]
+		[TestCase("VTS", "1", 1, 1680, 7.8f, "CSH", 26.5f)]
+		[TestCase("VTS", "1", 1, 600, 4.73f, "CSH", 14.5f)]
+		public void OnlineGradientDescentRegressorTest(string vendorId, string rateCode, float passengerCount, float tripTime, float tripDistance, string paymentType, float fareAmount)
 		{
-			var car = new CarData() { Manufacturer = manufacturer, Color = color, Year = year };
-			var result = predictionService.Regression<CarData, CarPricePrediction>(car, new OnlineGradientDescentRegressor());
-			Assert.IsTrue(result.Score > minValue);
+			var car = new TaxyData() { VendorId = vendorId, RateCode = rateCode, PassengerCount = passengerCount, TripTime = tripTime, TripDistance = tripDistance, PaymentType = paymentType };
+			var result = predictionService.Regression<TaxyData, TaxyTripFarePrediction>(car, new OnlineGradientDescentRegressor());
+			Assert.IsTrue(result.Score >= fareAmount);
 		}
 
 		[Test]
-		[TestCase(0, 0, 2018, 38000)]
-		[TestCase(0, 1, 2016, 28000)]
-		[TestCase(2, 0, 2018, 28000)]
-		[TestCase(3, 0, 2017, 13000)]
-		public void PoissonRegressorTest(float manufacturer, float color, float year, float minValue)
+		[TestCase("VTS", "1", 1, 1140, 3.75f, "CRD", 15.5f)]
+		[TestCase("VTS", "1", 1, 480, 2.72f, "CRD", 10.0f)]
+		[TestCase("VTS", "1", 1, 1680, 7.8f, "CSH", 26.5f)]
+		[TestCase("VTS", "1", 1, 600, 4.73f, "CSH", 14.5f)]
+		public void PoissonRegressorTest(string vendorId, string rateCode, float passengerCount, float tripTime, float tripDistance, string paymentType, float fareAmount)
 		{
-			var car = new CarData() { Manufacturer = manufacturer, Color = color, Year = year };
-			var result = predictionService.Regression<CarData, CarPricePrediction>(car, new PoissonRegressor());
-			Assert.IsTrue(result.Score > minValue);
-		}
-
-		[Test]
-		[TestCase(0, 0, 2018, 38000)]
-		[TestCase(0, 1, 2016, 28000)]
-		[TestCase(2, 0, 2018, 28000)]
-		[TestCase(3, 0, 2017, 13000)]
-		public void GeneralizedAdditiveModelRegressorTest(float manufacturer, float color, float year, float minValue)
-		{
-			var car = new CarData() { Manufacturer = manufacturer, Color = color, Year = year };
-			var result = predictionService.Regression<CarData, CarPricePrediction>(car, new GeneralizedAdditiveModelRegressor());
-			Assert.IsTrue(result.Score > minValue);
+			var car = new TaxyData() { VendorId = vendorId, RateCode = rateCode, PassengerCount = passengerCount, TripTime = tripTime, TripDistance = tripDistance, PaymentType = paymentType };
+			var result = predictionService.Regression<TaxyData, TaxyTripFarePrediction>(car, new PoissonRegressor());
+			Assert.IsTrue(result.Score >= fareAmount);
 		}
 	}
 }

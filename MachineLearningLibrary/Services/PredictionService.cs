@@ -15,8 +15,9 @@ namespace MachineLearningLibrary.Services
 		{
 			var pipeline = new LearningPipeline();
 			var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			pipeline.Add(new TextLoader($@"{dir}\cars.txt").CreateFrom<T>(separator: ','));
-			pipeline.Add(new ColumnConcatenator("Features", "Manufacturer", "Color", "Year"));
+			pipeline.Add(new TextLoader($@"{dir}\data\taxi.csv").CreateFrom<T>(separator: ','));
+			pipeline.Add(new CategoricalOneHotVectorizer("VendorId", "RateCode", "PaymentType"));
+			pipeline.Add(new ColumnConcatenator("Features", "VendorId", "RateCode", "PassengerCount", "TripDistance", "PaymentType"));
 			pipeline.Add(algorythm);
 
 			var model = pipeline.Train<T, TPrediction>();
@@ -27,7 +28,7 @@ namespace MachineLearningLibrary.Services
 		{
 			var pipeline = new LearningPipeline();
 			var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			pipeline.Add(new TextLoader($@"{dir}\irisdata.txt").CreateFrom<T>(separator: ','));
+			pipeline.Add(new TextLoader($@"{dir}\data\iris.txt").CreateFrom<T>(separator: ','));
 			pipeline.Add(new Dictionarizer("Label"));
 			pipeline.Add(new ColumnConcatenator("Features", "SepalLength", "SepalWidth", "PetalLength", "PetalWidth"));
 			pipeline.Add(algorythm);
