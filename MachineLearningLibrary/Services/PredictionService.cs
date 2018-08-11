@@ -11,11 +11,11 @@ namespace MachineLearningLibrary.Services
 {
 	public class PredictionService
 	{
-		public TPrediction Regression<T, TPrediction>(T car, ILearningPipelineItem algorythm) where T : class where TPrediction : class, new()
+		public TPrediction Regression<T, TPrediction>(T car, ILearningPipelineItem algorythm, string dataPath, char separator) where T : class where TPrediction : class, new()
 		{
 			var pipeline = new LearningPipeline();
-			var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			pipeline.Add(new TextLoader($@"{dir}\data\taxi.csv").CreateFrom<T>(separator: ','));
+			
+			pipeline.Add(new TextLoader(dataPath).CreateFrom<T>(separator: separator));
 			pipeline.Add(new CategoricalOneHotVectorizer("VendorId", "RateCode", "PaymentType"));
 			pipeline.Add(new ColumnConcatenator("Features", "VendorId", "RateCode", "PassengerCount", "TripDistance", "PaymentType"));
 			pipeline.Add(algorythm);
@@ -24,7 +24,7 @@ namespace MachineLearningLibrary.Services
 			return model.Predict(car);
 		}
 
-		public TPrediction MulticlassClassification<T, TPrediction>(T irisData, ILearningPipelineItem algorythm) where T : class where TPrediction : MultipleScores, new()
+		public TPrediction MulticlassClassification<T, TPrediction>(T irisData, ILearningPipelineItem algorythm, string dataPath, char separator) where T : class where TPrediction : MultipleScores, new()
 		{
 			var pipeline = new LearningPipeline();
 			var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);

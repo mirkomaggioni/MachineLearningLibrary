@@ -1,4 +1,6 @@
-﻿using MachineLearningLibrary.Models;
+﻿using System.IO;
+using System.Reflection;
+using MachineLearningLibrary.Models;
 using MachineLearningLibrary.Services;
 using Microsoft.ML.Trainers;
 using NUnit.Framework;
@@ -9,6 +11,16 @@ namespace MachineLearningLibraryTests
 	public class RegressionTests
 	{
 		private PredictionService predictionService = new PredictionService();
+		private string _dataPath;
+		private char _separator;
+
+		[SetUp]
+		public void Setup()
+		{
+			var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			_dataPath = $@"{dir}\data\taxi.csv";
+			_separator = ',';
+		}
 
 		[Test]
 		[TestCase("VTS", "1", 1, 1140, 3.75f, "CRD", 15.5f)]
@@ -18,7 +30,7 @@ namespace MachineLearningLibraryTests
 		public void StochasticDualCoordinateAscentRegressorTest(string vendorId, string rateCode, float passengerCount, float tripTime, float tripDistance, string paymentType, float fareAmount)
 		{
 			var car = new TaxyData() { VendorId = vendorId, RateCode = rateCode, PassengerCount = passengerCount, TripTime = tripTime, TripDistance = tripDistance, PaymentType = paymentType };
-			var result = predictionService.Regression<TaxyData, TaxyTripFarePrediction>(car, new StochasticDualCoordinateAscentRegressor());
+			var result = predictionService.Regression<TaxyData, TaxyTripFarePrediction>(car, new StochasticDualCoordinateAscentRegressor(), _dataPath, _separator);
 			Assert.IsTrue(result.Score >= fareAmount);
 		}
 
@@ -30,7 +42,7 @@ namespace MachineLearningLibraryTests
 		public void FastTreeRegressorTest(string vendorId, string rateCode, float passengerCount, float tripTime, float tripDistance, string paymentType, float fareAmount)
 		{
 			var car = new TaxyData() { VendorId = vendorId, RateCode = rateCode, PassengerCount = passengerCount, TripTime = tripTime, TripDistance = tripDistance, PaymentType = paymentType };
-			var result = predictionService.Regression<TaxyData, TaxyTripFarePrediction>(car,new FastTreeRegressor());
+			var result = predictionService.Regression<TaxyData, TaxyTripFarePrediction>(car,new FastTreeRegressor(), _dataPath, _separator);
 			Assert.IsTrue(result.Score >= fareAmount);
 		}
 
@@ -42,7 +54,7 @@ namespace MachineLearningLibraryTests
 		public void FastTreeTweedieRegressorTest(string vendorId, string rateCode, float passengerCount, float tripTime, float tripDistance, string paymentType, float fareAmount)
 		{
 			var car = new TaxyData() { VendorId = vendorId, RateCode = rateCode, PassengerCount = passengerCount, TripTime = tripTime, TripDistance = tripDistance, PaymentType = paymentType };
-			var result = predictionService.Regression<TaxyData, TaxyTripFarePrediction>(car, new FastTreeTweedieRegressor());
+			var result = predictionService.Regression<TaxyData, TaxyTripFarePrediction>(car, new FastTreeTweedieRegressor(), _dataPath, _separator);
 			Assert.IsTrue(result.Score >= fareAmount);
 		}
 
@@ -54,7 +66,7 @@ namespace MachineLearningLibraryTests
 		public void FastForestRegressorTest(string vendorId, string rateCode, float passengerCount, float tripTime, float tripDistance, string paymentType, float fareAmount)
 		{
 			var car = new TaxyData() { VendorId = vendorId, RateCode = rateCode, PassengerCount = passengerCount, TripTime = tripTime, TripDistance = tripDistance, PaymentType = paymentType };
-			var result = predictionService.Regression<TaxyData, TaxyTripFarePrediction>(car, new FastForestRegressor());
+			var result = predictionService.Regression<TaxyData, TaxyTripFarePrediction>(car, new FastForestRegressor(), _dataPath, _separator);
 			Assert.IsTrue(result.Score >= fareAmount);
 		}
 
@@ -66,7 +78,7 @@ namespace MachineLearningLibraryTests
 		public void OnlineGradientDescentRegressorTest(string vendorId, string rateCode, float passengerCount, float tripTime, float tripDistance, string paymentType, float fareAmount)
 		{
 			var car = new TaxyData() { VendorId = vendorId, RateCode = rateCode, PassengerCount = passengerCount, TripTime = tripTime, TripDistance = tripDistance, PaymentType = paymentType };
-			var result = predictionService.Regression<TaxyData, TaxyTripFarePrediction>(car, new OnlineGradientDescentRegressor());
+			var result = predictionService.Regression<TaxyData, TaxyTripFarePrediction>(car, new OnlineGradientDescentRegressor(), _dataPath, _separator);
 			Assert.IsTrue(result.Score >= fareAmount);
 		}
 
@@ -78,7 +90,7 @@ namespace MachineLearningLibraryTests
 		public void PoissonRegressorTest(string vendorId, string rateCode, float passengerCount, float tripTime, float tripDistance, string paymentType, float fareAmount)
 		{
 			var car = new TaxyData() { VendorId = vendorId, RateCode = rateCode, PassengerCount = passengerCount, TripTime = tripTime, TripDistance = tripDistance, PaymentType = paymentType };
-			var result = predictionService.Regression<TaxyData, TaxyTripFarePrediction>(car, new PoissonRegressor());
+			var result = predictionService.Regression<TaxyData, TaxyTripFarePrediction>(car, new PoissonRegressor(), _dataPath, _separator);
 			Assert.IsTrue(result.Score >= fareAmount);
 		}
 	}
