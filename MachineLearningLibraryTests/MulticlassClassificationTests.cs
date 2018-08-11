@@ -13,21 +13,18 @@ namespace MachineLearningLibraryTests
 	public class MulticlassClassificationTests
 	{
 		private PredictionService predictionService = new PredictionService();
-		private string _trainDataPath;
-		private char _separator;
-		private string _predictedColumn;
-		private string[] _dictionarizedLabels;
-		private string[] _concatenatedColumns;
+		private PipelineParameters<IrisData> _pipelineParameters;
 
 		[SetUp]
 		public void Setup()
 		{
 			var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			_trainDataPath = $@"{dir}\traindata\iris.txt";
-			_separator = ',';
-			_predictedColumn = "PredictedLabel";
-			_dictionarizedLabels = new[] { "Label" };
-			_concatenatedColumns = new[] { "SepalLength", "SepalWidth", "PetalLength", "PetalWidth" };
+			var trainDataPath = $@"{dir}\traindata\iris.txt";
+			var separator = ',';
+			var predictedColumn = "PredictedLabel";
+			var dictionarizedLabels = new[] { "Label" };
+			var concatenatedColumns = new[] { "SepalLength", "SepalWidth", "PetalLength", "PetalWidth" };
+			_pipelineParameters = new PipelineParameters<IrisData>(trainDataPath, separator, predictedColumn, null, dictionarizedLabels, concatenatedColumns);
 		}
 
 		[Test]
@@ -43,7 +40,7 @@ namespace MachineLearningLibraryTests
 		public async Task NaiveBayesClassifierTestAsync(float sepalLength, float sepalWidth, float petalLenght, float petalWidth, string label)
 		{
 			var irisdata = new IrisData() { SepalLength = sepalLength, SepalWidth = sepalWidth, PetalLength = petalLenght, PetalWidth = petalWidth };
-			var modelPath = await predictionService.TrainAsync<IrisData, IrisTypePrediction, NaiveBayesClassifier>(_trainDataPath, _separator, _dictionarizedLabels, null, _concatenatedColumns, _predictedColumn);
+			var modelPath = await predictionService.TrainAsync<IrisData, IrisTypePrediction, NaiveBayesClassifier>(_pipelineParameters);
 			var result = await predictionService.PredictScoresAsync<IrisData, IrisTypePrediction>(irisdata, modelPath);
 
 			Assert.AreEqual(result.Scores.OrderByDescending(s => s.Score).First().Label, label);
@@ -62,7 +59,7 @@ namespace MachineLearningLibraryTests
 		public async Task LogisticRegressionClassifierTestAsync(float sepalLength, float sepalWidth, float petalLenght, float petalWidth, string label)
 		{
 			var irisdata = new IrisData() { SepalLength = sepalLength, SepalWidth = sepalWidth, PetalLength = petalLenght, PetalWidth = petalWidth };
-			var modelPath = await predictionService.TrainAsync<IrisData, IrisTypePrediction, LogisticRegressionClassifier>(_trainDataPath, _separator, _dictionarizedLabels, null, _concatenatedColumns, _predictedColumn);
+			var modelPath = await predictionService.TrainAsync<IrisData, IrisTypePrediction, LogisticRegressionClassifier>(_pipelineParameters);
 			var result = await predictionService.PredictScoresAsync<IrisData, IrisTypePrediction>(irisdata, modelPath);
 
 			Assert.AreEqual(result.Scores.OrderByDescending(s => s.Score).First().Label, label);
@@ -81,7 +78,7 @@ namespace MachineLearningLibraryTests
 		public async Task StochasticDualCoordinateAscentClassifierTestAsync(float sepalLength, float sepalWidth, float petalLenght, float petalWidth, string label)
 		{
 			var irisdata = new IrisData() { SepalLength = sepalLength, SepalWidth = sepalWidth, PetalLength = petalLenght, PetalWidth = petalWidth };
-			var modelPath = await predictionService.TrainAsync<IrisData, IrisTypePrediction, StochasticDualCoordinateAscentClassifier>(_trainDataPath, _separator, _dictionarizedLabels, null, _concatenatedColumns, _predictedColumn);
+			var modelPath = await predictionService.TrainAsync<IrisData, IrisTypePrediction, StochasticDualCoordinateAscentClassifier>(_pipelineParameters);
 			var result = await predictionService.PredictScoresAsync<IrisData, IrisTypePrediction>(irisdata, modelPath);
 
 			Assert.AreEqual(result.Scores.OrderByDescending(s => s.Score).First().Label, label);

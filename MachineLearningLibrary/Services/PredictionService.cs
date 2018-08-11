@@ -20,22 +20,26 @@ namespace MachineLearningLibrary.Services
 			Directory.CreateDirectory(_modelsRootPath);
 		}
 
-		public async Task<string> TrainAsync<T, TPrediction, TAlgorythm>(string dataPath, char separator, string[] dictionarizedLabels, string[] alphanumericColums, string[] concatenatedColumns, string predictedColumn = null) where T : class where TPrediction : class, new() where TAlgorythm : ILearningPipelineItem, new()
+		public async Task<string> TrainAsync<T, TPrediction, TAlgorythm>(PipelineParameters<T> pipelineParameters) where T : class where TPrediction : class, new() where TAlgorythm : ILearningPipelineItem, new()
 		{
 			var pipeline = new LearningPipeline();
-			pipeline.Add(new TextLoader(dataPath).CreateFrom<T>(separator: separator));
-			
-			if (dictionarizedLabels != null)
-				pipeline.Add(new Dictionarizer(dictionarizedLabels));
 
-			if (alphanumericColums != null)
-				pipeline.Add(new CategoricalOneHotVectorizer(alphanumericColums));
+			if (pipelineParameters.TextLoader != null)
+				pipeline.Add(pipelineParameters.TextLoader);
 
-			pipeline.Add(new ColumnConcatenator("Features", concatenatedColumns));
+			if (pipelineParameters.Dictionarizer != null)
+				pipeline.Add(pipelineParameters.Dictionarizer);
+
+			if (pipelineParameters.CategoricalOneHotVectorizer != null)
+				pipeline.Add(pipelineParameters.CategoricalOneHotVectorizer);
+
+			if (pipelineParameters.ColumnConcatenator != null)
+				pipeline.Add(pipelineParameters.ColumnConcatenator);
+
 			pipeline.Add(new TAlgorythm());
 
-			if (!string.IsNullOrEmpty(predictedColumn))
-				pipeline.Add(new PredictedLabelColumnOriginalValueConverter { PredictedLabelColumn = predictedColumn });
+			if (pipelineParameters.PredictedLabelColumnOriginalValueConverter != null)
+				pipeline.Add(pipelineParameters.PredictedLabelColumnOriginalValueConverter);
 
 			var modelPath = $@"{_modelsRootPath}\{Guid.NewGuid()}.zip";
 			var model = pipeline.Train<T, TPrediction>();

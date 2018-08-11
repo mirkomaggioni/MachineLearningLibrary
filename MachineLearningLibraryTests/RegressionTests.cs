@@ -12,19 +12,17 @@ namespace MachineLearningLibraryTests
 	public class RegressionTests
 	{
 		private PredictionService predictionService = new PredictionService();
-		private string _dataPath;
-		private char _separator;
-		private string[] _alphanumericColumns;
-		private string[] _concatenatedColumns;
+		private PipelineParameters<TaxyData> _pipelineParameters;
 
 		[SetUp]
 		public void Setup()
 		{
 			var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			_dataPath = $@"{dir}\traindata\taxi.csv";
-			_separator = ',';
-			_alphanumericColumns = new[] { "VendorId", "RateCode", "PaymentType" };
-			_concatenatedColumns = new[] { "VendorId", "RateCode", "PassengerCount", "TripDistance", "PaymentType" };
+			var dataPath = $@"{dir}\traindata\taxi.csv";
+			var separator = ',';
+			var alphanumericColumns = new[] { "VendorId", "RateCode", "PaymentType" };
+			var concatenatedColumns = new[] { "VendorId", "RateCode", "PassengerCount", "TripDistance", "PaymentType" };
+			_pipelineParameters = new PipelineParameters<TaxyData>(dataPath, separator, null, alphanumericColumns, null, concatenatedColumns);
 		}
 
 		[Test]
@@ -35,7 +33,7 @@ namespace MachineLearningLibraryTests
 		public async Task StochasticDualCoordinateAscentRegressorTestAsync(string vendorId, string rateCode, float passengerCount, float tripTime, float tripDistance, string paymentType, float fareAmount)
 		{
 			var car = new TaxyData() { VendorId = vendorId, RateCode = rateCode, PassengerCount = passengerCount, TripTime = tripTime, TripDistance = tripDistance, PaymentType = paymentType };
-			var modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, StochasticDualCoordinateAscentRegressor>(_dataPath, _separator, null, _alphanumericColumns, _concatenatedColumns, null);
+			var modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, StochasticDualCoordinateAscentRegressor>(_pipelineParameters);
 			var result = await predictionService.PredictScoreAsync<TaxyData, TaxyTripFarePrediction>(car, modelPath);
 			Assert.IsTrue(result.Score >= fareAmount);
 		}
@@ -48,7 +46,7 @@ namespace MachineLearningLibraryTests
 		public async Task FastTreeRegressorTestAsync(string vendorId, string rateCode, float passengerCount, float tripTime, float tripDistance, string paymentType, float fareAmount)
 		{
 			var car = new TaxyData() { VendorId = vendorId, RateCode = rateCode, PassengerCount = passengerCount, TripTime = tripTime, TripDistance = tripDistance, PaymentType = paymentType };
-			var modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, StochasticDualCoordinateAscentRegressor>(_dataPath, _separator, null, _alphanumericColumns, _concatenatedColumns, null);
+			var modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, StochasticDualCoordinateAscentRegressor>(_pipelineParameters);
 			var result = await predictionService.PredictScoreAsync<TaxyData, TaxyTripFarePrediction>(car, modelPath);
 			Assert.IsTrue(result.Score >= fareAmount);
 		}
@@ -61,7 +59,7 @@ namespace MachineLearningLibraryTests
 		public async Task FastTreeTweedieRegressorTestAsync(string vendorId, string rateCode, float passengerCount, float tripTime, float tripDistance, string paymentType, float fareAmount)
 		{
 			var car = new TaxyData() { VendorId = vendorId, RateCode = rateCode, PassengerCount = passengerCount, TripTime = tripTime, TripDistance = tripDistance, PaymentType = paymentType };
-			var modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, StochasticDualCoordinateAscentRegressor>(_dataPath, _separator, null, _alphanumericColumns, _concatenatedColumns, null);
+			var modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, StochasticDualCoordinateAscentRegressor>(_pipelineParameters);
 			var result = await predictionService.PredictScoreAsync<TaxyData, TaxyTripFarePrediction>(car, modelPath);
 			Assert.IsTrue(result.Score >= fareAmount);
 		}
@@ -74,7 +72,7 @@ namespace MachineLearningLibraryTests
 		public async Task FastForestRegressorTestAsync(string vendorId, string rateCode, float passengerCount, float tripTime, float tripDistance, string paymentType, float fareAmount)
 		{
 			var car = new TaxyData() { VendorId = vendorId, RateCode = rateCode, PassengerCount = passengerCount, TripTime = tripTime, TripDistance = tripDistance, PaymentType = paymentType };
-			var modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, StochasticDualCoordinateAscentRegressor>(_dataPath, _separator, null, _alphanumericColumns, _concatenatedColumns, null);
+			var modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, StochasticDualCoordinateAscentRegressor>(_pipelineParameters);
 			var result = await predictionService.PredictScoreAsync<TaxyData, TaxyTripFarePrediction>(car, modelPath);
 			Assert.IsTrue(result.Score >= fareAmount);
 		}
@@ -87,7 +85,7 @@ namespace MachineLearningLibraryTests
 		public async Task OnlineGradientDescentRegressorTestAsync(string vendorId, string rateCode, float passengerCount, float tripTime, float tripDistance, string paymentType, float fareAmount)
 		{
 			var car = new TaxyData() { VendorId = vendorId, RateCode = rateCode, PassengerCount = passengerCount, TripTime = tripTime, TripDistance = tripDistance, PaymentType = paymentType };
-			var modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, StochasticDualCoordinateAscentRegressor>(_dataPath, _separator, null, _alphanumericColumns, _concatenatedColumns, null);
+			var modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, StochasticDualCoordinateAscentRegressor>(_pipelineParameters);
 			var result = await predictionService.PredictScoreAsync<TaxyData, TaxyTripFarePrediction>(car, modelPath);
 			Assert.IsTrue(result.Score >= fareAmount);
 		}
@@ -100,7 +98,7 @@ namespace MachineLearningLibraryTests
 		public async Task PoissonRegressorTestAsync(string vendorId, string rateCode, float passengerCount, float tripTime, float tripDistance, string paymentType, float fareAmount)
 		{
 			var car = new TaxyData() { VendorId = vendorId, RateCode = rateCode, PassengerCount = passengerCount, TripTime = tripTime, TripDistance = tripDistance, PaymentType = paymentType };
-			var modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, StochasticDualCoordinateAscentRegressor>(_dataPath, _separator, null, _alphanumericColumns, _concatenatedColumns, null);
+			var modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, StochasticDualCoordinateAscentRegressor>(_pipelineParameters);
 			var result = await predictionService.PredictScoreAsync<TaxyData, TaxyTripFarePrediction>(car, modelPath);
 			Assert.IsTrue(result.Score >= fareAmount);
 		}
