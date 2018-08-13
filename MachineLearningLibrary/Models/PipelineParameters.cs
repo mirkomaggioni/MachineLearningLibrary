@@ -9,7 +9,7 @@ namespace MachineLearningLibrary.Models
 		private readonly string[] _dictionarizedLabels;
 		private readonly string[] _concatenatedColumns;
 
-		public PipelineParameters(string dataPath, char separator, string predictedColumn, string[] alphanumericColumns, string[] dictionarizedLabels, string[] concatenatedColumns)
+		public PipelineParameters(string dataPath, char separator, string predictedColumn = null, string[] alphanumericColumns = null, string[] dictionarizedLabels = null, string[] concatenatedColumns = null)
 		{
 			TextLoader = new TextLoader(dataPath).CreateFrom<T>(separator: separator);
 			PredictedColumn = predictedColumn;
