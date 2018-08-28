@@ -121,6 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="TestData\cars.csv" />
     <None Include="TestData\taxi.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
