@@ -26,7 +26,7 @@ namespace MachineLearningLibraryTests
 			var separator = ',';
 			var alphanumericColumns = new[] { "VendorId", "RateCode", "PaymentType" };
 			var concatenatedColumns = new[] { "VendorId", "RateCode", "PassengerCount", "TripDistance", "PaymentType" };
-			_pipelineParameters = new PipelineParameters<TaxyData>(dataPath, separator, "FareAmount", null, alphanumericColumns, null, concatenatedColumns);
+			_pipelineParameters = new PipelineParameters<TaxyData>(dataPath, separator, null, alphanumericColumns, null, concatenatedColumns);
 			_pipelineTestParameters = new PipelineParameters<TaxyData>(testDataPath, separator);
 		}
 
@@ -34,27 +34,27 @@ namespace MachineLearningLibraryTests
 		public async Task TaxyDataRegressionEvaluationTest()
 		{
 			var modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, StochasticDualCoordinateAscentRegressor>(_pipelineParameters);
-			var result = await predictionService.EvaluateAsync<TaxyData, TaxyTripFarePrediction>(_pipelineTestParameters, modelPath);
+			var result = await predictionService.EvaluateRegressionAsync<TaxyData, TaxyTripFarePrediction>(_pipelineTestParameters, modelPath);
 			LogResult(nameof(StochasticDualCoordinateAscentRegressor), result);
 
 			modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, FastTreeRegressor>(_pipelineParameters);
-			result = await predictionService.EvaluateAsync<TaxyData, TaxyTripFarePrediction>(_pipelineTestParameters, modelPath);
+			result = await predictionService.EvaluateRegressionAsync<TaxyData, TaxyTripFarePrediction>(_pipelineTestParameters, modelPath);
 			LogResult(nameof(FastTreeRegressor), result);
 
 			modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, FastTreeTweedieRegressor>(_pipelineParameters);
-			result = await predictionService.EvaluateAsync<TaxyData, TaxyTripFarePrediction>(_pipelineTestParameters, modelPath);
+			result = await predictionService.EvaluateRegressionAsync<TaxyData, TaxyTripFarePrediction>(_pipelineTestParameters, modelPath);
 			LogResult(nameof(FastTreeTweedieRegressor), result);
 
 			modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, FastForestRegressor>(_pipelineParameters);
-			result = await predictionService.EvaluateAsync<TaxyData, TaxyTripFarePrediction>(_pipelineTestParameters, modelPath);
+			result = await predictionService.EvaluateRegressionAsync<TaxyData, TaxyTripFarePrediction>(_pipelineTestParameters, modelPath);
 			LogResult(nameof(FastForestRegressor), result);
 
 			modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, OnlineGradientDescentRegressor>(_pipelineParameters);
-			result = await predictionService.EvaluateAsync<TaxyData, TaxyTripFarePrediction>(_pipelineTestParameters, modelPath);
+			result = await predictionService.EvaluateRegressionAsync<TaxyData, TaxyTripFarePrediction>(_pipelineTestParameters, modelPath);
 			LogResult(nameof(OnlineGradientDescentRegressor), result);
 
 			modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, PoissonRegressor>(_pipelineParameters);
-			result = await predictionService.EvaluateAsync<TaxyData, TaxyTripFarePrediction>(_pipelineTestParameters, modelPath);
+			result = await predictionService.EvaluateRegressionAsync<TaxyData, TaxyTripFarePrediction>(_pipelineTestParameters, modelPath);
 			LogResult(nameof(PoissonRegressor), result);
 		}
 

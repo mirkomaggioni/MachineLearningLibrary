@@ -115,7 +115,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MulticlassClassificationTests.cs" />
+    <Compile Include="IrisDataMulticlassClassificationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CarDataRegressionEvaluationTests.cs" />
     <Compile Include="TaxyDataRegressionEvaluationTests.cs" />
@@ -125,10 +125,16 @@
     <None Include="TestData\car.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="TestData\iris.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\taxi.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TrainData\car.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TrainData\iris.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="TrainData\taxi.csv">
@@ -141,11 +147,6 @@
       <Project>{658E84C6-0E04-411E-8574-300A47C12CBF}</Project>
       <Name>MachineLearningLibrary</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="TrainData\iris.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -36,8 +36,6 @@ namespace MachineLearningLibrary.Services
 			if (pipelineParameters.ColumnConcatenator != null)
 				pipeline.Add(pipelineParameters.ColumnConcatenator);
 
-			pipeline.Add(new ColumnCopier((pipelineParameters.LabelColumn, "Label")));
-
 			pipeline.Add(new TAlgorythm());
 
 			if (pipelineParameters.PredictedLabelColumnOriginalValueConverter != null)
@@ -49,11 +47,18 @@ namespace MachineLearningLibrary.Services
 			return modelPath;
 		}
 
-		public async Task<RegressionMetrics> EvaluateAsync<T, TPrediction>(PipelineParameters<T> pipelineParameters, string modelPath) where T : class where TPrediction : class, new()
+		public async Task<RegressionMetrics> EvaluateRegressionAsync<T, TPrediction>(PipelineParameters<T> pipelineParameters, string modelPath) where T : class where TPrediction : class, new()
 		{
 			var model = await PredictionModel.ReadAsync<T, TPrediction>(modelPath);
 			var regressionEvaluator = new RegressionEvaluator();
 			return regressionEvaluator.Evaluate(model, pipelineParameters.TextLoader);
+		}
+
+		public async Task<ClassificationMetrics> EvaluateClassificationAsync<T, TPrediction>(PipelineParameters<T> pipelineParameters, string modelPath) where T : class where TPrediction : class, new()
+		{
+			var model = await PredictionModel.ReadAsync<T, TPrediction>(modelPath);
+			var classificationEvaluator = new ClassificationEvaluator();
+			return classificationEvaluator.Evaluate(model, pipelineParameters.TextLoader);
 		}
 
 		public async Task<TPrediction> PredictScoreAsync<T, TPrediction>(T data, string modelPath) where T : class where TPrediction : SingleScore, new()

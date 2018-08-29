@@ -26,8 +26,8 @@ namespace MachineLearningLibraryTests
 			var separator = ',';
 			var alphanumericColumns = new[] { "Make", "FuelType", "Aspiration", "Doors", "BodyStyle", "DriveWheels", "EngineLocation", "EngineType", "NumOfCylinders", "FuelSystem" };
 			var concatenatedColumns = new[] { "Symboling", "NormalizedLosses", "Make", "FuelType", "Aspiration", "Doors", "BodyStyle", "DriveWheels", "EngineLocation", "WheelBase", "Length", "Width", "Height", "CurbWeight", "EngineType", "NumOfCylinders", "EngineSize", "FuelSystem",
-												"Bore", "Stroke", "CompressionRatio", "HorsePower", "PeakRpm", "CityMpg", "HighwayMpg", "Price"};
-			_pipelineParameters = new PipelineParameters<CarData>(dataPath, separator, "Price", null, alphanumericColumns, null, concatenatedColumns);
+												"Bore", "Stroke", "CompressionRatio", "HorsePower", "PeakRpm", "CityMpg", "HighwayMpg"};
+			_pipelineParameters = new PipelineParameters<CarData>(dataPath, separator, null, alphanumericColumns, null, concatenatedColumns);
 			_pipelineTestParameters = new PipelineParameters<CarData>(testDataPath, separator);
 		}
 
@@ -35,27 +35,27 @@ namespace MachineLearningLibraryTests
 		public async Task CarDataRegressionEvaluationTest()
 		{
 			var modelPath = await predictionService.TrainAsync<CarData, CarPricePrediction, StochasticDualCoordinateAscentRegressor>(_pipelineParameters);
-			var result = await predictionService.EvaluateAsync<CarData, CarPricePrediction>(_pipelineTestParameters, modelPath);
+			var result = await predictionService.EvaluateRegressionAsync<CarData, CarPricePrediction>(_pipelineTestParameters, modelPath);
 			LogResult(nameof(StochasticDualCoordinateAscentRegressor), result);
 
 			modelPath = await predictionService.TrainAsync<CarData, CarPricePrediction, FastTreeRegressor>(_pipelineParameters);
-			result = await predictionService.EvaluateAsync<CarData, CarPricePrediction>(_pipelineTestParameters, modelPath);
+			result = await predictionService.EvaluateRegressionAsync<CarData, CarPricePrediction>(_pipelineTestParameters, modelPath);
 			LogResult(nameof(FastTreeRegressor), result);
 
 			modelPath = await predictionService.TrainAsync<CarData, CarPricePrediction, FastTreeTweedieRegressor>(_pipelineParameters);
-			result = await predictionService.EvaluateAsync<CarData, CarPricePrediction>(_pipelineTestParameters, modelPath);
+			result = await predictionService.EvaluateRegressionAsync<CarData, CarPricePrediction>(_pipelineTestParameters, modelPath);
 			LogResult(nameof(FastTreeTweedieRegressor), result);
 
 			modelPath = await predictionService.TrainAsync<CarData, CarPricePrediction, FastForestRegressor>(_pipelineParameters);
-			result = await predictionService.EvaluateAsync<CarData, CarPricePrediction>(_pipelineTestParameters, modelPath);
+			result = await predictionService.EvaluateRegressionAsync<CarData, CarPricePrediction>(_pipelineTestParameters, modelPath);
 			LogResult(nameof(FastForestRegressor), result);
 
 			modelPath = await predictionService.TrainAsync<CarData, CarPricePrediction, OnlineGradientDescentRegressor>(_pipelineParameters);
-			result = await predictionService.EvaluateAsync<CarData, CarPricePrediction>(_pipelineTestParameters, modelPath);
+			result = await predictionService.EvaluateRegressionAsync<CarData, CarPricePrediction>(_pipelineTestParameters, modelPath);
 			LogResult(nameof(OnlineGradientDescentRegressor), result);
 
 			modelPath = await predictionService.TrainAsync<CarData, CarPricePrediction, PoissonRegressor>(_pipelineParameters);
-			result = await predictionService.EvaluateAsync<CarData, CarPricePrediction>(_pipelineTestParameters, modelPath);
+			result = await predictionService.EvaluateRegressionAsync<CarData, CarPricePrediction>(_pipelineTestParameters, modelPath);
 			LogResult(nameof(PoissonRegressor), result);
 		}
 
