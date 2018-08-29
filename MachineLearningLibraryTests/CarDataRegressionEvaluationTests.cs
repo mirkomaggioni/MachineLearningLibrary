@@ -14,8 +14,8 @@ namespace MachineLearningLibraryTests
 	public class CarDataRegressionEvaluationTests
 	{
 		private PredictionService predictionService = new PredictionService();
-		private PipelineParameters<TaxyData> _pipelineParameters;
-		private PipelineParameters<TaxyData> _pipelineTestParameters;
+		private PipelineParameters<CarData> _pipelineParameters;
+		private PipelineParameters<CarData> _pipelineTestParameters;
 
 		[SetUp]
 		public void Setup()
@@ -24,37 +24,38 @@ namespace MachineLearningLibraryTests
 			var dataPath = $@"{dir}\traindata\car.csv";
 			var testDataPath = $@"{dir}\testdata\car.csv";
 			var separator = ',';
-			var alphanumericColumns = new[] { "VendorId", "RateCode", "PaymentType" };
-			var concatenatedColumns = new[] { "VendorId", "RateCode", "PassengerCount", "TripDistance", "PaymentType" };
-			_pipelineParameters = new PipelineParameters<TaxyData>(dataPath, separator, null, alphanumericColumns, null, concatenatedColumns);
-			_pipelineTestParameters = new PipelineParameters<TaxyData>(testDataPath, separator);
+			var alphanumericColumns = new[] { "Make", "FuelType", "Aspiration", "Doors", "BodyStyle", "DriveWheels", "EngineLocation", "EngineType", "NumOfCylinders", "FuelSystem" };
+			var concatenatedColumns = new[] { "Symboling", "NormalizedLosses", "Make", "FuelType", "Aspiration", "Doors", "BodyStyle", "DriveWheels", "EngineLocation", "WheelBase", "Length", "Width", "Height", "CurbWeight", "EngineType", "NumOfCylinders", "EngineSize", "FuelSystem",
+												"Bore", "Stroke", "CompressionRatio", "HorsePower", "PeakRpm", "CityMpg", "HighwayMpg", "Price"};
+			_pipelineParameters = new PipelineParameters<CarData>(dataPath, separator, "Price", null, alphanumericColumns, null, concatenatedColumns);
+			_pipelineTestParameters = new PipelineParameters<CarData>(testDataPath, separator);
 		}
 
 		[Test]
-		public async Task TaxyDataRegressionTestAsync()
+		public async Task CarDataRegressionEvaluationTest()
 		{
-			var modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, StochasticDualCoordinateAscentRegressor>(_pipelineParameters);
-			var result = await predictionService.EvaluateAsync<TaxyData, TaxyTripFarePrediction>(_pipelineTestParameters, modelPath);
+			var modelPath = await predictionService.TrainAsync<CarData, CarPricePrediction, StochasticDualCoordinateAscentRegressor>(_pipelineParameters);
+			var result = await predictionService.EvaluateAsync<CarData, CarPricePrediction>(_pipelineTestParameters, modelPath);
 			LogResult(nameof(StochasticDualCoordinateAscentRegressor), result);
 
-			modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, FastTreeRegressor>(_pipelineParameters);
-			result = await predictionService.EvaluateAsync<TaxyData, TaxyTripFarePrediction>(_pipelineTestParameters, modelPath);
+			modelPath = await predictionService.TrainAsync<CarData, CarPricePrediction, FastTreeRegressor>(_pipelineParameters);
+			result = await predictionService.EvaluateAsync<CarData, CarPricePrediction>(_pipelineTestParameters, modelPath);
 			LogResult(nameof(FastTreeRegressor), result);
 
-			modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, FastTreeTweedieRegressor>(_pipelineParameters);
-			result = await predictionService.EvaluateAsync<TaxyData, TaxyTripFarePrediction>(_pipelineTestParameters, modelPath);
+			modelPath = await predictionService.TrainAsync<CarData, CarPricePrediction, FastTreeTweedieRegressor>(_pipelineParameters);
+			result = await predictionService.EvaluateAsync<CarData, CarPricePrediction>(_pipelineTestParameters, modelPath);
 			LogResult(nameof(FastTreeTweedieRegressor), result);
 
-			modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, FastForestRegressor>(_pipelineParameters);
-			result = await predictionService.EvaluateAsync<TaxyData, TaxyTripFarePrediction>(_pipelineTestParameters, modelPath);
+			modelPath = await predictionService.TrainAsync<CarData, CarPricePrediction, FastForestRegressor>(_pipelineParameters);
+			result = await predictionService.EvaluateAsync<CarData, CarPricePrediction>(_pipelineTestParameters, modelPath);
 			LogResult(nameof(FastForestRegressor), result);
 
-			modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, OnlineGradientDescentRegressor>(_pipelineParameters);
-			result = await predictionService.EvaluateAsync<TaxyData, TaxyTripFarePrediction>(_pipelineTestParameters, modelPath);
+			modelPath = await predictionService.TrainAsync<CarData, CarPricePrediction, OnlineGradientDescentRegressor>(_pipelineParameters);
+			result = await predictionService.EvaluateAsync<CarData, CarPricePrediction>(_pipelineTestParameters, modelPath);
 			LogResult(nameof(OnlineGradientDescentRegressor), result);
 
-			modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, PoissonRegressor>(_pipelineParameters);
-			result = await predictionService.EvaluateAsync<TaxyData, TaxyTripFarePrediction>(_pipelineTestParameters, modelPath);
+			modelPath = await predictionService.TrainAsync<CarData, CarPricePrediction, PoissonRegressor>(_pipelineParameters);
+			result = await predictionService.EvaluateAsync<CarData, CarPricePrediction>(_pipelineTestParameters, modelPath);
 			LogResult(nameof(PoissonRegressor), result);
 		}
 

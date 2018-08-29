@@ -24,7 +24,7 @@ namespace MachineLearningLibraryTests
 			var predictedColumn = "PredictedLabel";
 			var dictionarizedLabels = new[] { "Label" };
 			var concatenatedColumns = new[] { "SepalLength", "SepalWidth", "PetalLength", "PetalWidth" };
-			_pipelineParameters = new PipelineParameters<IrisData>(trainDataPath, separator, predictedColumn, null, dictionarizedLabels, concatenatedColumns);
+			_pipelineParameters = new PipelineParameters<IrisData>(trainDataPath, separator, null, predictedColumn, null, dictionarizedLabels, concatenatedColumns);
 		}
 
 		[Test]

@@ -9,9 +9,10 @@ namespace MachineLearningLibrary.Models
 		private readonly string[] _dictionarizedLabels;
 		private readonly string[] _concatenatedColumns;
 
-		public PipelineParameters(string dataPath, char separator, string predictedColumn = null, string[] alphanumericColumns = null, string[] dictionarizedLabels = null, string[] concatenatedColumns = null)
+		public PipelineParameters(string dataPath, char separator, string labelColumn = null, string predictedColumn = null, string[] alphanumericColumns = null, string[] dictionarizedLabels = null, string[] concatenatedColumns = null)
 		{
 			TextLoader = new TextLoader(dataPath).CreateFrom<T>(separator: separator);
+			LabelColumn = labelColumn;
 			PredictedColumn = predictedColumn;
 			_alphanumericColumns = alphanumericColumns;
 			_dictionarizedLabels = dictionarizedLabels;
@@ -19,6 +20,7 @@ namespace MachineLearningLibrary.Models
 		}
 
 		public TextLoader TextLoader { get; }
+		public string LabelColumn { get; }
 		public string PredictedColumn { get; }
 		public PredictedLabelColumnOriginalValueConverter PredictedLabelColumnOriginalValueConverter => !string.IsNullOrEmpty(PredictedColumn) ? new PredictedLabelColumnOriginalValueConverter { PredictedLabelColumn = PredictedColumn } : null;
 		public Dictionarizer Dictionarizer => _dictionarizedLabels != null ? new Dictionarizer(_dictionarizedLabels) : null;

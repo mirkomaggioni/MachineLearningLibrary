@@ -122,11 +122,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="TestData\car.csv" />
+    <None Include="TestData\car.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\taxi.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="TrainData\car.csv" />
+    <None Include="TrainData\car.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="TrainData\taxi.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

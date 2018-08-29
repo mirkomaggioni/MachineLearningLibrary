@@ -1,6 +1,7 @@
 ﻿using MachineLearningLibrary.Models;
 using Microsoft.ML;
 using Microsoft.ML.Models;
+using Microsoft.ML.Transforms;
 using System;
 using System.IO;
 using System.Linq;
@@ -34,6 +35,8 @@ namespace MachineLearningLibrary.Services
 
 			if (pipelineParameters.ColumnConcatenator != null)
 				pipeline.Add(pipelineParameters.ColumnConcatenator);
+
+			pipeline.Add(new ColumnCopier((pipelineParameters.LabelColumn, "Label")));
 
 			pipeline.Add(new TAlgorythm());
 

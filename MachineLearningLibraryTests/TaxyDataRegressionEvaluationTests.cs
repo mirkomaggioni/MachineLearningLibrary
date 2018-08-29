@@ -26,12 +26,12 @@ namespace MachineLearningLibraryTests
 			var separator = ',';
 			var alphanumericColumns = new[] { "VendorId", "RateCode", "PaymentType" };
 			var concatenatedColumns = new[] { "VendorId", "RateCode", "PassengerCount", "TripDistance", "PaymentType" };
-			_pipelineParameters = new PipelineParameters<TaxyData>(dataPath, separator, null, alphanumericColumns, null, concatenatedColumns);
+			_pipelineParameters = new PipelineParameters<TaxyData>(dataPath, separator, "FareAmount", null, alphanumericColumns, null, concatenatedColumns);
 			_pipelineTestParameters = new PipelineParameters<TaxyData>(testDataPath, separator);
 		}
 
 		[Test]
-		public async Task TaxyDataRegressionTestAsync()
+		public async Task TaxyDataRegressionEvaluationTest()
 		{
 			var modelPath = await predictionService.TrainAsync<TaxyData, TaxyTripFarePrediction, StochasticDualCoordinateAscentRegressor>(_pipelineParameters);
 			var result = await predictionService.EvaluateAsync<TaxyData, TaxyTripFarePrediction>(_pipelineTestParameters, modelPath);

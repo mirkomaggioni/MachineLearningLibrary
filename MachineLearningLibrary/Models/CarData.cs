@@ -32,7 +32,7 @@ namespace MachineLearningLibrary.Models
 		public string EngineLocation;
 
 		[Column("9")]
-		public string WheelBase;
+		public float WheelBase;
 
 		[Column("10")]
 		public float Length;
