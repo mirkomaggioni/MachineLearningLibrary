@@ -54,6 +54,13 @@ namespace MachineLearningLibrary.Services
 			return regressionEvaluator.Evaluate(model, pipelineParameters.TextLoader);
 		}
 
+		public async Task<BinaryClassificationMetrics> EvaluateBinaryClassificationAsync<T, TPrediction>(PipelineParameters<T> pipelineParameters, string modelPath) where T : class where TPrediction : class, new()
+		{
+			var model = await PredictionModel.ReadAsync<T, TPrediction>(modelPath);
+			var binaryClassificationEvaluator = new BinaryClassificationEvaluator();
+			return binaryClassificationEvaluator.Evaluate(model, pipelineParameters.TextLoader);
+		}
+
 		public async Task<ClassificationMetrics> EvaluateClassificationAsync<T, TPrediction>(PipelineParameters<T> pipelineParameters, string modelPath) where T : class where TPrediction : class, new()
 		{
 			var model = await PredictionModel.ReadAsync<T, TPrediction>(modelPath);
@@ -61,22 +68,22 @@ namespace MachineLearningLibrary.Services
 			return classificationEvaluator.Evaluate(model, pipelineParameters.TextLoader);
 		}
 
-		public async Task<TPrediction> PredictScoreAsync<T, TPrediction>(T data, string modelPath) where T : class where TPrediction : SingleScore, new()
+		public async Task<TPrediction> PredictScoreAsync<T, TPrediction>(T data, string modelPath) where T : class where TPrediction : RegressionPrediction, new()
 		{
 			var model = await PredictionModel.ReadAsync<T, TPrediction>(modelPath);
 			return model.Predict(data);
 		}
 
-		public async Task<TPrediction> PredictScoresAsync<T, TPrediction>(T data, string modelPath) where T : class where TPrediction : MultipleScores, new()
+		public async Task<TPrediction> PredictScoresAsync<T, TPrediction>(T data, string modelPath) where T : class where TPrediction : MultiClassificationPrediction, new()
 		{
 			var model = await PredictionModel.ReadAsync<T, TPrediction>(modelPath);
 			var prediction = model.Predict(data);
-			model.TryGetScoreLabelNames(out string[] labelsScores);
+			model.TryGetScoreLabelNames(out string[] scoresLabels);
 
-			prediction.Scores = labelsScores.Select(ls => new ScoreLabel()
+			prediction.Scores = scoresLabels.Select(ls => new ScoreLabel()
 			{
 				Label = ls,
-				Score = prediction.Score[Array.IndexOf(labelsScores, ls)]
+				Score = prediction.Score[Array.IndexOf(scoresLabels, ls)]
 			}).ToArray();
 
 			return prediction;

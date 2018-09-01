@@ -83,5 +83,5 @@ namespace MachineLearningLibrary.Models
 		public float Price;
 	}
 
-	public class CarPricePrediction : SingleScore { }
+	public class CarPricePrediction : RegressionPrediction { }
 }

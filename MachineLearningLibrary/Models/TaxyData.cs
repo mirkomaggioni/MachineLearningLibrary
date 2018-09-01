@@ -26,5 +26,5 @@ namespace MachineLearningLibrary.Models
 		public float FareAmount;
 	}
 
-	public class TaxyTripFarePrediction : SingleScore {}
+	public class TaxyTripFarePrediction : RegressionPrediction {}
 }
