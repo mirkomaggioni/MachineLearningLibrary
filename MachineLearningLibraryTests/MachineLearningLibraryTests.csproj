@@ -110,6 +110,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GlassDataMulticlassClassificationTests.cs" />
     <Compile Include="IrisDataMulticlassClassificationTests.cs" />
     <Compile Include="MushroomsBinaryClassificationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -119,6 +120,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="TestData\car.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\glass.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="TestData\iris.csv">
@@ -131,6 +135,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TrainData\car.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TrainData\glass.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="TrainData\iris.csv">
