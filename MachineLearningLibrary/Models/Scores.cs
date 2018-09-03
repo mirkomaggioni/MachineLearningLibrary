@@ -25,7 +25,6 @@ namespace MachineLearningLibrary.Models
 		[ColumnName("PredictedLabel")]
 		public string PredictedLabel;
 		[ColumnName("Score")]
-		public float[] Score;
-		public ScoreLabel[] Scores { get; set; }
+		public float[] Scores;
 	}
 }
