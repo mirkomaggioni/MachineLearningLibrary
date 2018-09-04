@@ -74,19 +74,17 @@ namespace MachineLearningLibrary.Services
 			return model.Predict(data);
 		}
 
-		public async Task<TPrediction> PredictScoresAsync<T, TPrediction>(T data, string modelPath) where T : class where TPrediction : MultiClassificationPrediction, new()
+		public async Task<ScoreLabel[]> PredictScoresAsync<T, TPrediction>(T data, string modelPath) where T : class where TPrediction : MultiClassificationPrediction, new()
 		{
 			var model = await PredictionModel.ReadAsync<T, TPrediction>(modelPath);
 			var prediction = model.Predict(data);
 			model.TryGetScoreLabelNames(out string[] scoresLabels);
 
-			prediction.Scores = scoresLabels.Select(ls => new ScoreLabel()
+			return scoresLabels.Select(ls => new ScoreLabel()
 			{
 				Label = ls,
-				Score = prediction.Score[Array.IndexOf(scoresLabels, ls)]
+				Score = prediction.Scores[Array.IndexOf(scoresLabels, ls)]
 			}).ToArray();
-
-			return prediction;
 		}
 	}
 }
