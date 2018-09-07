@@ -20,8 +20,11 @@ namespace MachineLearningLibrary.Services
 			Directory.CreateDirectory(_modelsRootPath);
 		}
 
-		public async Task<string> TrainAsync<T, TPrediction, TAlgorythm>(PipelineParameters<T> pipelineParameters) where T : class where TPrediction : class, new() where TAlgorythm : ILearningPipelineItem, new()
+		public async Task<string> TrainAsync<T, TPrediction>(PipelineParameters<T> pipelineParameters) where T : class where TPrediction : class, new()
 		{
+			if (pipelineParameters.Algorithm == null)
+				throw new ArgumentNullException(nameof(pipelineParameters.Algorithm));
+
 			var pipeline = new LearningPipeline();
 
 			if (pipelineParameters.TextLoader != null)
@@ -36,7 +39,7 @@ namespace MachineLearningLibrary.Services
 			if (pipelineParameters.ColumnConcatenator != null)
 				pipeline.Add(pipelineParameters.ColumnConcatenator);
 
-			pipeline.Add(new TAlgorythm());
+			pipeline.Add(pipelineParameters.Algorithm);
 
 			if (pipelineParameters.PredictedLabelColumnOriginalValueConverter != null)
 				pipeline.Add(pipelineParameters.PredictedLabelColumnOriginalValueConverter);
@@ -53,7 +56,7 @@ namespace MachineLearningLibrary.Services
 			var regressionEvaluator = new RegressionEvaluator();
 			return regressionEvaluator.Evaluate(model, pipelineParameters.TextLoader);
 		}
-
+	
 		public async Task<BinaryClassificationMetrics> EvaluateBinaryClassificationAsync<T, TPrediction>(PipelineParameters<T> pipelineParameters, string modelPath) where T : class where TPrediction : class, new()
 		{
 			var model = await PredictionModel.ReadAsync<T, TPrediction>(modelPath);

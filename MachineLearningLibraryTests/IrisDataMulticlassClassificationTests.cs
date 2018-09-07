@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using MachineLearningLibrary.Models;
 using MachineLearningLibrary.Services;
+using Microsoft.ML;
 using Microsoft.ML.Models;
 using Microsoft.ML.Trainers;
 using NUnit.Framework;
@@ -14,35 +15,30 @@ namespace MachineLearningLibraryTests
 	public class IrisDataMulticlassClassificationTests
 	{
 		private PredictionService predictionService = new PredictionService();
-		private PipelineParameters<IrisData> _pipelineParameters;
-		private PipelineParameters<IrisData> _pipelineTestParameters;
-
-		[SetUp]
-		public void Setup()
-		{
-			var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			var dataPath = $@"{dir}\traindata\iris.csv";
-			var testDataPath = $@"{dir}\testdata\iris.csv";
-			var separator = ',';
-			var dictionarizedLabels = new[] { "Label" };
-			var concatenatedColumns = new[] { "SepalLength", "SepalWidth", "PetalLength", "PetalWidth" };
-			_pipelineParameters = new PipelineParameters<IrisData>(dataPath, separator, "PredictedLabel", null, dictionarizedLabels, concatenatedColumns);
-			_pipelineTestParameters = new PipelineParameters<IrisData>(testDataPath, separator);
-		}
+		private string _dataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\traindata\iris.csv";
+		private string _testDataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\testdata\iris.csv";
+		private char _separator = ',';
+		private string _predictedLabel = "PredictedLabel";
+		private string[] _dictionarizedLabels = new[] { "Label" };
+		private string[] _concatenatedColumns = new[] { "SepalLength", "SepalWidth", "PetalLength", "PetalWidth" };
 
 		[Test]
 		public async Task IrisDataMulticlassClassificationTest()
 		{
-			var modelPath = await predictionService.TrainAsync<IrisData, IrisTypePrediction, NaiveBayesClassifier>(_pipelineParameters);
-			var result = await predictionService.EvaluateClassificationAsync<IrisData, IrisTypePrediction>(_pipelineTestParameters, modelPath);
+			var pipelineParameters = GetPipelineParameters(new NaiveBayesClassifier());
+			var pipelineTestParameters = GetPipelineTestParameters();
+			var modelPath = await predictionService.TrainAsync<IrisData, IrisTypePrediction>(pipelineParameters);
+			var result = await predictionService.EvaluateClassificationAsync<IrisData, IrisTypePrediction>(pipelineTestParameters, modelPath);
 			LogResult(nameof(NaiveBayesClassifier), result);
 
-			modelPath = await predictionService.TrainAsync<IrisData, IrisTypePrediction, LogisticRegressionClassifier>(_pipelineParameters);
-			result = await predictionService.EvaluateClassificationAsync<IrisData, IrisTypePrediction>(_pipelineTestParameters, modelPath);
+			pipelineParameters = GetPipelineParameters(new LogisticRegressionClassifier());
+			modelPath = await predictionService.TrainAsync<IrisData, IrisTypePrediction>(pipelineParameters);
+			result = await predictionService.EvaluateClassificationAsync<IrisData, IrisTypePrediction>(pipelineTestParameters, modelPath);
 			LogResult(nameof(LogisticRegressionClassifier), result);
 
-			modelPath = await predictionService.TrainAsync<IrisData, IrisTypePrediction, StochasticDualCoordinateAscentClassifier>(_pipelineParameters);
-			result = await predictionService.EvaluateClassificationAsync<IrisData, IrisTypePrediction>(_pipelineTestParameters, modelPath);
+			pipelineParameters = GetPipelineParameters(new StochasticDualCoordinateAscentClassifier());
+			modelPath = await predictionService.TrainAsync<IrisData, IrisTypePrediction>(pipelineParameters);
+			result = await predictionService.EvaluateClassificationAsync<IrisData, IrisTypePrediction>(pipelineTestParameters, modelPath);
 			LogResult(nameof(StochasticDualCoordinateAscentClassifier), result);
 		}
 
@@ -54,6 +50,14 @@ namespace MachineLearningLibraryTests
 			Console.WriteLine($"LogLoss = {classificationMetrics.LogLoss}");
 			Console.WriteLine($"LogLossReduction = {classificationMetrics.LogLossReduction}");
 			Console.WriteLine($"------------- {algorithm} - END EVALUATION -------------");
+		}
+
+		private PipelineParameters<IrisData> GetPipelineParameters(ILearningPipelineItem algorithm) {
+			return new PipelineParameters<IrisData>(_dataPath, _separator, _predictedLabel, null, _dictionarizedLabels, _concatenatedColumns, algorithm);
+		}
+
+		private PipelineParameters<IrisData> GetPipelineTestParameters() {
+			return new PipelineParameters<IrisData>(_testDataPath, _separator);
 		}
 	}
 }

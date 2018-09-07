@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using MachineLearningLibrary.Models;
 using MachineLearningLibrary.Services;
+using Microsoft.ML;
 using Microsoft.ML.Models;
 using Microsoft.ML.Trainers;
 using NUnit.Framework;
@@ -14,59 +15,60 @@ namespace MachineLearningLibraryTests
 	public class MushroomsBinaryClassificationTests
 	{
 		private PredictionService predictionService = new PredictionService();
-		private PipelineParameters<MushroomData> _pipelineParameters;
-		private PipelineParameters<MushroomData> _pipelineTestParameters;
-
-		[SetUp]
-		public void Setup()
-		{
-			var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			var dataPath = $@"{dir}\traindata\mushroom.csv";
-			var testDataPath = $@"{dir}\testdata\mushroom.csv";
-			var separator = ',';
-			var dictionarizedLabels = new[] { "Label" };
-			var concatenatedColumns = new[] { "CapShape", "CapSurface", "CapColor", "Bruises", "Odor", "GillAttachment", "GillSpacing", "GillSize", "GillColor", "StalkShape", "StalkRoot", "StalkSurfaceAboveRing", "StalkSurfaceBelowRing", "StalkColorAboveRing", "StalkColorBelowRing", "VeilType", "VeilColor", "RingNumber", "RingType", "SporePrintColor", "Population", "Habitat" };
-			_pipelineParameters = new PipelineParameters<MushroomData>(dataPath, separator, "PredictedLabel", concatenatedColumns, dictionarizedLabels, concatenatedColumns);
-			_pipelineTestParameters = new PipelineParameters<MushroomData>(testDataPath, separator);
-		}
+		private string _dataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\traindata\mushroom.csv";
+		private string _testDataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\testdata\mushroom.csv";
+		private char _separator = ',';
+		private string _predictedLabel = "PredictedLabel";
+		private string[] _dictionarizedLabels = new[] { "Label" };
+		private string[] _concatenatedColumns = new[] { "CapShape", "CapSurface", "CapColor", "Bruises", "Odor", "GillAttachment", "GillSpacing", "GillSize", "GillColor", "StalkShape", "StalkRoot", "StalkSurfaceAboveRing", "StalkSurfaceBelowRing", "StalkColorAboveRing", "StalkColorBelowRing", "VeilType", "VeilColor", "RingNumber", "RingType", "SporePrintColor", "Population", "Habitat" };
 
 		[Test]
 		public async Task MushroomsBinaryClassificationTest()
 		{
-			var modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction, AveragedPerceptronBinaryClassifier>(_pipelineParameters);
-			var result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(_pipelineTestParameters, modelPath);
+			var pipelineParameters = GetPipelineParameters(new AveragedPerceptronBinaryClassifier());
+			var pipelineTestParameters = GetPipelineTestParameters();
+			var modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction>(pipelineParameters);
+			var result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(pipelineTestParameters, modelPath);
 			LogResult(nameof(AveragedPerceptronBinaryClassifier), result);
 
-			modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction, FastForestBinaryClassifier>(_pipelineParameters);
-			result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(_pipelineTestParameters, modelPath);
+			pipelineParameters = GetPipelineParameters(new FastForestBinaryClassifier());
+			modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction>(pipelineParameters);
+			result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(pipelineTestParameters, modelPath);
 			LogResult(nameof(FastForestBinaryClassifier), result);
 
-			modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction, FastTreeBinaryClassifier>(_pipelineParameters);
-			result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(_pipelineTestParameters, modelPath);
+			pipelineParameters = GetPipelineParameters(new FastTreeBinaryClassifier());
+			modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction>(pipelineParameters);
+			result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(pipelineTestParameters, modelPath);
 			LogResult(nameof(FastTreeBinaryClassifier), result);
 
-			modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction, FieldAwareFactorizationMachineBinaryClassifier>(_pipelineParameters);
-			result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(_pipelineTestParameters, modelPath);
+			pipelineParameters = GetPipelineParameters(new FieldAwareFactorizationMachineBinaryClassifier());
+			modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction>(pipelineParameters);
+			result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(pipelineTestParameters, modelPath);
 			LogResult(nameof(FieldAwareFactorizationMachineBinaryClassifier), result);
 
-			modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction, GeneralizedAdditiveModelBinaryClassifier>(_pipelineParameters);
-			result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(_pipelineTestParameters, modelPath);
+			pipelineParameters = GetPipelineParameters(new GeneralizedAdditiveModelBinaryClassifier());
+			modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction>(pipelineParameters);
+			result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(pipelineTestParameters, modelPath);
 			LogResult(nameof(GeneralizedAdditiveModelBinaryClassifier), result);
 
-			modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction, LinearSvmBinaryClassifier>(_pipelineParameters);
-			result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(_pipelineTestParameters, modelPath);
+			pipelineParameters = GetPipelineParameters(new LinearSvmBinaryClassifier());
+			modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction>(pipelineParameters);
+			result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(pipelineTestParameters, modelPath);
 			LogResult(nameof(LinearSvmBinaryClassifier), result);
 
-			modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction, LogisticRegressionBinaryClassifier>(_pipelineParameters);
-			result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(_pipelineTestParameters, modelPath);
+			pipelineParameters = GetPipelineParameters(new LogisticRegressionBinaryClassifier());
+			modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction>(pipelineParameters);
+			result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(pipelineTestParameters, modelPath);
 			LogResult(nameof(LogisticRegressionBinaryClassifier), result);
 
-			modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction, StochasticDualCoordinateAscentBinaryClassifier>(_pipelineParameters);
-			result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(_pipelineTestParameters, modelPath);
+			pipelineParameters = GetPipelineParameters(new StochasticDualCoordinateAscentBinaryClassifier());
+			modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction>(pipelineParameters);
+			result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(pipelineTestParameters, modelPath);
 			LogResult(nameof(StochasticDualCoordinateAscentBinaryClassifier), result);
 
-			modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction, StochasticGradientDescentBinaryClassifier>(_pipelineParameters);
-			result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(_pipelineTestParameters, modelPath);
+			pipelineParameters = GetPipelineParameters(new StochasticGradientDescentBinaryClassifier());
+			modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction>(pipelineParameters);
+			result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(pipelineTestParameters, modelPath);
 			LogResult(nameof(StochasticGradientDescentBinaryClassifier), result);
 		}
 
@@ -79,6 +81,14 @@ namespace MachineLearningLibraryTests
 			Console.WriteLine($"LogLoss = {classificationMetrics.LogLoss}");
 			Console.WriteLine($"LogLossReduction = {classificationMetrics.LogLossReduction}");
 			Console.WriteLine($"------------- {algorithm} - END EVALUATION -------------");
+		}
+
+		private PipelineParameters<MushroomData> GetPipelineParameters(ILearningPipelineItem algorithm) {
+			return new PipelineParameters<MushroomData>(_dataPath, _separator, _predictedLabel, _concatenatedColumns, _dictionarizedLabels, _concatenatedColumns, algorithm);
+		}
+
+		private PipelineParameters<MushroomData> GetPipelineTestParameters() {
+			return new PipelineParameters<MushroomData>(_testDataPath, _separator);
 		}
 	}
 }
