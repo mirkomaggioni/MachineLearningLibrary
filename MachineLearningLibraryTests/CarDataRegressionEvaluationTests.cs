@@ -25,7 +25,12 @@ namespace MachineLearningLibraryTests
 		[Test]
 		public async Task CarDataRegressionEvaluationTest()
 		{
-			var pipelineParameters = GetPipelineParameters(new StochasticDualCoordinateAscentRegressor());
+			var stochasticDualCoordinateAscentRegressorAlgorithm = new StochasticDualCoordinateAscentRegressor();
+			stochasticDualCoordinateAscentRegressorAlgorithm.BiasLearningRate = 0.1f;
+			stochasticDualCoordinateAscentRegressorAlgorithm.CheckFrequency = 0;
+			stochasticDualCoordinateAscentRegressorAlgorithm.ConvergenceTolerance = 0.1f;
+
+			var pipelineParameters = GetPipelineParameters(stochasticDualCoordinateAscentRegressorAlgorithm);
 			var pipelineTestParameters = GetPipelineTestParameters();
 			var modelPath = await predictionService.TrainAsync<CarData, CarPricePrediction>(pipelineParameters);
 			var result = await predictionService.EvaluateRegressionAsync<CarData, CarPricePrediction>(pipelineTestParameters, modelPath);
