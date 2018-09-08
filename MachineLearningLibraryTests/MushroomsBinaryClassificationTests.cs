@@ -25,16 +25,18 @@ namespace MachineLearningLibraryTests
 		[Test]
 		public async Task MushroomsBinaryClassificationTest()
 		{
-			var pipelineParameters = GetPipelineParameters(new AveragedPerceptronBinaryClassifier());
+			var algorithm = new FastForestBinaryClassifier();
+			algorithm.NumTrees = 3000;
+			var pipelineParameters = GetPipelineParameters(algorithm);
 			var pipelineTestParameters = GetPipelineTestParameters();
 			var modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction>(pipelineParameters);
 			var result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(pipelineTestParameters, modelPath);
-			LogResult(nameof(AveragedPerceptronBinaryClassifier), result);
+			LogResult(nameof(FastForestBinaryClassifier), result);
 
-			pipelineParameters = GetPipelineParameters(new FastForestBinaryClassifier());
+			pipelineParameters = GetPipelineParameters(new AveragedPerceptronBinaryClassifier());
 			modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction>(pipelineParameters);
 			result = await predictionService.EvaluateBinaryClassificationAsync<MushroomData, MushroomEdiblePrediction>(pipelineTestParameters, modelPath);
-			LogResult(nameof(FastForestBinaryClassifier), result);
+			LogResult(nameof(AveragedPerceptronBinaryClassifier), result);
 
 			pipelineParameters = GetPipelineParameters(new FastTreeBinaryClassifier());
 			modelPath = await predictionService.TrainAsync<MushroomData, MushroomEdiblePrediction>(pipelineParameters);
