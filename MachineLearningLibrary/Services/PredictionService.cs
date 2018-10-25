@@ -1,7 +1,6 @@
 ﻿using MachineLearningLibrary.Models;
-using Microsoft.ML;
-using Microsoft.ML.Models;
-using Microsoft.ML.Transforms;
+using Microsoft.ML.Legacy;
+using Microsoft.ML.Legacy.Models;
 using System;
 using System.IO;
 using System.Linq;

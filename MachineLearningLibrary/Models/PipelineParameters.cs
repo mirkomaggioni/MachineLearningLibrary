@@ -1,6 +1,6 @@
-﻿using Microsoft.ML;
-using Microsoft.ML.Data;
-using Microsoft.ML.Transforms;
+﻿using Microsoft.ML.Legacy;
+using Microsoft.ML.Legacy.Data;
+using Microsoft.ML.Legacy.Transforms;
 
 namespace MachineLearningLibrary.Models
 {

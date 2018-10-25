@@ -4,9 +4,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using MachineLearningLibrary.Models;
 using MachineLearningLibrary.Services;
-using Microsoft.ML;
-using Microsoft.ML.Models;
-using Microsoft.ML.Trainers;
+using Microsoft.ML.Legacy;
+using Microsoft.ML.Legacy.Models;
+using Microsoft.ML.Legacy.Trainers;
 using NUnit.Framework;
 
 namespace MachineLearningLibraryTests
