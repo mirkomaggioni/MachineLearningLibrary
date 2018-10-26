@@ -1,31 +1,52 @@
-﻿using Microsoft.ML.Legacy;
-using Microsoft.ML.Legacy.Data;
-using Microsoft.ML.Legacy.Transforms;
+﻿using Microsoft.ML;
+using Microsoft.ML.Runtime.Data;
+using System;
+using System.Collections.Generic;
+using static Microsoft.ML.Runtime.Data.TextLoader;
 
 namespace MachineLearningLibrary.Models
 {
 	public class PipelineParameters<T> where T : class
 	{
-		private readonly string[] _alphanumericColumns;
-		private readonly string[] _dictionarizedLabels;
-		private readonly string[] _concatenatedColumns;
-        private string _predictedColumn;
+		private readonly TextLoader _reader;
+		private string _predictedColumn;
+		private readonly string _dataPath;
 
-		public PipelineParameters(string dataPath, char separator, string predictedColumn = null, string[] alphanumericColumns = null, string[] dictionarizedLabels = null, string[] concatenatedColumns = null, ILearningPipelineItem algorithm = null)
+		public PipelineParameters(string dataPath, string separator, bool hasHeader, string predictedColumn = null, Tuple<string, DataKind, int, bool, bool>[] columns = null, TrainContextBase trainContextBase = null)
 		{
-			TextLoader = new TextLoader(dataPath).CreateFrom<T>(separator: separator);
-			_predictedColumn = predictedColumn;
-			_alphanumericColumns = alphanumericColumns;
-			_dictionarizedLabels = dictionarizedLabels;
-			_concatenatedColumns = concatenatedColumns;
-            Algorithm = algorithm;
-        }
+			var mlColumns = new List<Column>();
+			var mlFeatureColumns  = new List<Range>();
+			var mlTargetColumns  = new List<Range>();
 
-		public TextLoader TextLoader { get; }
-		public PredictedLabelColumnOriginalValueConverter PredictedLabelColumnOriginalValueConverter => !string.IsNullOrEmpty(_predictedColumn) ? new PredictedLabelColumnOriginalValueConverter { PredictedLabelColumn = _predictedColumn } : null;
-		public Dictionarizer Dictionarizer => _dictionarizedLabels != null ? new Dictionarizer(_dictionarizedLabels) : null;
-		public ColumnConcatenator ColumnConcatenator => _concatenatedColumns != null ? new ColumnConcatenator("Features", _concatenatedColumns) : null;
-		public CategoricalOneHotVectorizer CategoricalOneHotVectorizer => _alphanumericColumns != null ? new CategoricalOneHotVectorizer(_alphanumericColumns) : null;
-        public ILearningPipelineItem Algorithm { get; }
-    }
+			foreach (var column in columns)
+			{
+				mlColumns.Add(new Column(column.Item1, column.Item2, column.Item3));
+				if (column.Item4)
+				{
+					mlFeatureColumns.Add(new Range(column.Item3));
+				}
+				if (column.Item5)
+				{
+					mlTargetColumns.Add(new Range(column.Item3));
+				}
+			}
+
+			mlColumns.Add(new Column("FeatureVector", DataKind.R4, mlFeatureColumns.ToArray()));
+			mlColumns.Add(new Column("Target", DataKind.R4, mlTargetColumns.ToArray()));
+
+			_reader = new TextLoader(new LocalEnvironment(), new Arguments
+			{
+				Column = mlColumns.ToArray(),
+				HasHeader = hasHeader,
+				Separator = separator
+			});
+
+			_predictedColumn = predictedColumn;
+            TrainContextBase = trainContextBase;
+			_dataPath = dataPath;
+		}
+
+		public IDataView Data => _reader.Read(new MultiFileSource(_dataPath));
+		public TrainContextBase TrainContextBase { get; }
+	}
 }
