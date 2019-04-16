@@ -1,22 +1,22 @@
-﻿using Microsoft.ML.Runtime.Api;
+﻿using Microsoft.ML.Data;
 
 namespace MachineLearningLibrary.Models
 {
 	public class IrisData
 	{
-		[Column("0")]
+		[LoadColumn(0)]
 		public float SepalLength;
 
-		[Column("1")]
+		[LoadColumn(1)]
 		public float SepalWidth;
 
-		[Column("2")]
+		[LoadColumn(2)]
 		public float PetalLength;
 
-		[Column("3")]
+		[LoadColumn(3)]
 		public float PetalWidth;
 
-		[Column("4", "Label")]
+		[LoadColumn(4), ColumnName("Label")]
 		public string Type;
 	}
 

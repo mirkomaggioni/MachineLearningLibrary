@@ -1,85 +1,85 @@
-﻿using Microsoft.ML.Runtime.Api;
+﻿using Microsoft.ML.Data;
 
 namespace MachineLearningLibrary.Models
 {
 	public class CarData
 	{
-		[Column("0")]
+		[LoadColumn(0)]
 		public float Symboling;
 
-		[Column("1")]
+		[LoadColumn(1)]
 		public float NormalizedLosses;
 
-		[Column("2")]
+		[LoadColumn(2)]
 		public string Make;
 
-		[Column("3")]
+		[LoadColumn(3)]
 		public string FuelType;
 
-		[Column("4")]
+		[LoadColumn(4)]
 		public string Aspiration;
 
-		[Column("5")]
+		[LoadColumn(5)]
 		public string Doors;
 
-		[Column("6")]
+		[LoadColumn(6)]
 		public string BodyStyle;
 
-		[Column("7")]
+		[LoadColumn(7)]
 		public string DriveWheels;
 
-		[Column("8")]
+		[LoadColumn(8)]
 		public string EngineLocation;
 
-		[Column("9")]
+		[LoadColumn(9)]
 		public float WheelBase;
 
-		[Column("10")]
+		[LoadColumn(10)]
 		public float Length;
 
-		[Column("11")]
+		[LoadColumn(11)]
 		public float Width;
 
-		[Column("12")]
+		[LoadColumn(12)]
 		public float Height;
 
-		[Column("13")]
+		[LoadColumn(13)]
 		public float CurbWeight;
 
-		[Column("14")]
+		[LoadColumn(14)]
 		public string EngineType;
 
-		[Column("15")]
+		[LoadColumn(15)]
 		public string NumOfCylinders;
 
-		[Column("16")]
+		[LoadColumn(16)]
 		public float EngineSize;
 
-		[Column("17")]
+		[LoadColumn(17)]
 		public string FuelSystem;
 
-		[Column("18")]
+		[LoadColumn(18)]
 		public float Bore;
 
-		[Column("19")]
+		[LoadColumn(19)]
 		public float Stroke;
 
-		[Column("20")]
+		[LoadColumn(20)]
 		public float CompressionRatio;
 
-		[Column("21")]
+		[LoadColumn(21)]
 		public float HorsePower;
 
-		[Column("22")]
+		[LoadColumn(22)]
 		public float PeakRpm;
 
-		[Column("23")]
+		[LoadColumn(23)]
 		public float CityMpg;
 
-		[Column("24")]
+		[LoadColumn(24)]
 		public float HighwayMpg;
 
-		[Column("25", "Label")]
+		[LoadColumn(25), ColumnName("Label")]
 		public float Price;
 	}
 

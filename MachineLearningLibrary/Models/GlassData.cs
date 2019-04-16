@@ -1,30 +1,30 @@
-﻿using Microsoft.ML.Runtime.Api;
+﻿using Microsoft.ML.Data;
 
 namespace MachineLearningLibrary.Models
 {
 	public class GlassData
 	{
-		[Column("0")]
+		[LoadColumn(0)]
 		public float IdNumber;
-		[Column("1")]
+		[LoadColumn(1)]
 		public float RefractiveIndex;
-		[Column("2")]
+		[LoadColumn(2)]
 		public float Sodium;
-		[Column("3")]
+		[LoadColumn(3)]
 		public float Magnesium;
-		[Column("4")]
+		[LoadColumn(4)]
 		public float Aluminium;
-		[Column("5")]
+		[LoadColumn(5)]
 		public float Silicon;
-		[Column("6")]
+		[LoadColumn(6)]
 		public float Potassium;
-		[Column("7")]
+		[LoadColumn(7)]
 		public float Calcium;
-		[Column("8")]
+		[LoadColumn(8)]
 		public float Barium;
-		[Column("9")]
+		[LoadColumn(9)]
 		public float Iron;
-		[Column("10", "Label")]
+		[LoadColumn(10), ColumnName("Label")]
 		public string Type;
 	}
 
