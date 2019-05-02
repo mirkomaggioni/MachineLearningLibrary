@@ -1,8 +1,8 @@
 ﻿using Microsoft.Data.DataView;
 using Microsoft.ML;
 using Microsoft.ML.Data;
+using Microsoft.ML.Transforms.Text;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MachineLearningLibrary.Models
 {
@@ -10,7 +10,7 @@ namespace MachineLearningLibrary.Models
 	{
 		public readonly MLContext MlContext;
 		public readonly IDataView DataView;
-
+		public readonly TextFeaturizingEstimator TextFeaturizingEstimator;
 		//private readonly string[] _dictionarizedLabels;
 		//private string _predictedColumn;
 
@@ -19,7 +19,7 @@ namespace MachineLearningLibrary.Models
 		{
 			MlContext = new MLContext();
 			DataView = MlContext.Data.LoadFromTextFile<T>(dataPath, separator, hasHeader: false);
-			MlContext.Transforms.Text.FeaturizeText(DefaultColumnNames.Features, concatenatedColumns, null);
+			TextFeaturizingEstimator = MlContext.Transforms.Text.FeaturizeText(DefaultColumnNames.Features, concatenatedColumns, null);
 
 			foreach (var alphanumericColumn in alphanumericColumns)
 				MlContext.Transforms.Categorical.OneHotEncoding(alphanumericColumn);
@@ -27,6 +27,17 @@ namespace MachineLearningLibrary.Models
 			//_predictedColumn = predictedColumn;
 			//_dictionarizedLabels = dictionarizedLabels;
 		}
+
+		//public void SetupTrainerEstimator<TTransformer, TModel>(ITrainerEstimator<TTransformer, TModel> trainerEstimator)
+		//	where TTransformer : class, ITransformer
+		//	//ISingleFeaturePredictionTransformer<TModel>
+		//	where TModel : class
+		//{
+		//	EstimatorChain<ITransformer> EsstimatorChain = _textFeaturizingEstimator.Append(trainerEstimator);
+
+		//	if (EstimatorChain == null)
+		//		EstimatorChain = _textFeaturizingEstimator.Append(trainerEstimator);
+		//}
 
 		//public PredictedLabelColumnOriginalValueConverter PredictedLabelColumnOriginalValueConverter => !string.IsNullOrEmpty(_predictedColumn) ? new PredictedLabelColumnOriginalValueConverter { PredictedLabelColumn = _predictedColumn } : null;
 		//public Dictionarizer Dictionarizer => _dictionarizedLabels != null ? new Dictionarizer(_dictionarizedLabels) : null;

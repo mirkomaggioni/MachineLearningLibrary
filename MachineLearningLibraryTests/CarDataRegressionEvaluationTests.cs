@@ -4,10 +4,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using MachineLearningLibrary.Models;
 using MachineLearningLibrary.Services;
-using Microsoft.ML.Legacy;
-using Microsoft.ML.Legacy.Models;
-using Microsoft.ML.Legacy.Trainers;
 using NUnit.Framework;
+using Microsoft.ML.Data;
+using Microsoft.ML;
+using Microsoft.ML.Trainers;
 
 namespace MachineLearningLibraryTests
 {
@@ -23,43 +23,34 @@ namespace MachineLearningLibraryTests
 												"Bore", "Stroke", "CompressionRatio", "HorsePower", "PeakRpm", "CityMpg", "HighwayMpg"};
 
 		[Test]
-		public async Task CarDataRegressionEvaluationTest()
+		public void CarDataRegressionEvaluationTest()
 		{
-			var stochasticDualCoordinateAscentRegressorAlgorithm = new StochasticDualCoordinateAscentRegressor();
-			stochasticDualCoordinateAscentRegressorAlgorithm.BiasLearningRate = 0.1f;
-			stochasticDualCoordinateAscentRegressorAlgorithm.CheckFrequency = 0;
-			stochasticDualCoordinateAscentRegressorAlgorithm.ConvergenceTolerance = 0.1f;
+			var pipelineParameters = GetPipelineParameters(_dataPath);
+			var pipelineTestParameters = GetPipelineParameters(_testDataPath);
 
-			var pipelineParameters = GetPipelineParameters(stochasticDualCoordinateAscentRegressorAlgorithm);
-			var pipelineTestParameters = GetPipelineTestParameters();
-			var modelPath = await predictionService.TrainAsync<CarData, CarPricePrediction>(pipelineParameters);
-			var result = await predictionService.EvaluateRegressionAsync<CarData, CarPricePrediction>(pipelineTestParameters, modelPath);
-			LogResult(nameof(StochasticDualCoordinateAscentRegressor), result);
+			var modelPath = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscent);
+			var result = predictionService.EvaluateRegression(pipelineParameters, pipelineTestParameters);
+			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscent), result);
 
-			pipelineParameters = GetPipelineParameters(new FastTreeRegressor());
-			modelPath = await predictionService.TrainAsync<CarData, CarPricePrediction>(pipelineParameters);
-			result = await predictionService.EvaluateRegressionAsync<CarData, CarPricePrediction>(pipelineTestParameters, modelPath);
-			LogResult(nameof(FastTreeRegressor), result);
+			modelPath = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.FastTree);
+			result = predictionService.EvaluateRegression(pipelineParameters, pipelineTestParameters);
+			LogResult(nameof(AlgorithmType.FastTree), result);
 
-			pipelineParameters = GetPipelineParameters(new FastTreeTweedieRegressor());
-			modelPath = await predictionService.TrainAsync<CarData, CarPricePrediction>(pipelineParameters);
-			result = await predictionService.EvaluateRegressionAsync<CarData, CarPricePrediction>(pipelineTestParameters, modelPath);
-			LogResult(nameof(FastTreeTweedieRegressor), result);
+			modelPath = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.FastTreeTweedieRegressor);
+			result = predictionService.EvaluateRegression(pipelineParameters, pipelineTestParameters);
+			LogResult(nameof(AlgorithmType.FastTreeTweedieRegressor), result);
 
-			pipelineParameters = GetPipelineParameters(new FastForestRegressor());
-			modelPath = await predictionService.TrainAsync<CarData, CarPricePrediction>(pipelineParameters);
-			result = await predictionService.EvaluateRegressionAsync<CarData, CarPricePrediction>(pipelineTestParameters, modelPath);
-			LogResult(nameof(FastForestRegressor), result);
+			modelPath = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.FastForestRegressor);
+			result = predictionService.EvaluateRegression(pipelineParameters, pipelineTestParameters);
+			LogResult(nameof(AlgorithmType.FastForestRegressor), result);
 
-			pipelineParameters = GetPipelineParameters(new OnlineGradientDescentRegressor());
-			modelPath = await predictionService.TrainAsync<CarData, CarPricePrediction>(pipelineParameters);
-			result = await predictionService.EvaluateRegressionAsync<CarData, CarPricePrediction>(pipelineTestParameters, modelPath);
-			LogResult(nameof(OnlineGradientDescentRegressor), result);
+			modelPath = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.OnlineGradientDescentRegressor);
+			result = predictionService.EvaluateRegression(pipelineParameters, pipelineTestParameters);
+			LogResult(nameof(AlgorithmType.OnlineGradientDescentRegressor), result);
 
-			pipelineParameters = GetPipelineParameters(new PoissonRegressor());
-			modelPath = await predictionService.TrainAsync<CarData, CarPricePrediction>(pipelineParameters);
-			result = await predictionService.EvaluateRegressionAsync<CarData, CarPricePrediction>(pipelineTestParameters, modelPath);
-			LogResult(nameof(PoissonRegressor), result);
+			modelPath = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.PoissonRegressor);
+			result = predictionService.EvaluateRegression(pipelineParameters, pipelineTestParameters);
+			LogResult(nameof(AlgorithmType.PoissonRegressor), result);
 		}
 
 		private void LogResult(string algorithm, RegressionMetrics regressionMetrics)
@@ -70,12 +61,9 @@ namespace MachineLearningLibraryTests
 			Console.WriteLine($"------------- {algorithm} - END EVALUATION -------------");
 		}
 
-		private PipelineParameters<CarData> GetPipelineParameters(ILearningPipelineItem algorithm) {
-			return new PipelineParameters<CarData>(_dataPath, _separator, null, _alphanumericColumns, null, _concatenatedColumns, algorithm);
-		}
-
-		private PipelineParameters<CarData> GetPipelineTestParameters() {
-			return new PipelineParameters<CarData>(_testDataPath, _separator);
+		private PipelineParameters<CarData> GetPipelineParameters(string dataPath)
+		{
+			return new PipelineParameters<CarData>(dataPath, _separator, _alphanumericColumns, _concatenatedColumns);
 		}
 	}
 }

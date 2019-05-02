@@ -5,9 +5,20 @@ using System.Reflection;
 using Microsoft.ML;
 using Microsoft.ML.Data;
 using Microsoft.ML.Trainers;
+using Microsoft.ML.Trainers.FastTree;
 
 namespace MachineLearningLibrary.Services
 {
+	public enum AlgorithmType
+	{
+		StochasticDualCoordinateAscent,
+		FastTree,
+		FastTreeTweedieRegressor,
+		FastForestRegressor,
+		OnlineGradientDescentRegressor,
+		PoissonRegressor
+	}
+
 	public class PredictionService
 	{
 		private readonly string _modelsRootPath;
@@ -18,10 +29,8 @@ namespace MachineLearningLibrary.Services
 			Directory.CreateDirectory(_modelsRootPath);
 		}
 
-		public PredictionEngine<T, TPredictionModel> Train<T, TTransformer, TModel, TPredictionModel>(ITrainerEstimator<TTransformer, TModel> trainerEstimator, PipelineParameters<T> pipelineParameters) 
+		public PredictionEngine<T, TPredictionModel> Train<T, TPredictionModel>(PipelineParameters<T> pipelineParameters, AlgorithmType algorithmType) 
 			where T : class
-			where TTransformer : ISingleFeaturePredictionTransformer<TModel>
-			where TModel : class
 			where TPredictionModel : class, IPredictionModel, new()
 		{
 			//if (pipelineParameters.MlContext..Algorithm == null)
@@ -47,7 +56,7 @@ namespace MachineLearningLibrary.Services
 			//	pipeline.Add(pipelineParameters.PredictedLabelColumnOriginalValueConverter);
 
 			var modelPath = $@"{_modelsRootPath}\{Guid.NewGuid()}.zip";
-			var model = trainerEstimator.Fit(pipelineParameters.DataView);
+			var model = GetModel(pipelineParameters, AlgorithmType.FastTree);
 
 			using (var fileStream = new FileStream(modelPath, FileMode.Create, FileAccess.Write, FileShare.Write))
 			{
@@ -57,19 +66,19 @@ namespace MachineLearningLibrary.Services
 			return pipelineParameters.MlContext.Model.CreatePredictionEngine<T, TPredictionModel>(model);
 		}
 
-		public RegressionMetrics EvaluateRegression<T>(PipelineParameters<T> pipelineParameters) where T : class
+		public RegressionMetrics EvaluateRegression<T>(PipelineParameters<T> pipelineParameters, PipelineParameters<T> pipelineTestParameters) where T : class
 		{
-			return pipelineParameters.MlContext.Regression.Evaluate(pipelineParameters.DataView);
+			return pipelineParameters.MlContext.Regression.Evaluate(pipelineTestParameters.DataView);
 		}
 
-		public BinaryClassificationMetrics EvaluateBinaryClassification<T>(PipelineParameters<T> pipelineParameters) where T : class
+		public BinaryClassificationMetrics EvaluateBinaryClassification<T>(PipelineParameters<T> pipelineParameters, PipelineParameters<T> pipelineTestParameters) where T : class
 		{
-			return pipelineParameters.MlContext.BinaryClassification.Evaluate(pipelineParameters.DataView);
+			return pipelineParameters.MlContext.BinaryClassification.Evaluate(pipelineTestParameters.DataView);
 		}
 
-		public ClusteringMetrics EvaluateClassification<T>(PipelineParameters<T> pipelineParameters) where T : class
+		public ClusteringMetrics EvaluateClassification<T>(PipelineParameters<T> pipelineParameters, PipelineParameters<T> pipelineTestParameters) where T : class
 		{
-			return pipelineParameters.MlContext.Clustering.Evaluate(pipelineParameters.DataView);
+			return pipelineParameters.MlContext.Clustering.Evaluate(pipelineTestParameters.DataView);
 		}
 
 		public TPredictionModel PredictScore<T, TPredictionModel>(T data, PredictionEngine<T, TPredictionModel> predictionEngine) 
@@ -91,5 +100,26 @@ namespace MachineLearningLibrary.Services
 		//		Score = prediction.Scores[Array.IndexOf(scoresLabels, ls)]
 		//	}).ToArray();
 		//}
+
+		private ITransformer GetModel<T>(PipelineParameters<T> pipelineParameters, AlgorithmType algorithmType) where T : class
+		{
+			switch (algorithmType)
+			{
+				case AlgorithmType.FastTree:
+					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.FastTree()).Fit(pipelineParameters.DataView);
+				case AlgorithmType.StochasticDualCoordinateAscent:
+					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.StochasticDualCoordinateAscent()).Fit(pipelineParameters.DataView);
+				case AlgorithmType.FastTreeTweedieRegressor:
+					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.FastTreeTweedie()).Fit(pipelineParameters.DataView);
+				case AlgorithmType.FastForestRegressor:
+					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.FastForest()).Fit(pipelineParameters.DataView);
+				case AlgorithmType.OnlineGradientDescentRegressor:
+					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.OnlineGradientDescent()).Fit(pipelineParameters.DataView);
+				case AlgorithmType.PoissonRegressor:
+					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.PoissonRegression()).Fit(pipelineParameters.DataView);
+				default:
+					return null;
+			}
+		}
 	}
 }
