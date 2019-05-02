@@ -1,11 +1,10 @@
 ﻿using MachineLearningLibrary.Models;
-using Microsoft.ML.Legacy;
-using Microsoft.ML.Legacy.Models;
 using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
+using Microsoft.ML;
+using Microsoft.ML.Data;
+using Microsoft.ML.Trainers;
 
 namespace MachineLearningLibrary.Services
 {
@@ -19,74 +18,78 @@ namespace MachineLearningLibrary.Services
 			Directory.CreateDirectory(_modelsRootPath);
 		}
 
-		public async Task<string> TrainAsync<T, TPrediction>(PipelineParameters<T> pipelineParameters) where T : class where TPrediction : class, new()
+		public PredictionEngine<T, TPredictionModel> Train<T, TTransformer, TModel, TPredictionModel>(ITrainerEstimator<TTransformer, TModel> trainerEstimator, PipelineParameters<T> pipelineParameters) 
+			where T : class
+			where TTransformer : ISingleFeaturePredictionTransformer<TModel>
+			where TModel : class
+			where TPredictionModel : class, IPredictionModel, new()
 		{
-			if (pipelineParameters.Algorithm == null)
-				throw new ArgumentNullException(nameof(pipelineParameters.Algorithm));
+			//if (pipelineParameters.MlContext..Algorithm == null)
+			//	throw new ArgumentNullException(nameof(pipelineParameters.Algorithm));
 
-			var pipeline = new LearningPipeline();
+			//var pipeline = new LearningPipeline();
 
-			if (pipelineParameters.TextLoader != null)
-				pipeline.Add(pipelineParameters.TextLoader);
+			//if (pipelineParameters.TextLoader != null)
+			//	pipeline.Add(pipelineParameters.TextLoader);
 
-			if (pipelineParameters.Dictionarizer != null)
-				pipeline.Add(pipelineParameters.Dictionarizer);
+			//if (pipelineParameters.Dictionarizer != null)
+			//	pipeline.Add(pipelineParameters.Dictionarizer);
 
-			if (pipelineParameters.CategoricalOneHotVectorizer != null)
-				pipeline.Add(pipelineParameters.CategoricalOneHotVectorizer);
+			//if (pipelineParameters.CategoricalOneHotVectorizer != null)
+			//	pipeline.Add(pipelineParameters.CategoricalOneHotVectorizer);
 
-			if (pipelineParameters.ColumnConcatenator != null)
-				pipeline.Add(pipelineParameters.ColumnConcatenator);
+			//if (pipelineParameters.ColumnConcatenator != null)
+			//	pipeline.Add(pipelineParameters.ColumnConcatenator);
 
-			pipeline.Add(pipelineParameters.Algorithm);
+			//pipeline.Add(pipelineParameters.Algorithm);
 
-			if (pipelineParameters.PredictedLabelColumnOriginalValueConverter != null)
-				pipeline.Add(pipelineParameters.PredictedLabelColumnOriginalValueConverter);
+			//if (pipelineParameters.PredictedLabelColumnOriginalValueConverter != null)
+			//	pipeline.Add(pipelineParameters.PredictedLabelColumnOriginalValueConverter);
 
 			var modelPath = $@"{_modelsRootPath}\{Guid.NewGuid()}.zip";
-			var model = pipeline.Train<T, TPrediction>();
-			await model.WriteAsync(modelPath);
-			return modelPath;
-		}
+			var model = trainerEstimator.Fit(pipelineParameters.DataView);
 
-		public async Task<RegressionMetrics> EvaluateRegressionAsync<T, TPrediction>(PipelineParameters<T> pipelineParameters, string modelPath) where T : class where TPrediction : class, new()
-		{
-			var model = await PredictionModel.ReadAsync<T, TPrediction>(modelPath);
-			var regressionEvaluator = new RegressionEvaluator();
-			return regressionEvaluator.Evaluate(model, pipelineParameters.TextLoader);
-		}
-	
-		public async Task<BinaryClassificationMetrics> EvaluateBinaryClassificationAsync<T, TPrediction>(PipelineParameters<T> pipelineParameters, string modelPath) where T : class where TPrediction : class, new()
-		{
-			var model = await PredictionModel.ReadAsync<T, TPrediction>(modelPath);
-			var binaryClassificationEvaluator = new BinaryClassificationEvaluator();
-			return binaryClassificationEvaluator.Evaluate(model, pipelineParameters.TextLoader);
-		}
-
-		public async Task<ClassificationMetrics> EvaluateClassificationAsync<T, TPrediction>(PipelineParameters<T> pipelineParameters, string modelPath) where T : class where TPrediction : class, new()
-		{
-			var model = await PredictionModel.ReadAsync<T, TPrediction>(modelPath);
-			var classificationEvaluator = new ClassificationEvaluator();
-			return classificationEvaluator.Evaluate(model, pipelineParameters.TextLoader);
-		}
-
-		public async Task<TPrediction> PredictScoreAsync<T, TPrediction>(T data, string modelPath) where T : class where TPrediction : RegressionPrediction, new()
-		{
-			var model = await PredictionModel.ReadAsync<T, TPrediction>(modelPath);
-			return model.Predict(data);
-		}
-
-		public async Task<ScoreLabel[]> PredictScoresAsync<T, TPrediction>(T data, string modelPath) where T : class where TPrediction : MultiClassificationPrediction, new()
-		{
-			var model = await PredictionModel.ReadAsync<T, TPrediction>(modelPath);
-			var prediction = model.Predict(data);
-			model.TryGetScoreLabelNames(out string[] scoresLabels);
-
-			return scoresLabels.Select(ls => new ScoreLabel()
+			using (var fileStream = new FileStream(modelPath, FileMode.Create, FileAccess.Write, FileShare.Write))
 			{
-				Label = ls,
-				Score = prediction.Scores[Array.IndexOf(scoresLabels, ls)]
-			}).ToArray();
+				pipelineParameters.MlContext.Model.Save(model, fileStream);
+			}
+
+			return pipelineParameters.MlContext.Model.CreatePredictionEngine<T, TPredictionModel>(model);
 		}
+
+		public RegressionMetrics EvaluateRegression<T>(PipelineParameters<T> pipelineParameters) where T : class
+		{
+			return pipelineParameters.MlContext.Regression.Evaluate(pipelineParameters.DataView);
+		}
+
+		public BinaryClassificationMetrics EvaluateBinaryClassification<T>(PipelineParameters<T> pipelineParameters) where T : class
+		{
+			return pipelineParameters.MlContext.BinaryClassification.Evaluate(pipelineParameters.DataView);
+		}
+
+		public ClusteringMetrics EvaluateClassification<T>(PipelineParameters<T> pipelineParameters) where T : class
+		{
+			return pipelineParameters.MlContext.Clustering.Evaluate(pipelineParameters.DataView);
+		}
+
+		public TPredictionModel PredictScore<T, TPredictionModel>(T data, PredictionEngine<T, TPredictionModel> predictionEngine) 
+			where T : class
+			where TPredictionModel : class, IPredictionModel, new()
+		{
+			return predictionEngine.Predict(data);
+		}
+
+		//public async Task<ScoreLabel[]> PredictScoresAsync<T, TPrediction>(T data, string modelPath) where T : class where TPrediction : MultiClassificationPrediction, new()
+		//{
+		//	var model = await PredictionModel.ReadAsync<T, TPrediction>(modelPath);
+		//	var prediction = model.Predict(data);
+		//	model.TryGetScoreLabelNames(out string[] scoresLabels);
+
+		//	return scoresLabels.Select(ls => new ScoreLabel()
+		//	{
+		//		Label = ls,
+		//		Score = prediction.Scores[Array.IndexOf(scoresLabels, ls)]
+		//	}).ToArray();
+		//}
 	}
 }

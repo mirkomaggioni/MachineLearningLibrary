@@ -106,6 +106,7 @@
   <ItemGroup>
     <Compile Include="Models\CarData.cs" />
     <Compile Include="Models\GlassData.cs" />
+    <Compile Include="Models\IPredictionModel.cs" />
     <Compile Include="Models\IrisData.cs" />
     <Compile Include="Models\MushroomData.cs" />
     <Compile Include="Models\PipelineParameters.cs" />

@@ -8,19 +8,19 @@ namespace MachineLearningLibrary.Models
 		public float Score { get; set; }
 	}
 
-	public class RegressionPrediction
+	public class RegressionPrediction : IPredictionModel
 	{
 		[ColumnName("Score")]
 		public float Score;
 	}
 
-	public class BinaryClassificationPrediction
+	public class BinaryClassificationPrediction : IPredictionModel
 	{
 		[ColumnName("PredictedLabel")]
 		public bool PredictedLabel;
 	}
 
-	public class MultiClassificationPrediction
+	public class MultiClassificationPrediction : IPredictionModel
 	{
 		[ColumnName("PredictedLabel")]
 		public string PredictedLabel;
