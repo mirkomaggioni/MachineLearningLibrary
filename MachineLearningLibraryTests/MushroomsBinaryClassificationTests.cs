@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using System.Threading.Tasks;
 using MachineLearningLibrary.Models;
 using MachineLearningLibrary.Services;
 using Microsoft.ML.Data;
@@ -16,12 +15,10 @@ namespace MachineLearningLibraryTests
 		private string _dataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\traindata\mushroom.csv";
 		private string _testDataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\testdata\mushroom.csv";
 		private char _separator = ',';
-		private string _predictedLabel = "PredictedLabel";
-		private string[] _dictionarizedLabels = new[] { "Label" };
 		private string[] _concatenatedColumns = new[] { "CapShape", "CapSurface", "CapColor", "Bruises", "Odor", "GillAttachment", "GillSpacing", "GillSize", "GillColor", "StalkShape", "StalkRoot", "StalkSurfaceAboveRing", "StalkSurfaceBelowRing", "StalkColorAboveRing", "StalkColorBelowRing", "VeilType", "VeilColor", "RingNumber", "RingType", "SporePrintColor", "Population", "Habitat" };
 
 		[Test]
-		public async Task MushroomsBinaryClassificationTest()
+		public void MushroomsBinaryClassificationTest()
 		{
 			var pipelineParameters = GetPipelineParameters(_dataPath);
 			var pipelineTestParameters = GetPipelineParameters(_testDataPath);

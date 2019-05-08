@@ -25,13 +25,13 @@ namespace MachineLearningLibraryTests
 			var pipelineParameters = GetPipelineParameters(_dataPath);
 			var pipelineTestParameters = GetPipelineParameters(_testDataPath);
 
-			var modelPath = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscent);
+			var modelPath = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscentRegressor);
 			var result = predictionService.EvaluateRegression(pipelineParameters, pipelineTestParameters);
-			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscent), result);
+			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentRegressor), result);
 
-			modelPath = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.FastTree);
+			modelPath = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.FastTreeRegressor);
 			result = predictionService.EvaluateRegression(pipelineParameters, pipelineTestParameters);
-			LogResult(nameof(AlgorithmType.FastTree), result);
+			LogResult(nameof(AlgorithmType.FastTreeRegressor), result);
 
 			modelPath = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.FastTreeTweedieRegressor);
 			result = predictionService.EvaluateRegression(pipelineParameters, pipelineTestParameters);

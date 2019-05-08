@@ -10,15 +10,15 @@ namespace MachineLearningLibrary.Services
 {
 	public enum AlgorithmType
 	{
-		StochasticDualCoordinateAscent,
-		FastTree,
+		StochasticDualCoordinateAscentRegressor,
+		FastTreeRegressor,
 		FastTreeTweedieRegressor,
 		FastForestRegressor,
 		OnlineGradientDescentRegressor,
 		PoissonRegressor,
-		NaiveBayesClassifier,
-		LogisticRegressionClassifier,
-		StochasticDualCoordinateAscentClassifier,
+		NaiveBayesMultiClassifier,
+		LogisticRegressionMultiClassifier,
+		StochasticDualCoordinateAscentMultiClassifier,
 		FastForestBinaryClassifier,
 		AveragedPerceptronBinaryClassifier,
 		FastTreeBinaryClassifier,
@@ -67,7 +67,7 @@ namespace MachineLearningLibrary.Services
 			//	pipeline.Add(pipelineParameters.PredictedLabelColumnOriginalValueConverter);
 
 			var modelPath = $@"{_modelsRootPath}\{Guid.NewGuid()}.zip";
-			var model = GetModel(pipelineParameters, AlgorithmType.FastTree);
+			var model = GetModel(pipelineParameters, AlgorithmType.FastTreeRegressor);
 
 			using (var fileStream = new FileStream(modelPath, FileMode.Create, FileAccess.Write, FileShare.Write))
 			{
@@ -116,9 +116,9 @@ namespace MachineLearningLibrary.Services
 		{
 			switch (algorithmType)
 			{
-				case AlgorithmType.FastTree:
+				case AlgorithmType.FastTreeRegressor:
 					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.FastTree()).Fit(pipelineParameters.DataView);
-				case AlgorithmType.StochasticDualCoordinateAscent:
+				case AlgorithmType.StochasticDualCoordinateAscentRegressor:
 					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.StochasticDualCoordinateAscent()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.FastTreeTweedieRegressor:
 					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.FastTreeTweedie()).Fit(pipelineParameters.DataView);
@@ -128,11 +128,11 @@ namespace MachineLearningLibrary.Services
 					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.OnlineGradientDescent()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.PoissonRegressor:
 					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.PoissonRegression()).Fit(pipelineParameters.DataView);
-				case AlgorithmType.NaiveBayesClassifier:
+				case AlgorithmType.NaiveBayesMultiClassifier:
 					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.NaiveBayes()).Fit(pipelineParameters.DataView);
-				case AlgorithmType.LogisticRegressionClassifier:
+				case AlgorithmType.LogisticRegressionMultiClassifier:
 					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.LogisticRegression()).Fit(pipelineParameters.DataView);
-				case AlgorithmType.StochasticDualCoordinateAscentClassifier:
+				case AlgorithmType.StochasticDualCoordinateAscentMultiClassifier:
 					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.StochasticDualCoordinateAscent()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.FastForestBinaryClassifier:
 					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.FastForest(numTrees: 3000)).Fit(pipelineParameters.DataView);

@@ -23,17 +23,17 @@ namespace MachineLearningLibraryTests
 			var pipelineParameters = GetPipelineParameters(_dataPath);
 			var pipelineTestParameters = GetPipelineParameters(_testDataPath);
 
-			var modelPath = predictionService.Train<GlassData, GlassTypePrediction>(pipelineParameters, AlgorithmType.NaiveBayesClassifier);
+			var modelPath = predictionService.Train<GlassData, GlassTypePrediction>(pipelineParameters, AlgorithmType.NaiveBayesMultiClassifier);
 			var result = predictionService.EvaluateClassification(pipelineParameters, pipelineTestParameters);
-			LogResult(nameof(AlgorithmType.NaiveBayesClassifier), result);
+			LogResult(nameof(AlgorithmType.NaiveBayesMultiClassifier), result);
 
-			modelPath = predictionService.Train<GlassData, GlassTypePrediction>(pipelineParameters, AlgorithmType.LogisticRegressionClassifier);
+			modelPath = predictionService.Train<GlassData, GlassTypePrediction>(pipelineParameters, AlgorithmType.LogisticRegressionMultiClassifier);
 			result = predictionService.EvaluateClassification(pipelineParameters, pipelineTestParameters);
-			LogResult(nameof(AlgorithmType.LogisticRegressionClassifier), result);
+			LogResult(nameof(AlgorithmType.LogisticRegressionMultiClassifier), result);
 
-			modelPath = predictionService.Train<GlassData, GlassTypePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscentClassifier);
+			modelPath = predictionService.Train<GlassData, GlassTypePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscentMultiClassifier);
 			result = predictionService.EvaluateClassification(pipelineParameters, pipelineTestParameters);
-			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentClassifier), result);
+			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentMultiClassifier), result);
 		}
 
 		private void LogResult(string algorithm, ClusteringMetrics clusteringMetrics)
