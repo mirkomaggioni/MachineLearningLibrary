@@ -11,6 +11,8 @@ namespace MachineLearningLibrary.Models
 		public readonly MLContext MlContext;
 		public readonly IDataView DataView;
 		public readonly TextFeaturizingEstimator TextFeaturizingEstimator;
+		public readonly IEnumerable<string> ConcatenatedColumns;
+
 		//private readonly string[] _dictionarizedLabels;
 		//private string _predictedColumn;
 
@@ -23,6 +25,7 @@ namespace MachineLearningLibrary.Models
 
 			foreach (var alphanumericColumn in alphanumericColumns)
 				MlContext.Transforms.Categorical.OneHotEncoding(alphanumericColumn);
+			ConcatenatedColumns = concatenatedColumns;
 
 			//_predictedColumn = predictedColumn;
 			//_dictionarizedLabels = dictionarizedLabels;

@@ -1,13 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using System.Threading.Tasks;
 using MachineLearningLibrary.Models;
 using MachineLearningLibrary.Services;
 using NUnit.Framework;
 using Microsoft.ML.Data;
-using Microsoft.ML;
-using Microsoft.ML.Trainers;
 
 namespace MachineLearningLibraryTests
 {

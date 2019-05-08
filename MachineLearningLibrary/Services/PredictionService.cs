@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using Microsoft.ML;
 using Microsoft.ML.Data;
+using System.Linq;
 
 namespace MachineLearningLibrary.Services
 {
@@ -17,7 +18,16 @@ namespace MachineLearningLibrary.Services
 		PoissonRegressor,
 		NaiveBayesClassifier,
 		LogisticRegressionClassifier,
-		StochasticDualCoordinateAscentClassifier
+		StochasticDualCoordinateAscentClassifier,
+		FastForestBinaryClassifier,
+		AveragedPerceptronBinaryClassifier,
+		FastTreeBinaryClassifier,
+		FieldAwareFactorizationMachineBinaryClassifier,
+		GeneralizedAdditiveModelBinaryClassifier,
+		LinearSvmBinaryClassifier,
+		LogisticRegressionBinaryClassifier,
+		StochasticDualCoordinateAscentBinaryClassifier,
+		StochasticGradientDescentBinaryClassifier
 	}
 
 	public class PredictionService
@@ -124,6 +134,24 @@ namespace MachineLearningLibrary.Services
 					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.LogisticRegression()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.StochasticDualCoordinateAscentClassifier:
 					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.StochasticDualCoordinateAscent()).Fit(pipelineParameters.DataView);
+				case AlgorithmType.FastForestBinaryClassifier:
+					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.FastForest(numTrees: 3000)).Fit(pipelineParameters.DataView);
+				case AlgorithmType.AveragedPerceptronBinaryClassifier:
+					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.AveragedPerceptron()).Fit(pipelineParameters.DataView);
+				case AlgorithmType.FastTreeBinaryClassifier:
+					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.FastTree()).Fit(pipelineParameters.DataView);
+				case AlgorithmType.FieldAwareFactorizationMachineBinaryClassifier:
+					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.FieldAwareFactorizationMachine(pipelineParameters.ConcatenatedColumns.ToArray())).Fit(pipelineParameters.DataView);
+				case AlgorithmType.GeneralizedAdditiveModelBinaryClassifier:
+					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.GeneralizedAdditiveModels()).Fit(pipelineParameters.DataView);
+				case AlgorithmType.LinearSvmBinaryClassifier:
+					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.LinearSupportVectorMachines()).Fit(pipelineParameters.DataView);
+				case AlgorithmType.LogisticRegressionBinaryClassifier:
+					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.LogisticRegression()).Fit(pipelineParameters.DataView);
+				case AlgorithmType.StochasticDualCoordinateAscentBinaryClassifier:
+					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.StochasticDualCoordinateAscent()).Fit(pipelineParameters.DataView);
+				case AlgorithmType.StochasticGradientDescentBinaryClassifier:
+					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.StochasticGradientDescent()).Fit(pipelineParameters.DataView);
 				default:
 					return null;
 			}
