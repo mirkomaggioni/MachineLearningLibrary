@@ -4,8 +4,6 @@ using System.IO;
 using System.Reflection;
 using Microsoft.ML;
 using Microsoft.ML.Data;
-using Microsoft.ML.Trainers;
-using Microsoft.ML.Trainers.FastTree;
 
 namespace MachineLearningLibrary.Services
 {
@@ -16,7 +14,10 @@ namespace MachineLearningLibrary.Services
 		FastTreeTweedieRegressor,
 		FastForestRegressor,
 		OnlineGradientDescentRegressor,
-		PoissonRegressor
+		PoissonRegressor,
+		NaiveBayesClassifier,
+		LogisticRegressionClassifier,
+		StochasticDualCoordinateAscentClassifier
 	}
 
 	public class PredictionService
@@ -117,6 +118,12 @@ namespace MachineLearningLibrary.Services
 					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.OnlineGradientDescent()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.PoissonRegressor:
 					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.PoissonRegression()).Fit(pipelineParameters.DataView);
+				case AlgorithmType.NaiveBayesClassifier:
+					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.NaiveBayes()).Fit(pipelineParameters.DataView);
+				case AlgorithmType.LogisticRegressionClassifier:
+					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.LogisticRegression()).Fit(pipelineParameters.DataView);
+				case AlgorithmType.StochasticDualCoordinateAscentClassifier:
+					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.StochasticDualCoordinateAscent()).Fit(pipelineParameters.DataView);
 				default:
 					return null;
 			}
