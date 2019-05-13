@@ -67,7 +67,7 @@ namespace MachineLearningLibrary.Services
 			//	pipeline.Add(pipelineParameters.PredictedLabelColumnOriginalValueConverter);
 
 			var modelPath = $@"{_modelsRootPath}\{Guid.NewGuid()}.zip";
-			var model = GetModel(pipelineParameters, AlgorithmType.FastTreeRegressor);
+			var model = GetModel(pipelineParameters, algorithmType);
 
 			using (var fileStream = new FileStream(modelPath, FileMode.Create, FileAccess.Write, FileShare.Write))
 			{

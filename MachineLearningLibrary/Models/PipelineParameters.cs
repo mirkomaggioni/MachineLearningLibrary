@@ -17,14 +17,14 @@ namespace MachineLearningLibrary.Models
 		//private string _predictedColumn;
 
 		//public PipelineParameters(string dataPath, char separator, string predictedColumn = null, string[] alphanumericColumns = null, string[] dictionarizedLabels = null, IEnumerable<string> concatenatedColumns = null)
-		public PipelineParameters(string dataPath, char separator, string[] alphanumericColumns = null, IEnumerable<string> concatenatedColumns = null)
+		public PipelineParameters(string dataPath, char separator, string[] alphanumericColumns = null, string[] concatenatedColumns = null)
 		{
 			MlContext = new MLContext();
 			DataView = MlContext.Data.LoadFromTextFile<T>(dataPath, separator, hasHeader: false);
-			TextFeaturizingEstimator = MlContext.Transforms.Text.FeaturizeText(DefaultColumnNames.Features, concatenatedColumns, null);
+			TextFeaturizingEstimator = MlContext.Transforms.Text.FeaturizeText(DefaultColumnNames.Features, alphanumericColumns, null);
 
-			foreach (var alphanumericColumn in alphanumericColumns)
-				MlContext.Transforms.Categorical.OneHotEncoding(alphanumericColumn);
+			foreach (var concatenatedColumn in concatenatedColumns)
+				MlContext.Transforms.Categorical.OneHotEncoding(concatenatedColumn);
 			ConcatenatedColumns = concatenatedColumns;
 
 			//_predictedColumn = predictedColumn;
