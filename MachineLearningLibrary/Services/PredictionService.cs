@@ -40,7 +40,7 @@ namespace MachineLearningLibrary.Services
 			Directory.CreateDirectory(_modelsRootPath);
 		}
 
-		public PredictionEngine<T, TPredictionModel> Train<T, TPredictionModel>(PipelineParameters<T> pipelineParameters, AlgorithmType algorithmType) 
+		public ITransformer Train<T, TPredictionModel>(PipelineParameters<T> pipelineParameters, AlgorithmType algorithmType) 
 			where T : class
 			where TPredictionModel : class, IPredictionModel, new()
 		{
@@ -74,12 +74,12 @@ namespace MachineLearningLibrary.Services
 				pipelineParameters.MlContext.Model.Save(model, fileStream);
 			}
 
-			return pipelineParameters.MlContext.Model.CreatePredictionEngine<T, TPredictionModel>(model);
+			return model;
 		}
 
-		public RegressionMetrics EvaluateRegression<T>(PipelineParameters<T> pipelineParameters, PipelineParameters<T> pipelineTestParameters) where T : class
+		public RegressionMetrics EvaluateRegression<T>(ITransformer model, PipelineParameters<T> pipelineParameters, PipelineParameters<T> pipelineTestParameters) where T : class
 		{
-			return pipelineParameters.MlContext.Regression.Evaluate(pipelineTestParameters.DataView);
+			return pipelineParameters.MlContext.Regression.Evaluate(model.Transform(pipelineTestParameters.DataView));
 		}
 
 		public BinaryClassificationMetrics EvaluateBinaryClassification<T>(PipelineParameters<T> pipelineParameters, PipelineParameters<T> pipelineTestParameters) where T : class
@@ -92,10 +92,11 @@ namespace MachineLearningLibrary.Services
 			return pipelineParameters.MlContext.Clustering.Evaluate(pipelineTestParameters.DataView);
 		}
 
-		public TPredictionModel PredictScore<T, TPredictionModel>(T data, PredictionEngine<T, TPredictionModel> predictionEngine) 
+		public TPredictionModel PredictScore<T, TPredictionModel>(T data, PipelineParameters<T> pipelineParameters, ITransformer model) 
 			where T : class
 			where TPredictionModel : class, IPredictionModel, new()
 		{
+			var predictionEngine = pipelineParameters.MlContext.Model.CreatePredictionEngine<T, TPredictionModel>(model);
 			return predictionEngine.Predict(data);
 		}
 

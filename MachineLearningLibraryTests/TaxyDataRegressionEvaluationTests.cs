@@ -23,28 +23,28 @@ namespace MachineLearningLibraryTests
 			var pipelineParameters = GetPipelineParameters(_dataPath);
 			var pipelineTestParameters = GetPipelineParameters(_testDataPath);
 
-			var modelPath = predictionService.Train<TaxyData, TaxyTripFarePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscentRegressor);
-			var result = predictionService.EvaluateRegression(pipelineParameters, pipelineTestParameters);
+			var model = predictionService.Train<TaxyData, TaxyTripFarePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscentRegressor);
+			var result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentRegressor), result);
 
-			modelPath = predictionService.Train<TaxyData, TaxyTripFarePrediction>(pipelineParameters, AlgorithmType.FastTreeRegressor);
-			result = predictionService.EvaluateRegression(pipelineParameters, pipelineTestParameters);
+			model = predictionService.Train<TaxyData, TaxyTripFarePrediction>(pipelineParameters, AlgorithmType.FastTreeRegressor);
+			result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.FastTreeRegressor), result);
 
-			modelPath = predictionService.Train<TaxyData, TaxyTripFarePrediction>(pipelineParameters, AlgorithmType.FastTreeTweedieRegressor);
-			result = predictionService.EvaluateRegression(pipelineParameters, pipelineTestParameters);
+			model = predictionService.Train<TaxyData, TaxyTripFarePrediction>(pipelineParameters, AlgorithmType.FastTreeTweedieRegressor);
+			result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.FastTreeTweedieRegressor), result);
 
-			modelPath = predictionService.Train<TaxyData, TaxyTripFarePrediction>(pipelineParameters, AlgorithmType.FastForestRegressor);
-			result = predictionService.EvaluateRegression(pipelineParameters, pipelineTestParameters);
+			model = predictionService.Train<TaxyData, TaxyTripFarePrediction>(pipelineParameters, AlgorithmType.FastForestRegressor);
+			result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.FastForestRegressor), result);
 
-			modelPath = predictionService.Train<TaxyData, TaxyTripFarePrediction>(pipelineParameters, AlgorithmType.OnlineGradientDescentRegressor);
-			result = predictionService.EvaluateRegression(pipelineParameters, pipelineTestParameters);
+			model = predictionService.Train<TaxyData, TaxyTripFarePrediction>(pipelineParameters, AlgorithmType.OnlineGradientDescentRegressor);
+			result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.OnlineGradientDescentRegressor), result);
 
-			modelPath = predictionService.Train<TaxyData, TaxyTripFarePrediction>(pipelineParameters, AlgorithmType.PoissonRegressor);
-			result = predictionService.EvaluateRegression(pipelineParameters, pipelineTestParameters);
+			model = predictionService.Train<TaxyData, TaxyTripFarePrediction>(pipelineParameters, AlgorithmType.PoissonRegressor);
+			result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.PoissonRegressor), result);
 		}
 

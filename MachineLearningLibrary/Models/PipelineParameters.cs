@@ -23,12 +23,12 @@ namespace MachineLearningLibrary.Models
 			DataView = MlContext.Data.LoadFromTextFile<T>(dataPath, separator, hasHeader: false);
 			TextFeaturizingEstimator = MlContext.Transforms.Text.FeaturizeText(DefaultColumnNames.Features, alphanumericColumns, null);
 
-			foreach (var concatenatedColumn in concatenatedColumns)
-				MlContext.Transforms.Categorical.OneHotEncoding(concatenatedColumn);
-			ConcatenatedColumns = concatenatedColumns;
+			//foreach (var concatenatedColumn in concatenatedColumns)
+			//	MlContext.Transforms.Categorical.OneHotEncoding(concatenatedColumn);
 
-			//_predictedColumn = predictedColumn;
-			//_dictionarizedLabels = dictionarizedLabels;
+			//TextFeaturizingEstimator.Append(MlContext.Transforms.Concatenate("Features", concatenatedColumns));
+			//ConcatenatedColumns = concatenatedColumns;
+
 		}
 
 		//public void SetupTrainerEstimator<TTransformer, TModel>(ITrainerEstimator<TTransformer, TModel> trainerEstimator)
