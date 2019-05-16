@@ -24,7 +24,7 @@ namespace MachineLearningLibrary.Models
 		public float Barium;
 		[LoadColumn(9)]
 		public float Iron;
-		[LoadColumn(10), ColumnName("Label")]
+		[LoadColumn(10)]
 		public string Type;
 	}
 

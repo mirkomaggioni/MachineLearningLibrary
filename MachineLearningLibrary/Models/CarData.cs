@@ -79,7 +79,7 @@ namespace MachineLearningLibrary.Models
 		[LoadColumn(24)]
 		public float HighwayMpg;
 
-		[LoadColumn(25), ColumnName("Label")]
+		[LoadColumn(25)]
 		public float Price;
 	}
 

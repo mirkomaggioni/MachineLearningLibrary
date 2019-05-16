@@ -11,11 +11,12 @@ namespace MachineLearningLibraryTests
 	[TestFixture]
 	public class MushroomsBinaryClassificationTests
 	{
-		private PredictionService predictionService = new PredictionService();
-		private string _dataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\traindata\mushroom.csv";
-		private string _testDataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\testdata\mushroom.csv";
-		private char _separator = ',';
-		private string[] _concatenatedColumns = new[] { "CapShape", "CapSurface", "CapColor", "Bruises", "Odor", "GillAttachment", "GillSpacing", "GillSize", "GillColor", "StalkShape", "StalkRoot", "StalkSurfaceAboveRing", "StalkSurfaceBelowRing", "StalkColorAboveRing", "StalkColorBelowRing", "VeilType", "VeilColor", "RingNumber", "RingType", "SporePrintColor", "Population", "Habitat" };
+		private readonly PredictionService predictionService = new PredictionService();
+		private readonly string _dataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\traindata\mushroom.csv";
+		private readonly string _testDataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\testdata\mushroom.csv";
+		private readonly char _separator = ',';
+		private readonly string _predictedColumn = "Edible";
+		private readonly string[] _concatenatedColumns = new[] { "CapShape", "CapSurface", "CapColor", "Bruises", "Odor", "GillAttachment", "GillSpacing", "GillSize", "GillColor", "StalkShape", "StalkRoot", "StalkSurfaceAboveRing", "StalkSurfaceBelowRing", "StalkColorAboveRing", "StalkColorBelowRing", "VeilType", "VeilColor", "RingNumber", "RingType", "SporePrintColor", "Population", "Habitat" };
 
 		[Test]
 		public void MushroomsBinaryClassificationTest()
@@ -23,44 +24,44 @@ namespace MachineLearningLibraryTests
 			var pipelineParameters = GetPipelineParameters(_dataPath);
 			var pipelineTestParameters = GetPipelineParameters(_testDataPath);
 
-			var modelPath = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.FastForestBinaryClassifier);
-			var result = predictionService.EvaluateBinaryClassification(pipelineParameters, pipelineTestParameters);
+			var model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.FastForestBinaryClassifier);
+			var result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.FastForestBinaryClassifier), result);
 
-			modelPath = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.AveragedPerceptronBinaryClassifier);
-			result = predictionService.EvaluateBinaryClassification(pipelineParameters, pipelineTestParameters);
+			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.AveragedPerceptronBinaryClassifier);
+			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.AveragedPerceptronBinaryClassifier), result);
 
-			modelPath = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.AveragedPerceptronBinaryClassifier);
-			result = predictionService.EvaluateBinaryClassification(pipelineParameters, pipelineTestParameters);
+			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.AveragedPerceptronBinaryClassifier);
+			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.AveragedPerceptronBinaryClassifier), result);
 
-			modelPath = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.FastTreeBinaryClassifier);
-			result = predictionService.EvaluateBinaryClassification(pipelineParameters, pipelineTestParameters);
+			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.FastTreeBinaryClassifier);
+			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.FastTreeBinaryClassifier), result);
 
-			modelPath = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.FieldAwareFactorizationMachineBinaryClassifier);
-			result = predictionService.EvaluateBinaryClassification(pipelineParameters, pipelineTestParameters);
+			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.FieldAwareFactorizationMachineBinaryClassifier);
+			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.FieldAwareFactorizationMachineBinaryClassifier), result);
 
-			modelPath = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.GeneralizedAdditiveModelBinaryClassifier);
-			result = predictionService.EvaluateBinaryClassification(pipelineParameters, pipelineTestParameters);
+			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.GeneralizedAdditiveModelBinaryClassifier);
+			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.GeneralizedAdditiveModelBinaryClassifier), result);
 
-			modelPath = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.LinearSvmBinaryClassifier);
-			result = predictionService.EvaluateBinaryClassification(pipelineParameters, pipelineTestParameters);
+			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.LinearSvmBinaryClassifier);
+			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.LinearSvmBinaryClassifier), result);
 
-			modelPath = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.LogisticRegressionBinaryClassifier);
-			result = predictionService.EvaluateBinaryClassification(pipelineParameters, pipelineTestParameters);
+			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.LogisticRegressionBinaryClassifier);
+			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.LogisticRegressionBinaryClassifier), result);
 
-			modelPath = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscentBinaryClassifier);
-			result = predictionService.EvaluateBinaryClassification(pipelineParameters, pipelineTestParameters);
+			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscentBinaryClassifier);
+			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentBinaryClassifier), result);
 
-			modelPath = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.StochasticGradientDescentBinaryClassifier);
-			result = predictionService.EvaluateBinaryClassification(pipelineParameters, pipelineTestParameters);
+			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.StochasticGradientDescentBinaryClassifier);
+			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.StochasticGradientDescentBinaryClassifier), result);
 		}
 
@@ -75,7 +76,7 @@ namespace MachineLearningLibraryTests
 
 		private PipelineParameters<MushroomData> GetPipelineParameters(string dataPath)
 		{
-			return new PipelineParameters<MushroomData>(dataPath, _separator, null, _concatenatedColumns);
+			return new PipelineParameters<MushroomData>(dataPath, _separator, _predictedColumn, null, _concatenatedColumns);
 		}
 	}
 }

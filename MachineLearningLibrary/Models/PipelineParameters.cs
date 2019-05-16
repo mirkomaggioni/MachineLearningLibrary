@@ -1,8 +1,7 @@
 ﻿using Microsoft.Data.DataView;
 using Microsoft.ML;
 using Microsoft.ML.Data;
-using Microsoft.ML.Transforms.Text;
-using System.Collections.Generic;
+using Microsoft.ML.Transforms;
 
 namespace MachineLearningLibrary.Models
 {
@@ -10,25 +9,25 @@ namespace MachineLearningLibrary.Models
 	{
 		public readonly MLContext MlContext;
 		public readonly IDataView DataView;
-		public readonly TextFeaturizingEstimator TextFeaturizingEstimator;
-		public readonly IEnumerable<string> ConcatenatedColumns;
-
-		//private readonly string[] _dictionarizedLabels;
+		//public readonly TextFeaturizingEstimator TextFeaturizingEstimator;
+		public readonly ColumnCopyingEstimator ColumnCopyingEstimator;
+		public readonly string[] ConcatenatedColumns;
 		//private string _predictedColumn;
 
 		//public PipelineParameters(string dataPath, char separator, string predictedColumn = null, string[] alphanumericColumns = null, string[] dictionarizedLabels = null, IEnumerable<string> concatenatedColumns = null)
-		public PipelineParameters(string dataPath, char separator, string[] alphanumericColumns = null, string[] concatenatedColumns = null)
+		public PipelineParameters(string dataPath, char separator, string predictedColumn, string[] alphanumericColumns = null, string[] concatenatedColumns = null)
 		{
 			MlContext = new MLContext();
 			DataView = MlContext.Data.LoadFromTextFile<T>(dataPath, separator, hasHeader: false);
-			TextFeaturizingEstimator = MlContext.Transforms.Text.FeaturizeText(DefaultColumnNames.Features, alphanumericColumns, null);
+			ColumnCopyingEstimator = MlContext.Transforms.CopyColumns("Label", predictedColumn);
+			//TextFeaturizingEstimator = MlContext.Transforms.Text.FeaturizeText(DefaultColumnNames.Features, alphanumericColumns, null);
+			MlContext.Transforms.Text.FeaturizeText(DefaultColumnNames.Features, alphanumericColumns, null);
 
-			//foreach (var concatenatedColumn in concatenatedColumns)
-			//	MlContext.Transforms.Categorical.OneHotEncoding(concatenatedColumn);
+			foreach (var alphanumericColumn in alphanumericColumns)
+				ColumnCopyingEstimator.Append(MlContext.Transforms.Categorical.OneHotEncoding(alphanumericColumn));
 
-			//TextFeaturizingEstimator.Append(MlContext.Transforms.Concatenate("Features", concatenatedColumns));
-			//ConcatenatedColumns = concatenatedColumns;
-
+			ColumnCopyingEstimator.Append(MlContext.Transforms.Concatenate("Features", concatenatedColumns));
+			ConcatenatedColumns = concatenatedColumns;
 		}
 
 		//public void SetupTrainerEstimator<TTransformer, TModel>(ITrainerEstimator<TTransformer, TModel> trainerEstimator)

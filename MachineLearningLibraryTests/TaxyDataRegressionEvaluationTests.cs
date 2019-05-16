@@ -11,11 +11,12 @@ namespace MachineLearningLibraryTests
 	[TestFixture]
 	public class TaxyDataRegressionEvaluationTests
 	{
-		private PredictionService predictionService = new PredictionService();
-		private string _dataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\traindata\taxi.csv";
-		private string _testDataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\testdata\taxi.csv";
-		private char _separator = ',';
-		private string[] _concatenatedColumns = new[] { "VendorId", "RateCode", "PassengerCount", "TripDistance", "PaymentType" };
+		private readonly PredictionService predictionService = new PredictionService();
+		private readonly string _dataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\traindata\taxi.csv";
+		private readonly string _testDataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\testdata\taxi.csv";
+		private readonly char _separator = ',';
+		private readonly string _predictedColumn = "FareAmount";
+		private readonly string[] _concatenatedColumns = new[] { "VendorId", "RateCode", "PassengerCount", "TripDistance", "PaymentType" };
 
 		[Test]
 		public void TaxyDataRegressionEvaluationTest()
@@ -61,7 +62,7 @@ namespace MachineLearningLibraryTests
 
 		private PipelineParameters<TaxyData> GetPipelineParameters(string dataPath)
 		{
-			return new PipelineParameters<TaxyData>(dataPath, _separator, null, _concatenatedColumns);
+			return new PipelineParameters<TaxyData>(dataPath, _separator, _predictedColumn, null, _concatenatedColumns);
 		}
 	}
 }

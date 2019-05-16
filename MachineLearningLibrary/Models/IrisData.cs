@@ -16,7 +16,7 @@ namespace MachineLearningLibrary.Models
 		[LoadColumn(3)]
 		public float PetalWidth;
 
-		[LoadColumn(4), ColumnName("Label")]
+		[LoadColumn(4)]
 		public string Type;
 	}
 

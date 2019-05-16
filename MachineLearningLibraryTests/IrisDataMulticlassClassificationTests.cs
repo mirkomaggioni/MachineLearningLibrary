@@ -11,11 +11,12 @@ namespace MachineLearningLibraryTests
 	[TestFixture]
 	public class IrisDataMulticlassClassificationTests
 	{
-		private PredictionService predictionService = new PredictionService();
-		private string _dataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\traindata\iris.csv";
-		private string _testDataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\testdata\iris.csv";
-		private char _separator = ',';
-		private string[] _concatenatedColumns = new[] { "SepalLength", "SepalWidth", "PetalLength", "PetalWidth" };
+		private readonly PredictionService predictionService = new PredictionService();
+		private readonly string _dataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\traindata\iris.csv";
+		private readonly string _testDataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\testdata\iris.csv";
+		private readonly char _separator = ',';
+		private readonly string _predictedColumn = "Type";
+		private readonly string[] _concatenatedColumns = new[] { "SepalLength", "SepalWidth", "PetalLength", "PetalWidth" };
 
 		[Test]
 		public void IrisDataMulticlassClassificationTest()
@@ -23,16 +24,16 @@ namespace MachineLearningLibraryTests
 			var pipelineParameters = GetPipelineParameters(_dataPath);
 			var pipelineTestParameters = GetPipelineParameters(_testDataPath);
 
-			var modelPath = predictionService.Train<IrisData, IrisTypePrediction>(pipelineParameters, AlgorithmType.NaiveBayesMultiClassifier);
-			var result = predictionService.EvaluateClassification(pipelineParameters, pipelineTestParameters);
+			var model = predictionService.Train<IrisData, IrisTypePrediction>(pipelineParameters, AlgorithmType.NaiveBayesMultiClassifier);
+			var result = predictionService.EvaluateClassification(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.NaiveBayesMultiClassifier), result);
 
-			modelPath = predictionService.Train<IrisData, IrisTypePrediction>(pipelineParameters, AlgorithmType.LogisticRegressionMultiClassifier);
-			result = predictionService.EvaluateClassification(pipelineParameters, pipelineTestParameters);
+			model = predictionService.Train<IrisData, IrisTypePrediction>(pipelineParameters, AlgorithmType.LogisticRegressionMultiClassifier);
+			result = predictionService.EvaluateClassification(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.LogisticRegressionMultiClassifier), result);
 
-			modelPath = predictionService.Train<IrisData, IrisTypePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscentMultiClassifier);
-			result = predictionService.EvaluateClassification(pipelineParameters, pipelineTestParameters);
+			model = predictionService.Train<IrisData, IrisTypePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscentMultiClassifier);
+			result = predictionService.EvaluateClassification(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentMultiClassifier), result);
 		}
 
@@ -47,7 +48,7 @@ namespace MachineLearningLibraryTests
 
 		private PipelineParameters<IrisData> GetPipelineParameters(string dataPath)
 		{
-			return new PipelineParameters<IrisData>(dataPath, _separator, null, _concatenatedColumns);
+			return new PipelineParameters<IrisData>(dataPath, _separator, _predictedColumn, null, _concatenatedColumns);
 		}
 	}
 }

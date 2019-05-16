@@ -44,28 +44,6 @@ namespace MachineLearningLibrary.Services
 			where T : class
 			where TPredictionModel : class, IPredictionModel, new()
 		{
-			//if (pipelineParameters.MlContext..Algorithm == null)
-			//	throw new ArgumentNullException(nameof(pipelineParameters.Algorithm));
-
-			//var pipeline = new LearningPipeline();
-
-			//if (pipelineParameters.TextLoader != null)
-			//	pipeline.Add(pipelineParameters.TextLoader);
-
-			//if (pipelineParameters.Dictionarizer != null)
-			//	pipeline.Add(pipelineParameters.Dictionarizer);
-
-			//if (pipelineParameters.CategoricalOneHotVectorizer != null)
-			//	pipeline.Add(pipelineParameters.CategoricalOneHotVectorizer);
-
-			//if (pipelineParameters.ColumnConcatenator != null)
-			//	pipeline.Add(pipelineParameters.ColumnConcatenator);
-
-			//pipeline.Add(pipelineParameters.Algorithm);
-
-			//if (pipelineParameters.PredictedLabelColumnOriginalValueConverter != null)
-			//	pipeline.Add(pipelineParameters.PredictedLabelColumnOriginalValueConverter);
-
 			var modelPath = $@"{_modelsRootPath}\{Guid.NewGuid()}.zip";
 			var model = GetModel(pipelineParameters, algorithmType);
 
@@ -82,14 +60,14 @@ namespace MachineLearningLibrary.Services
 			return pipelineParameters.MlContext.Regression.Evaluate(model.Transform(pipelineTestParameters.DataView));
 		}
 
-		public BinaryClassificationMetrics EvaluateBinaryClassification<T>(PipelineParameters<T> pipelineParameters, PipelineParameters<T> pipelineTestParameters) where T : class
+		public BinaryClassificationMetrics EvaluateBinaryClassification<T>(ITransformer model, PipelineParameters<T> pipelineParameters, PipelineParameters<T> pipelineTestParameters) where T : class
 		{
-			return pipelineParameters.MlContext.BinaryClassification.Evaluate(pipelineTestParameters.DataView);
+			return pipelineParameters.MlContext.BinaryClassification.Evaluate(model.Transform(pipelineTestParameters.DataView));
 		}
 
-		public ClusteringMetrics EvaluateClassification<T>(PipelineParameters<T> pipelineParameters, PipelineParameters<T> pipelineTestParameters) where T : class
+		public ClusteringMetrics EvaluateClassification<T>(ITransformer model, PipelineParameters<T> pipelineParameters, PipelineParameters<T> pipelineTestParameters) where T : class
 		{
-			return pipelineParameters.MlContext.Clustering.Evaluate(pipelineTestParameters.DataView);
+			return pipelineParameters.MlContext.Clustering.Evaluate(model.Transform(pipelineTestParameters.DataView));
 		}
 
 		public TPredictionModel PredictScore<T, TPredictionModel>(T data, PipelineParameters<T> pipelineParameters, ITransformer model) 
@@ -118,41 +96,41 @@ namespace MachineLearningLibrary.Services
 			switch (algorithmType)
 			{
 				case AlgorithmType.FastTreeRegressor:
-					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.FastTree()).Fit(pipelineParameters.DataView);
+					return pipelineParameters.ColumnCopyingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.FastTree()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.StochasticDualCoordinateAscentRegressor:
-					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.StochasticDualCoordinateAscent()).Fit(pipelineParameters.DataView);
+					return pipelineParameters.ColumnCopyingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.StochasticDualCoordinateAscent()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.FastTreeTweedieRegressor:
-					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.FastTreeTweedie()).Fit(pipelineParameters.DataView);
+					return pipelineParameters.ColumnCopyingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.FastTreeTweedie()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.FastForestRegressor:
-					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.FastForest()).Fit(pipelineParameters.DataView);
+					return pipelineParameters.ColumnCopyingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.FastForest()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.OnlineGradientDescentRegressor:
-					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.OnlineGradientDescent()).Fit(pipelineParameters.DataView);
+					return pipelineParameters.ColumnCopyingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.OnlineGradientDescent()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.PoissonRegressor:
-					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.PoissonRegression()).Fit(pipelineParameters.DataView);
+					return pipelineParameters.ColumnCopyingEstimator.Append(pipelineParameters.MlContext.Regression.Trainers.PoissonRegression()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.NaiveBayesMultiClassifier:
-					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.NaiveBayes()).Fit(pipelineParameters.DataView);
+					return pipelineParameters.ColumnCopyingEstimator.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.NaiveBayes()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.LogisticRegressionMultiClassifier:
-					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.LogisticRegression()).Fit(pipelineParameters.DataView);
+					return pipelineParameters.ColumnCopyingEstimator.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.LogisticRegression()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.StochasticDualCoordinateAscentMultiClassifier:
-					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.StochasticDualCoordinateAscent()).Fit(pipelineParameters.DataView);
+					return pipelineParameters.ColumnCopyingEstimator.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.StochasticDualCoordinateAscent()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.FastForestBinaryClassifier:
-					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.FastForest(numTrees: 3000)).Fit(pipelineParameters.DataView);
+					return pipelineParameters.ColumnCopyingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.FastForest(numTrees: 3000)).Fit(pipelineParameters.DataView);
 				case AlgorithmType.AveragedPerceptronBinaryClassifier:
-					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.AveragedPerceptron()).Fit(pipelineParameters.DataView);
+					return pipelineParameters.ColumnCopyingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.AveragedPerceptron()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.FastTreeBinaryClassifier:
-					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.FastTree()).Fit(pipelineParameters.DataView);
+					return pipelineParameters.ColumnCopyingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.FastTree()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.FieldAwareFactorizationMachineBinaryClassifier:
-					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.FieldAwareFactorizationMachine(pipelineParameters.ConcatenatedColumns.ToArray())).Fit(pipelineParameters.DataView);
+					return pipelineParameters.ColumnCopyingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.FieldAwareFactorizationMachine(pipelineParameters.ConcatenatedColumns.ToArray())).Fit(pipelineParameters.DataView);
 				case AlgorithmType.GeneralizedAdditiveModelBinaryClassifier:
-					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.GeneralizedAdditiveModels()).Fit(pipelineParameters.DataView);
+					return pipelineParameters.ColumnCopyingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.GeneralizedAdditiveModels()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.LinearSvmBinaryClassifier:
-					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.LinearSupportVectorMachines()).Fit(pipelineParameters.DataView);
+					return pipelineParameters.ColumnCopyingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.LinearSupportVectorMachines()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.LogisticRegressionBinaryClassifier:
-					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.LogisticRegression()).Fit(pipelineParameters.DataView);
+					return pipelineParameters.ColumnCopyingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.LogisticRegression()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.StochasticDualCoordinateAscentBinaryClassifier:
-					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.StochasticDualCoordinateAscent()).Fit(pipelineParameters.DataView);
+					return pipelineParameters.ColumnCopyingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.StochasticDualCoordinateAscent()).Fit(pipelineParameters.DataView);
 				case AlgorithmType.StochasticGradientDescentBinaryClassifier:
-					return pipelineParameters.TextFeaturizingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.StochasticGradientDescent()).Fit(pipelineParameters.DataView);
+					return pipelineParameters.ColumnCopyingEstimator.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.StochasticGradientDescent()).Fit(pipelineParameters.DataView);
 				default:
 					return null;
 			}

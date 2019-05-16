@@ -5,19 +5,19 @@ using MachineLearningLibrary.Models;
 using MachineLearningLibrary.Services;
 using NUnit.Framework;
 using Microsoft.ML.Data;
-using Microsoft.ML;
 
 namespace MachineLearningLibraryTests
 {
 	[TestFixture]
 	public class CarDataRegressionEvaluationTests
 	{
-		private PredictionService predictionService = new PredictionService();
-		private string _dataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\traindata\car.csv";
-		private string _testDataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\testdata\car.csv";
-		private char _separator = ',';
-		private string[] _alphanumericColumns = new[] { "Make", "FuelType", "Aspiration", "Doors", "BodyStyle", "DriveWheels", "EngineLocation", "EngineType", "NumOfCylinders", "FuelSystem" };
-		private string[] _concatenatedColumns = new[] { "Symboling", "NormalizedLosses", "Make", "FuelType", "Aspiration", "Doors", "BodyStyle", "DriveWheels", "EngineLocation", "WheelBase", "Length", "Width", "Height", "CurbWeight", "EngineType", "NumOfCylinders", "EngineSize", "FuelSystem",
+		private readonly PredictionService predictionService = new PredictionService();
+		private readonly string _dataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\traindata\car.csv";
+		private readonly string _testDataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\testdata\car.csv";
+		private readonly char _separator = ',';
+		private readonly string _predictedColumn = "Price";
+		private readonly string[] _alphanumericColumns = new[] { "Make", "FuelType", "Aspiration", "Doors", "BodyStyle", "DriveWheels", "EngineLocation", "EngineType", "NumOfCylinders", "FuelSystem" };
+		private readonly string[] _concatenatedColumns = new[] { "Symboling", "NormalizedLosses", "Make", "FuelType", "Aspiration", "Doors", "BodyStyle", "DriveWheels", "EngineLocation", "WheelBase", "Length", "Width", "Height", "CurbWeight", "EngineType", "NumOfCylinders", "EngineSize", "FuelSystem",
 												"Bore", "Stroke", "CompressionRatio", "HorsePower", "PeakRpm", "CityMpg", "HighwayMpg"};
 
 		[Test]
@@ -61,7 +61,7 @@ namespace MachineLearningLibraryTests
 
 		private PipelineParameters<CarData> GetPipelineParameters(string dataPath)
 		{
-			return new PipelineParameters<CarData>(dataPath, _separator, _alphanumericColumns, _concatenatedColumns);
+			return new PipelineParameters<CarData>(dataPath, _separator, _predictedColumn, _alphanumericColumns, _concatenatedColumns);
 		}
 	}
 }

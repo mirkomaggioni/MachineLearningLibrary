@@ -22,7 +22,7 @@ namespace MachineLearningLibrary.Models
 		[LoadColumn(5)]
 		public string PaymentType;
 
-		[LoadColumn(6), ColumnName("Label")]
+		[LoadColumn(6)]
 		public float FareAmount;
 	}
 

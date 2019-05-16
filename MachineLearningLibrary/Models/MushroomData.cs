@@ -4,7 +4,7 @@ namespace MachineLearningLibrary.Models
 {
 	public class MushroomData
 	{
-		[LoadColumn(0), ColumnName("Label")]
+		[LoadColumn(0)]
 		public bool Edible;
 		[LoadColumn(1)]
 		public string CapShape;
