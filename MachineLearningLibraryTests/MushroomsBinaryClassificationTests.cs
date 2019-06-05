@@ -69,14 +69,14 @@ namespace MachineLearningLibraryTests
 		{
 			Console.WriteLine($"------------- {algorithm} - EVALUATION RESULTS -------------");
 			Console.WriteLine($"Accurancy = {binaryClassificationMetrics.Accuracy}");
-			Console.WriteLine($"AUC = {binaryClassificationMetrics.Auc}");
+			Console.WriteLine($"AUC = {binaryClassificationMetrics.AreaUnderRocCurve}");
 			Console.WriteLine($"F1Score = {binaryClassificationMetrics.F1Score}");
 			Console.WriteLine($"------------- {algorithm} - END EVALUATION -------------");
 		}
 
 		private PipelineParameters<MushroomData> GetPipelineParameters(string dataPath)
 		{
-			return new PipelineParameters<MushroomData>(dataPath, _separator, _predictedColumn, null, _concatenatedColumns);
+			return new PipelineParameters<MushroomData>(dataPath, _separator, _predictedColumn, _concatenatedColumns, _concatenatedColumns);
 		}
 	}
 }

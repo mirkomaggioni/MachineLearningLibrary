@@ -52,10 +52,8 @@ namespace MachineLearningLibraryTests
 		private void LogResult(string algorithm, RegressionMetrics regressionMetrics)
 		{
 			Console.WriteLine($"------------- {algorithm} - EVALUATION RESULTS -------------");
-			Console.WriteLine($"L1 = {regressionMetrics.L1}");
-			Console.WriteLine($"L2 = {regressionMetrics.L2}");
-			Console.WriteLine($"LossFn = {regressionMetrics.LossFn}");
-			Console.WriteLine($"Rms = {regressionMetrics.Rms}");
+			Console.WriteLine($"LossFn = {regressionMetrics.LossFunction}");
+			Console.WriteLine($"Rms = {regressionMetrics.RootMeanSquaredError}");
 			Console.WriteLine($"RSquared = {regressionMetrics.RSquared}");
 			Console.WriteLine($"------------- {algorithm} - END EVALUATION -------------");
 		}

@@ -1,5 +1,4 @@
-﻿using Microsoft.Data.DataView;
-using Microsoft.ML;
+﻿using Microsoft.ML;
 using Microsoft.ML.Data;
 using Microsoft.ML.Transforms;
 
@@ -10,23 +9,42 @@ namespace MachineLearningLibrary.Models
 		public readonly MLContext MlContext;
 		public readonly IDataView DataView;
 		//public readonly TextFeaturizingEstimator TextFeaturizingEstimator;
-		public readonly ColumnCopyingEstimator ColumnCopyingEstimator;
+		public readonly EstimatorChain<ColumnConcatenatingTransformer> EstimatorChain;
 		public readonly string[] ConcatenatedColumns;
 		//private string _predictedColumn;
 
 		//public PipelineParameters(string dataPath, char separator, string predictedColumn = null, string[] alphanumericColumns = null, string[] dictionarizedLabels = null, IEnumerable<string> concatenatedColumns = null)
-		public PipelineParameters(string dataPath, char separator, string predictedColumn, string[] alphanumericColumns = null, string[] concatenatedColumns = null)
+		public PipelineParameters(string dataPath, char separator, string predictedColumn, string[] concatenatedColumns, string[] alphanumericColumns = null)
 		{
 			MlContext = new MLContext();
 			DataView = MlContext.Data.LoadFromTextFile<T>(dataPath, separator, hasHeader: false);
-			ColumnCopyingEstimator = MlContext.Transforms.CopyColumns("Label", predictedColumn);
+
+			var columnCopyingEstimator = MlContext.Transforms.CopyColumns("Label", predictedColumn);
 			//TextFeaturizingEstimator = MlContext.Transforms.Text.FeaturizeText(DefaultColumnNames.Features, alphanumericColumns, null);
-			MlContext.Transforms.Text.FeaturizeText(DefaultColumnNames.Features, alphanumericColumns, null);
+			EstimatorChain<OneHotEncodingTransformer> estimatorChainColumnConcat = null;
 
-			foreach (var alphanumericColumn in alphanumericColumns)
-				ColumnCopyingEstimator.Append(MlContext.Transforms.Categorical.OneHotEncoding(alphanumericColumn));
+			if (alphanumericColumns != null)
+			{
+				//MlContext.Transforms.Text.FeaturizeText(DefaultColumnNames.Features, alphanumericColumns, null);
+				foreach (var alphanumericColumn in alphanumericColumns)
+				{
+					if (estimatorChainColumnConcat == null)
+					{
+						estimatorChainColumnConcat = columnCopyingEstimator.Append(MlContext.Transforms.Categorical.OneHotEncoding(alphanumericColumn));
+					}
+					else
+					{
+						estimatorChainColumnConcat = estimatorChainColumnConcat.Append(MlContext.Transforms.Categorical.OneHotEncoding(alphanumericColumn));
+					}
+				}
 
-			ColumnCopyingEstimator.Append(MlContext.Transforms.Concatenate("Features", concatenatedColumns));
+				EstimatorChain = estimatorChainColumnConcat.Append(MlContext.Transforms.Concatenate("Features", concatenatedColumns));
+			}
+			else
+			{
+				EstimatorChain = columnCopyingEstimator.Append(MlContext.Transforms.Concatenate("Features", concatenatedColumns));
+			}
+
 			ConcatenatedColumns = concatenatedColumns;
 		}
 
