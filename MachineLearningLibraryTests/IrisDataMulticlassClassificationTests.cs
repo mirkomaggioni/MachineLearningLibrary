@@ -28,9 +28,9 @@ namespace MachineLearningLibraryTests
 			var result = predictionService.EvaluateClassification(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.NaiveBayesMultiClassifier), result);
 
-			model = predictionService.Train<IrisData, IrisTypePrediction>(pipelineParameters, AlgorithmType.LogisticRegressionMultiClassifier);
+			model = predictionService.Train<IrisData, IrisTypePrediction>(pipelineParameters, AlgorithmType.LbfgsMultiClassifier);
 			result = predictionService.EvaluateClassification(model, pipelineParameters, pipelineTestParameters);
-			LogResult(nameof(AlgorithmType.LogisticRegressionMultiClassifier), result);
+			LogResult(nameof(AlgorithmType.LbfgsMultiClassifier), result);
 
 			model = predictionService.Train<IrisData, IrisTypePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscentMultiClassifier);
 			result = predictionService.EvaluateClassification(model, pipelineParameters, pipelineTestParameters);

@@ -25,7 +25,7 @@ namespace MachineLearningLibrary.Models
 		[LoadColumn(9)]
 		public float Iron;
 		[LoadColumn(10)]
-		public string Type;
+		public int Type;
 	}
 
 	public class GlassTypePrediction : MultiClassificationPrediction { }

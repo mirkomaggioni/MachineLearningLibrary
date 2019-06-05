@@ -44,17 +44,17 @@ namespace MachineLearningLibraryTests
 			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.FieldAwareFactorizationMachineBinaryClassifier), result);
 
-			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.GeneralizedAdditiveModelBinaryClassifier);
+			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.GamBinaryClassifier);
 			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
-			LogResult(nameof(AlgorithmType.GeneralizedAdditiveModelBinaryClassifier), result);
+			LogResult(nameof(AlgorithmType.GamBinaryClassifier), result);
 
 			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.LinearSvmBinaryClassifier);
 			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.LinearSvmBinaryClassifier), result);
 
-			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.LogisticRegressionBinaryClassifier);
+			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.LbfgsBinaryClassifier);
 			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
-			LogResult(nameof(AlgorithmType.LogisticRegressionBinaryClassifier), result);
+			LogResult(nameof(AlgorithmType.LbfgsBinaryClassifier), result);
 
 			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscentBinaryClassifier);
 			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);

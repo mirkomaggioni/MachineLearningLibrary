@@ -28,9 +28,9 @@ namespace MachineLearningLibraryTests
 			var result = predictionService.EvaluateClassification(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.NaiveBayesMultiClassifier), result);
 
-			model = predictionService.Train<GlassData, GlassTypePrediction>(pipelineParameters, AlgorithmType.LogisticRegressionMultiClassifier);
+			model = predictionService.Train<GlassData, GlassTypePrediction>(pipelineParameters, AlgorithmType.LbfgsMultiClassifier);
 			result = predictionService.EvaluateClassification(model, pipelineParameters, pipelineTestParameters);
-			LogResult(nameof(AlgorithmType.LogisticRegressionMultiClassifier), result);
+			LogResult(nameof(AlgorithmType.LbfgsMultiClassifier), result);
 
 			model = predictionService.Train<GlassData, GlassTypePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscentMultiClassifier);
 			result = predictionService.EvaluateClassification(model, pipelineParameters, pipelineTestParameters);
@@ -40,14 +40,14 @@ namespace MachineLearningLibraryTests
 		private void LogResult(string algorithm, ClusteringMetrics clusteringMetrics)
 		{
 			Console.WriteLine($"------------- {algorithm} - EVALUATION RESULTS -------------");
-			Console.WriteLine($"AVG MIN SCORE = {clusteringMetrics.AvgMinScore}");
-			Console.WriteLine($"DBI = {clusteringMetrics.Dbi}");
-			Console.WriteLine($"NMI = {clusteringMetrics.Nmi}");
+			Console.WriteLine($"AVG MIN SCORE = {clusteringMetrics.AverageDistance}");
+			Console.WriteLine($"DBI = {clusteringMetrics.DaviesBouldinIndex}");
+			Console.WriteLine($"NMI = {clusteringMetrics.NormalizedMutualInformation}");
 			Console.WriteLine($"------------- {algorithm} - END EVALUATION -------------");
 		}
 
 		private PipelineParameters<GlassData> GetPipelineParameters(string dataPath) {
-			return new PipelineParameters<GlassData>(dataPath, _separator, _predictedColumn, null, _concatenatedColumns);
+			return new PipelineParameters<GlassData>(dataPath, _separator, _predictedColumn, _concatenatedColumns, _concatenatedColumns);
 		}
 	}
 }
