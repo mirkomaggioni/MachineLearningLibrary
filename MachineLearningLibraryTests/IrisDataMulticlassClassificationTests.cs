@@ -48,7 +48,7 @@ namespace MachineLearningLibraryTests
 
 		private PipelineParameters<IrisData> GetPipelineParameters(string dataPath)
 		{
-			return new PipelineParameters<IrisData>(dataPath, _separator, _predictedColumn, null, _concatenatedColumns);
+			return new PipelineParameters<IrisData>(dataPath, _separator, (_predictedColumn, false), _concatenatedColumns, _concatenatedColumns);
 		}
 	}
 }

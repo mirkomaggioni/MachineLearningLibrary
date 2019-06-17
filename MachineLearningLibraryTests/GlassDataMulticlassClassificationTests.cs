@@ -47,7 +47,7 @@ namespace MachineLearningLibraryTests
 		}
 
 		private PipelineParameters<GlassData> GetPipelineParameters(string dataPath) {
-			return new PipelineParameters<GlassData>(dataPath, _separator, _predictedColumn, _concatenatedColumns, _concatenatedColumns);
+			return new PipelineParameters<GlassData>(dataPath, _separator, (_predictedColumn, false), _concatenatedColumns, _concatenatedColumns);
 		}
 	}
 }

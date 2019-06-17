@@ -60,7 +60,7 @@ namespace MachineLearningLibraryTests
 
 		private PipelineParameters<TaxyData> GetPipelineParameters(string dataPath)
 		{
-			return new PipelineParameters<TaxyData>(dataPath, _separator, _predictedColumn, null, _concatenatedColumns);
+			return new PipelineParameters<TaxyData>(dataPath, _separator, (_predictedColumn, true), null, _concatenatedColumns);
 		}
 	}
 }

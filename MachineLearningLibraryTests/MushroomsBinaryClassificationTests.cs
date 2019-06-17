@@ -76,7 +76,7 @@ namespace MachineLearningLibraryTests
 
 		private PipelineParameters<MushroomData> GetPipelineParameters(string dataPath)
 		{
-			return new PipelineParameters<MushroomData>(dataPath, _separator, _predictedColumn, _concatenatedColumns, _concatenatedColumns);
+			return new PipelineParameters<MushroomData>(dataPath, _separator, (_predictedColumn, false), _concatenatedColumns, _concatenatedColumns);
 		}
 	}
 }

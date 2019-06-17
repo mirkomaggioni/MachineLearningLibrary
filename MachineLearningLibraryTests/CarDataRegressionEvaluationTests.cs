@@ -34,21 +34,21 @@ namespace MachineLearningLibraryTests
 			result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
 			LogResult(nameof(AlgorithmType.FastTreeRegressor), result);
 
-			model = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.FastTreeTweedieRegressor);
-			result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
-			LogResult(nameof(AlgorithmType.FastTreeTweedieRegressor), result);
+			//model = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.FastTreeTweedieRegressor);
+			//result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
+			//LogResult(nameof(AlgorithmType.FastTreeTweedieRegressor), result);
 
-			model = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.FastForestRegressor);
-			result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
-			LogResult(nameof(AlgorithmType.FastForestRegressor), result);
+			//model = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.FastForestRegressor);
+			//result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
+			//LogResult(nameof(AlgorithmType.FastForestRegressor), result);
 
-			model = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.OnlineGradientDescentRegressor);
-			result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
-			LogResult(nameof(AlgorithmType.OnlineGradientDescentRegressor), result);
+			//model = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.OnlineGradientDescentRegressor);
+			//result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
+			//LogResult(nameof(AlgorithmType.OnlineGradientDescentRegressor), result);
 
-			model = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.PoissonRegressor);
-			result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
-			LogResult(nameof(AlgorithmType.PoissonRegressor), result);
+			//model = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.PoissonRegressor);
+			//result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
+			//LogResult(nameof(AlgorithmType.PoissonRegressor), result);
 		}
 
 		private void LogResult(string algorithm, RegressionMetrics regressionMetrics)
@@ -61,7 +61,7 @@ namespace MachineLearningLibraryTests
 
 		private PipelineParameters<CarData> GetPipelineParameters(string dataPath)
 		{
-			return new PipelineParameters<CarData>(dataPath, _separator, _predictedColumn, _alphanumericColumns, _concatenatedColumns);
+			return new PipelineParameters<CarData>(dataPath, _separator, (_predictedColumn, true), _concatenatedColumns, _alphanumericColumns);
 		}
 	}
 }

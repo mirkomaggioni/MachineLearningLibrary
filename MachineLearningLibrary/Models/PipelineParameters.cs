@@ -11,13 +11,21 @@ namespace MachineLearningLibrary.Models
 		public readonly EstimatorChain<ColumnConcatenatingTransformer> Chain;
 		public readonly string[] ConcatenatedColumns;
 
-		public PipelineParameters(string dataPath, char separator, string predictedColumn, string[] concatenatedColumns, string[] alphanumericColumns)
+		public PipelineParameters(string dataPath, char separator, (string, bool) predictedColumn, string[] concatenatedColumns, string[] alphanumericColumns)
 		{
 			MlContext = new MLContext();
 			DataView = MlContext.Data.LoadFromTextFile<T>(dataPath, separator, hasHeader: false);
+			dynamic chain = null;
 
-			var columnCopyingEstimator = MlContext.Transforms.Conversion.MapValueToKey(predictedColumn)
-											.Append(MlContext.Transforms.CopyColumns("Label", predictedColumn));
+			if (predictedColumn.Item2)
+			{
+				chain = MlContext.Transforms.CopyColumns("Label", predictedColumn.Item1);
+			}
+			else
+			{
+				chain = MlContext.Transforms.Conversion.MapValueToKey(predictedColumn.Item1).Append(MlContext.Transforms.CopyColumns("Label", predictedColumn.Item1));
+			}
+
 			EstimatorChain<OneHotEncodingTransformer> OneHotEncodingEstimator = null;
 
 			if (alphanumericColumns != null)
@@ -27,7 +35,7 @@ namespace MachineLearningLibrary.Models
 				{
 					if (OneHotEncodingEstimator == null)
 					{
-						OneHotEncodingEstimator = columnCopyingEstimator.Append(MlContext.Transforms.Categorical.OneHotEncoding(alphanumericColumn));
+						OneHotEncodingEstimator = chain.Append(MlContext.Transforms.Categorical.OneHotEncoding(alphanumericColumn));
 					}
 					else
 					{
@@ -39,7 +47,7 @@ namespace MachineLearningLibrary.Models
 			}
 			else
 			{
-				Chain = columnCopyingEstimator.Append(MlContext.Transforms.Concatenate("Features", concatenatedColumns));
+				Chain = chain.Append(MlContext.Transforms.Concatenate("Features", concatenatedColumns));
 			}
 
 			ConcatenatedColumns = concatenatedColumns;
