@@ -108,6 +108,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\IPipeline.cs" />
     <Compile Include="Models\CarData.cs" />
     <Compile Include="Models\GlassData.cs" />
     <Compile Include="Models\IPredictionModel.cs" />
