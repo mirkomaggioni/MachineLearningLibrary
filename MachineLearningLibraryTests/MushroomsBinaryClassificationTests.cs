@@ -74,9 +74,9 @@ namespace MachineLearningLibraryTests
 			Console.WriteLine($"------------- {algorithm} - END EVALUATION -------------");
 		}
 
-		private PipelineParameters<MushroomData> GetPipelineParameters(string dataPath)
+		private Pipeline<MushroomData> GetPipelineParameters(string dataPath)
 		{
-			return new PipelineParameters<MushroomData>(dataPath, _separator, (_predictedColumn, false), _concatenatedColumns, _concatenatedColumns);
+			return new Pipeline<MushroomData>(dataPath, _separator, (_predictedColumn, false), _concatenatedColumns, _concatenatedColumns);
 		}
 	}
 }

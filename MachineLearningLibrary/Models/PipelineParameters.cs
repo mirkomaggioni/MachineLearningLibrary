@@ -4,14 +4,14 @@ using Microsoft.ML.Transforms;
 
 namespace MachineLearningLibrary.Models
 {
-	public class PipelineParameters<T> where T : class
+	public class Pipeline<T> where T : class
 	{
 		public readonly MLContext MlContext;
 		public readonly IDataView DataView;
 		public readonly EstimatorChain<ColumnConcatenatingTransformer> Chain;
 		public readonly string[] ConcatenatedColumns;
 
-		public PipelineParameters(string dataPath, char separator, (string, bool) predictedColumn, string[] concatenatedColumns, string[] alphanumericColumns)
+		public Pipeline(string dataPath, char separator, (string, bool) predictedColumn, string[] concatenatedColumns, string[] alphanumericColumns)
 		{
 			MlContext = new MLContext();
 			DataView = MlContext.Data.LoadFromTextFile<T>(dataPath, separator, hasHeader: false);

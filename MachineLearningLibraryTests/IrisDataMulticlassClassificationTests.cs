@@ -46,9 +46,9 @@ namespace MachineLearningLibraryTests
 			Console.WriteLine($"------------- {algorithm} - END EVALUATION -------------");
 		}
 
-		private PipelineParameters<IrisData> GetPipelineParameters(string dataPath)
+		private Pipeline<IrisData> GetPipelineParameters(string dataPath)
 		{
-			return new PipelineParameters<IrisData>(dataPath, _separator, (_predictedColumn, false), _concatenatedColumns, _concatenatedColumns);
+			return new Pipeline<IrisData>(dataPath, _separator, (_predictedColumn, false), _concatenatedColumns, _concatenatedColumns);
 		}
 	}
 }

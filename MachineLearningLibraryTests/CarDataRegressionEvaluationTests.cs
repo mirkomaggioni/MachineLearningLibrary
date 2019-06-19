@@ -59,9 +59,9 @@ namespace MachineLearningLibraryTests
 			Console.WriteLine($"------------- {algorithm} - END EVALUATION -------------");
 		}
 
-		private PipelineParameters<CarData> GetPipelineParameters(string dataPath)
+		private Pipeline<CarData> GetPipelineParameters(string dataPath)
 		{
-			return new PipelineParameters<CarData>(dataPath, _separator, (_predictedColumn, true), _concatenatedColumns, _alphanumericColumns);
+			return new Pipeline<CarData>(dataPath, _separator, (_predictedColumn, true), _concatenatedColumns, _alphanumericColumns);
 		}
 	}
 }

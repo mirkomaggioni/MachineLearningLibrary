@@ -40,7 +40,7 @@ namespace MachineLearningLibrary.Services
 			Directory.CreateDirectory(_modelsRootPath);
 		}
 
-		public ITransformer Train<T, TPredictionModel>(PipelineParameters<T> pipelineParameters, AlgorithmType algorithmType) 
+		public ITransformer Train<T, TPredictionModel>(Pipeline<T> pipelineParameters, AlgorithmType algorithmType) 
 			where T : class
 			where TPredictionModel : class, IPredictionModel, new()
 		{
@@ -55,22 +55,22 @@ namespace MachineLearningLibrary.Services
 			return model;
 		}
 
-		public RegressionMetrics EvaluateRegression<T>(ITransformer model, PipelineParameters<T> pipelineParameters, PipelineParameters<T> pipelineTestParameters) where T : class
+		public RegressionMetrics EvaluateRegression<T>(ITransformer model, Pipeline<T> pipelineParameters, Pipeline<T> pipelineTestParameters) where T : class
 		{
 			return pipelineParameters.MlContext.Regression.Evaluate(model.Transform(pipelineTestParameters.DataView));
 		}
 
-		public BinaryClassificationMetrics EvaluateBinaryClassification<T>(ITransformer model, PipelineParameters<T> pipelineParameters, PipelineParameters<T> pipelineTestParameters) where T : class
+		public BinaryClassificationMetrics EvaluateBinaryClassification<T>(ITransformer model, Pipeline<T> pipelineParameters, Pipeline<T> pipelineTestParameters) where T : class
 		{
 			return pipelineParameters.MlContext.BinaryClassification.Evaluate(model.Transform(pipelineTestParameters.DataView));
 		}
 
-		public ClusteringMetrics EvaluateClassification<T>(ITransformer model, PipelineParameters<T> pipelineParameters, PipelineParameters<T> pipelineTestParameters) where T : class
+		public ClusteringMetrics EvaluateClassification<T>(ITransformer model, Pipeline<T> pipelineParameters, Pipeline<T> pipelineTestParameters) where T : class
 		{
 			return pipelineParameters.MlContext.Clustering.Evaluate(model.Transform(pipelineTestParameters.DataView));
 		}
 
-		public TPredictionModel PredictScore<T, TPredictionModel>(T data, PipelineParameters<T> pipelineParameters, ITransformer model) 
+		public TPredictionModel PredictScore<T, TPredictionModel>(T data, Pipeline<T> pipelineParameters, ITransformer model) 
 			where T : class
 			where TPredictionModel : class, IPredictionModel, new()
 		{
@@ -91,7 +91,7 @@ namespace MachineLearningLibrary.Services
 		//	}).ToArray();
 		//}
 
-		private ITransformer GetModel<T>(PipelineParameters<T> pipelineParameters, AlgorithmType algorithmType) where T : class
+		private ITransformer GetModel<T>(Pipeline<T> pipelineParameters, AlgorithmType algorithmType) where T : class
 		{
 			switch (algorithmType)
 			{
