@@ -23,9 +23,10 @@ namespace MachineLearningLibrary.Models
 			DataView = MlContext.Data.LoadFromTextFile<T>(dataPath, separator, hasHeader: false);
 		}
 
-		public void ConvertAlphanumericKeyColumn(string column)
+		public IAlphanumericColumnsConversionPipeline ConvertAlphanumericKeyColumn(string column)
 		{
 			valueToKeyMappingEstimator = MlContext.Transforms.Conversion.MapValueToKey(column);
+			return this;
 		}
 
 		public IAlphanumericColumnsConversionPipeline CopyColumn(string outputColumnName, string inputColumnName)
@@ -33,6 +34,10 @@ namespace MachineLearningLibrary.Models
 			if (valueToKeyMappingEstimator == null)
 			{
 				columnCopyingEstimator = MlContext.Transforms.CopyColumns(outputColumnName, inputColumnName);
+			}
+			else if(columnCopyingEstimator != null)
+			{
+				estimatorChainCopy = columnCopyingEstimator.Append(MlContext.Transforms.CopyColumns(outputColumnName, inputColumnName));
 			}
 			else
 			{
@@ -49,7 +54,7 @@ namespace MachineLearningLibrary.Models
 				if (i == 0)
 				{
 					estimatorChainEncoding = estimatorChainCopy != null 
-						? estimatorChainCopy.Append(MlContext.Transforms.Categorical.OneHotEncoding(columns[i]));
+						? estimatorChainCopy.Append(MlContext.Transforms.Categorical.OneHotEncoding(columns[i]))
 						: columnCopyingEstimator.Append(MlContext.Transforms.Categorical.OneHotEncoding(columns[i]));
 				}
 				else
@@ -69,7 +74,7 @@ namespace MachineLearningLibrary.Models
 			}
 			else
 			{
-				estimatorChainTransformer = columnCopyingEstimator.Append(MlContext.Transforms.Concatenate("Features", columns));
+				estimatorChainTransformer = estimatorChainCopy!= null ? estimatorChainCopy.Append(MlContext.Transforms.Concatenate("Features", columns)) : columnCopyingEstimator.Append(MlContext.Transforms.Concatenate("Features", columns));
 			}
 
 			return this;

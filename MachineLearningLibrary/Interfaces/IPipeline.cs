@@ -4,12 +4,13 @@ namespace MachineLearningLibrary.Interfaces
 {
 	public interface IPredictedColumnPipeline
 	{
-		void ConvertAlphanumericKeyColumn(string column);
+		IAlphanumericColumnsConversionPipeline ConvertAlphanumericKeyColumn(string column);
 		IAlphanumericColumnsConversionPipeline CopyColumn(string outputColumnName, string inputColumnName);
 	}
 
 	public interface IAlphanumericColumnsConversionPipeline
 	{
+		IAlphanumericColumnsConversionPipeline CopyColumn(string outputColumnName, string inputColumnName);
 		IConcatenateColumns ConvertAlphanumericColumns(string[] columns);
 	}
 
