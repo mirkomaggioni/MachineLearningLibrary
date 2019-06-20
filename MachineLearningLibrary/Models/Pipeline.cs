@@ -68,14 +68,10 @@ namespace MachineLearningLibrary.Models
 
 		public ITrain ConcatenateColumns(string[] columns)
 		{
-			if (estimatorChainEncoding != null)
-			{
-				estimatorChainTransformer = estimatorChainEncoding.Append(MlContext.Transforms.Concatenate("Features", columns));
-			}
-			else
-			{
-				estimatorChainTransformer = estimatorChainCopy!= null ? estimatorChainCopy.Append(MlContext.Transforms.Concatenate("Features", columns)) : columnCopyingEstimator.Append(MlContext.Transforms.Concatenate("Features", columns));
-			}
+			estimatorChainTransformer = estimatorChainEncoding != null ?
+										estimatorChainEncoding.Append(MlContext.Transforms.Concatenate("Features", columns)) :
+										estimatorChainCopy != null ? estimatorChainCopy.Append(MlContext.Transforms.Concatenate("Features", columns)) :
+										columnCopyingEstimator.Append(MlContext.Transforms.Concatenate("Features", columns));
 
 			return this;
 		}

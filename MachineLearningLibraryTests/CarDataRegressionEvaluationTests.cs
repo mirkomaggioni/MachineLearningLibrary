@@ -61,7 +61,7 @@ namespace MachineLearningLibraryTests
 
 		private Pipeline<CarData> GetPipelineParameters(string dataPath)
 		{
-			return new Pipeline<CarData>(dataPath, _separator, (_predictedColumn, true), _concatenatedColumns, _alphanumericColumns);
+			return new Pipeline<CarData>(dataPath, _separator);
 		}
 	}
 }
