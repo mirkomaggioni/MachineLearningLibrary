@@ -1,4 +1,5 @@
 ﻿using MachineLearningLibrary.Services;
+using Microsoft.ML;
 
 namespace MachineLearningLibrary.Interfaces
 {
@@ -21,6 +22,6 @@ namespace MachineLearningLibrary.Interfaces
 
 	public interface ITrain
 	{
-		void Train(AlgorithmType algorithmType);
+		ITransformer Train(AlgorithmType algorithmType);
 	}
 }

@@ -40,20 +40,20 @@ namespace MachineLearningLibrary.Services
 			Directory.CreateDirectory(_modelsRootPath);
 		}
 
-		public ITransformer Train<T, TPredictionModel>(Pipeline<T> pipelineParameters, AlgorithmType algorithmType) 
-			where T : class
-			where TPredictionModel : class, IPredictionModel, new()
-		{
-			var modelPath = $@"{_modelsRootPath}\{Guid.NewGuid()}.zip";
-			var model = GetModel(pipelineParameters, algorithmType);
+		//public ITransformer Train<T, TPredictionModel>(Pipeline<T> pipelineParameters, AlgorithmType algorithmType) 
+		//	where T : class
+		//	where TPredictionModel : class, IPredictionModel, new()
+		//{
+		//	var modelPath = $@"{_modelsRootPath}\{Guid.NewGuid()}.zip";
+		//	var model = GetModel(pipelineParameters, algorithmType);
 
-			using (var fileStream = new FileStream(modelPath, FileMode.Create, FileAccess.Write, FileShare.Write))
-			{
-				pipelineParameters.MlContext.Model.Save(model, pipelineParameters.DataView.Schema, fileStream);
-			}
+		//	using (var fileStream = new FileStream(modelPath, FileMode.Create, FileAccess.Write, FileShare.Write))
+		//	{
+		//		pipelineParameters.MlContext.Model.Save(model, pipelineParameters.DataView.Schema, fileStream);
+		//	}
 
-			return model;
-		}
+		//	return model;
+		//}
 
 		public RegressionMetrics EvaluateRegression<T>(ITransformer model, Pipeline<T> pipelineParameters, Pipeline<T> pipelineTestParameters) where T : class
 		{
@@ -91,49 +91,49 @@ namespace MachineLearningLibrary.Services
 		//	}).ToArray();
 		//}
 
-		private ITransformer GetModel<T>(Pipeline<T> pipelineParameters, AlgorithmType algorithmType) where T : class
-		{
-			switch (algorithmType)
-			{
-				case AlgorithmType.FastTreeRegressor:
-					return pipelineParameters.Chain.Append(pipelineParameters.MlContext.Regression.Trainers.FastTree()).Fit(pipelineParameters.DataView);
-				case AlgorithmType.StochasticDualCoordinateAscentRegressor:
-					return pipelineParameters.Chain.Append(pipelineParameters.MlContext.Regression.Trainers.Sdca()).Fit(pipelineParameters.DataView);
-				case AlgorithmType.FastTreeTweedieRegressor:
-					return pipelineParameters.Chain.Append(pipelineParameters.MlContext.Regression.Trainers.FastTreeTweedie()).Fit(pipelineParameters.DataView);
-				case AlgorithmType.FastForestRegressor:
-					return pipelineParameters.Chain.Append(pipelineParameters.MlContext.Regression.Trainers.FastForest()).Fit(pipelineParameters.DataView);
-				case AlgorithmType.OnlineGradientDescentRegressor:
-					return pipelineParameters.Chain.Append(pipelineParameters.MlContext.Regression.Trainers.OnlineGradientDescent()).Fit(pipelineParameters.DataView);
-				case AlgorithmType.PoissonRegressor:
-					return pipelineParameters.Chain.Append(pipelineParameters.MlContext.Regression.Trainers.LbfgsPoissonRegression()).Fit(pipelineParameters.DataView);
-				case AlgorithmType.NaiveBayesMultiClassifier:
-					return pipelineParameters.Chain.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.NaiveBayes()).Fit(pipelineParameters.DataView);
-				case AlgorithmType.StochasticDualCoordinateAscentMultiClassifier:
-					return pipelineParameters.Chain.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.SdcaNonCalibrated()).Fit(pipelineParameters.DataView);
-				case AlgorithmType.LbfgsMultiClassifier:
-					return pipelineParameters.Chain.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.LbfgsMaximumEntropy()).Fit(pipelineParameters.DataView);
-				case AlgorithmType.FastForestBinaryClassifier:
-					return pipelineParameters.Chain.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.FastForest(numberOfTrees: 3000)).Fit(pipelineParameters.DataView);
-				case AlgorithmType.AveragedPerceptronBinaryClassifier:
-					return pipelineParameters.Chain.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.AveragedPerceptron()).Fit(pipelineParameters.DataView);
-				case AlgorithmType.FastTreeBinaryClassifier:
-					return pipelineParameters.Chain.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.FastTree()).Fit(pipelineParameters.DataView);
-				case AlgorithmType.FieldAwareFactorizationMachineBinaryClassifier:
-					return pipelineParameters.Chain.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.FieldAwareFactorizationMachine(pipelineParameters.ConcatenatedColumns.ToArray())).Fit(pipelineParameters.DataView);
-				case AlgorithmType.LinearSvmBinaryClassifier:
-					return pipelineParameters.Chain.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.LinearSvm()).Fit(pipelineParameters.DataView);
-				case AlgorithmType.StochasticDualCoordinateAscentBinaryClassifier:
-					return pipelineParameters.Chain.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.SdcaLogisticRegression()).Fit(pipelineParameters.DataView);
-				case AlgorithmType.StochasticGradientDescentBinaryClassifier:
-					return pipelineParameters.Chain.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.SgdNonCalibrated()).Fit(pipelineParameters.DataView);
-				case AlgorithmType.GamBinaryClassifier:
-					return pipelineParameters.Chain.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.Gam()).Fit(pipelineParameters.DataView);
-				case AlgorithmType.LbfgsBinaryClassifier:
-					return pipelineParameters.Chain.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.LbfgsLogisticRegression()).Fit(pipelineParameters.DataView);
-				default:
-					return null;
-			}
-		}
+		//private ITransformer GetModel<T>(Pipeline<T> pipelineParameters, AlgorithmType algorithmType) where T : class
+		//{
+		//	switch (algorithmType)
+		//	{
+		//		case AlgorithmType.FastTreeRegressor:
+		//			return pipelineParameters.Chain.Append(pipelineParameters.MlContext.Regression.Trainers.FastTree()).Fit(pipelineParameters.DataView);
+		//		case AlgorithmType.StochasticDualCoordinateAscentRegressor:
+		//			return pipelineParameters.Chain.Append(pipelineParameters.MlContext.Regression.Trainers.Sdca()).Fit(pipelineParameters.DataView);
+		//		case AlgorithmType.FastTreeTweedieRegressor:
+		//			return pipelineParameters.Chain.Append(pipelineParameters.MlContext.Regression.Trainers.FastTreeTweedie()).Fit(pipelineParameters.DataView);
+		//		case AlgorithmType.FastForestRegressor:
+		//			return pipelineParameters.Chain.Append(pipelineParameters.MlContext.Regression.Trainers.FastForest()).Fit(pipelineParameters.DataView);
+		//		case AlgorithmType.OnlineGradientDescentRegressor:
+		//			return pipelineParameters.Chain.Append(pipelineParameters.MlContext.Regression.Trainers.OnlineGradientDescent()).Fit(pipelineParameters.DataView);
+		//		case AlgorithmType.PoissonRegressor:
+		//			return pipelineParameters.Chain.Append(pipelineParameters.MlContext.Regression.Trainers.LbfgsPoissonRegression()).Fit(pipelineParameters.DataView);
+		//		case AlgorithmType.NaiveBayesMultiClassifier:
+		//			return pipelineParameters.Chain.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.NaiveBayes()).Fit(pipelineParameters.DataView);
+		//		case AlgorithmType.StochasticDualCoordinateAscentMultiClassifier:
+		//			return pipelineParameters.Chain.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.SdcaNonCalibrated()).Fit(pipelineParameters.DataView);
+		//		case AlgorithmType.LbfgsMultiClassifier:
+		//			return pipelineParameters.Chain.Append(pipelineParameters.MlContext.MulticlassClassification.Trainers.LbfgsMaximumEntropy()).Fit(pipelineParameters.DataView);
+		//		case AlgorithmType.FastForestBinaryClassifier:
+		//			return pipelineParameters.Chain.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.FastForest(numberOfTrees: 3000)).Fit(pipelineParameters.DataView);
+		//		case AlgorithmType.AveragedPerceptronBinaryClassifier:
+		//			return pipelineParameters.Chain.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.AveragedPerceptron()).Fit(pipelineParameters.DataView);
+		//		case AlgorithmType.FastTreeBinaryClassifier:
+		//			return pipelineParameters.Chain.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.FastTree()).Fit(pipelineParameters.DataView);
+		//		case AlgorithmType.FieldAwareFactorizationMachineBinaryClassifier:
+		//			return pipelineParameters.Chain.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.FieldAwareFactorizationMachine(pipelineParameters.ConcatenatedColumns.ToArray())).Fit(pipelineParameters.DataView);
+		//		case AlgorithmType.LinearSvmBinaryClassifier:
+		//			return pipelineParameters.Chain.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.LinearSvm()).Fit(pipelineParameters.DataView);
+		//		case AlgorithmType.StochasticDualCoordinateAscentBinaryClassifier:
+		//			return pipelineParameters.Chain.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.SdcaLogisticRegression()).Fit(pipelineParameters.DataView);
+		//		case AlgorithmType.StochasticGradientDescentBinaryClassifier:
+		//			return pipelineParameters.Chain.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.SgdNonCalibrated()).Fit(pipelineParameters.DataView);
+		//		case AlgorithmType.GamBinaryClassifier:
+		//			return pipelineParameters.Chain.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.Gam()).Fit(pipelineParameters.DataView);
+		//		case AlgorithmType.LbfgsBinaryClassifier:
+		//			return pipelineParameters.Chain.Append(pipelineParameters.MlContext.BinaryClassification.Trainers.LbfgsLogisticRegression()).Fit(pipelineParameters.DataView);
+		//		default:
+		//			return null;
+		//	}
+		//}
 	}
 }

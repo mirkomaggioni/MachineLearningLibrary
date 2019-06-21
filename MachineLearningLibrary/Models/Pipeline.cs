@@ -84,7 +84,7 @@ namespace MachineLearningLibrary.Models
 			return this;
 		}
 
-		public void Train(AlgorithmType algorithmType)
+		public ITransformer Train(AlgorithmType algorithmType)
 		{
 			var modelPath = $@"{_modelsRootPath}\{Guid.NewGuid()}.zip";
 			var model = GetModel(algorithmType);
@@ -93,6 +93,8 @@ namespace MachineLearningLibrary.Models
 			{
 				MlContext.Model.Save(model, DataView.Schema, fileStream);
 			}
+
+			return model;
 		}
 
 		private ITransformer GetModel(AlgorithmType algorithmType)

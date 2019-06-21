@@ -5,6 +5,7 @@ using MachineLearningLibrary.Models;
 using MachineLearningLibrary.Services;
 using NUnit.Framework;
 using Microsoft.ML.Data;
+using MachineLearningLibrary.Interfaces;
 
 namespace MachineLearningLibraryTests
 {
@@ -25,14 +26,15 @@ namespace MachineLearningLibraryTests
 		{
 			var pipelineParameters = GetPipelineParameters(_dataPath);
 			var pipelineTestParameters = GetPipelineParameters(_testDataPath);
+			var model = pipelineParameters.Train(AlgorithmType.StochasticDualCoordinateAscentRegressor);
 
-			var model = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscentRegressor);
-			var result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
-			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentRegressor), result);
+			//var model = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscentRegressor);
+			//var result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
+			//LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentRegressor), result);
 
-			model = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.FastTreeRegressor);
-			result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
-			LogResult(nameof(AlgorithmType.FastTreeRegressor), result);
+			//model = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.FastTreeRegressor);
+			//result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
+			//LogResult(nameof(AlgorithmType.FastTreeRegressor), result);
 
 			//model = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.FastTreeTweedieRegressor);
 			//result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
@@ -59,9 +61,9 @@ namespace MachineLearningLibraryTests
 			Console.WriteLine($"------------- {algorithm} - END EVALUATION -------------");
 		}
 
-		private Pipeline<CarData> GetPipelineParameters(string dataPath)
+		private ITrain GetPipelineParameters(string dataPath)
 		{
-			return new Pipeline<CarData>(dataPath, _separator);
+			return (new Pipeline<CarData>(dataPath, _separator)).CopyColumn("Label", "Price").ConvertAlphanumericColumns(_alphanumericColumns).ConcatenateColumns(_concatenatedColumns);
 		}
 	}
 }
