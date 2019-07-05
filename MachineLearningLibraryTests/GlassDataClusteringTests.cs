@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace MachineLearningLibraryTests
 {
 	[TestFixture]
-	public class GlassDataMulticlassClassificationTests
+	public class GlassDataClusteringTests
 	{
 		private readonly PredictionService predictionService = new PredictionService();
 		private readonly string _dataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\traindata\glass.csv";
@@ -19,21 +19,21 @@ namespace MachineLearningLibraryTests
 		private readonly string[] _concatenatedColumns = new[] { "IdNumber", "RefractiveIndex", "Sodium", "Magnesium", "Aluminium", "Silicon", "Potassium", "Calcium", "Barium", "Iron" };
 
 		[Test]
-		public void GlassDataMulticlassClassificationTest()
+		public void GlassDataClusteringTest()
 		{
 			var pipelineParameters = GetPipelineParameters(_dataPath);
 			var pipelineTestParameters = GetPipelineParameters(_testDataPath);
 
-			var model = predictionService.Train<GlassData, GlassTypePrediction>(pipelineParameters, AlgorithmType.NaiveBayesMultiClassifier);
-			var result = predictionService.EvaluateClassification(model, pipelineParameters, pipelineTestParameters);
+			var pipelineTransformer = pipelineParameters.Train(AlgorithmType.NaiveBayesMultiClassifier);
+			var result = pipelineTransformer.EvaluateClustering(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.NaiveBayesMultiClassifier), result);
 
-			model = predictionService.Train<GlassData, GlassTypePrediction>(pipelineParameters, AlgorithmType.LbfgsMultiClassifier);
-			result = predictionService.EvaluateClassification(model, pipelineParameters, pipelineTestParameters);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.LbfgsMultiClassifier);
+			result = pipelineTransformer.EvaluateClustering(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.LbfgsMultiClassifier), result);
 
-			model = predictionService.Train<GlassData, GlassTypePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscentMultiClassifier);
-			result = predictionService.EvaluateClassification(model, pipelineParameters, pipelineTestParameters);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.StochasticDualCoordinateAscentMultiClassifier);
+			result = pipelineTransformer.EvaluateClustering(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentMultiClassifier), result);
 		}
 

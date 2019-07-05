@@ -115,7 +115,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GlassDataMulticlassClassificationTests.cs" />
+    <Compile Include="GlassDataClusteringTests.cs" />
     <Compile Include="IrisDataMulticlassClassificationTests.cs" />
     <Compile Include="MushroomsBinaryClassificationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
