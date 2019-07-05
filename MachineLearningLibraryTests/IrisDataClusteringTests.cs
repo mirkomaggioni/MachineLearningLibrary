@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using MachineLearningLibrary.Interfaces;
 using MachineLearningLibrary.Models;
 using MachineLearningLibrary.Services;
 using Microsoft.ML.Data;
@@ -9,7 +10,7 @@ using NUnit.Framework;
 namespace MachineLearningLibraryTests
 {
 	[TestFixture]
-	public class IrisDataMulticlassClassificationTests
+	public class IrisDataClusteringTests
 	{
 		private readonly PredictionService predictionService = new PredictionService();
 		private readonly string _dataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\traindata\iris.csv";
@@ -19,21 +20,21 @@ namespace MachineLearningLibraryTests
 		private readonly string[] _concatenatedColumns = new[] { "SepalLength", "SepalWidth", "PetalLength", "PetalWidth" };
 
 		[Test]
-		public void IrisDataMulticlassClassificationTest()
+		public void IrisDataClusteringTest()
 		{
 			var pipelineParameters = GetPipelineParameters(_dataPath);
-			var pipelineTestParameters = GetPipelineParameters(_testDataPath);
+			var pipelineTestParameters = new Pipeline<IrisData>(_testDataPath, _separator);
 
-			var model = predictionService.Train<IrisData, IrisTypePrediction>(pipelineParameters, AlgorithmType.NaiveBayesMultiClassifier);
-			var result = predictionService.EvaluateClassification(model, pipelineParameters, pipelineTestParameters);
+			var pipelineTransformer = pipelineParameters.Train(AlgorithmType.NaiveBayesMultiClassifier);
+			var result = pipelineTransformer.EvaluateClustering(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.NaiveBayesMultiClassifier), result);
 
-			model = predictionService.Train<IrisData, IrisTypePrediction>(pipelineParameters, AlgorithmType.LbfgsMultiClassifier);
-			result = predictionService.EvaluateClassification(model, pipelineParameters, pipelineTestParameters);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.LbfgsMultiClassifier);
+			result = pipelineTransformer.EvaluateClustering(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.LbfgsMultiClassifier), result);
 
-			model = predictionService.Train<IrisData, IrisTypePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscentMultiClassifier);
-			result = predictionService.EvaluateClassification(model, pipelineParameters, pipelineTestParameters);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.StochasticDualCoordinateAscentMultiClassifier);
+			result = pipelineTransformer.EvaluateClustering(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentMultiClassifier), result);
 		}
 
@@ -46,9 +47,11 @@ namespace MachineLearningLibraryTests
 			Console.WriteLine($"------------- {algorithm} - END EVALUATION -------------");
 		}
 
-		private Pipeline<IrisData> GetPipelineParameters(string dataPath)
+		private ITrain GetPipelineParameters(string dataPath)
 		{
-			return new Pipeline<IrisData>(dataPath, _separator);
+			return (new Pipeline<CarData>(dataPath, _separator))
+				.CopyColumn("Label", "Type")
+				.ConcatenateColumns(_concatenatedColumns);
 		}
 	}
 }
