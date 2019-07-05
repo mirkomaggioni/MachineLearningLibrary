@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using MachineLearningLibrary.Interfaces;
 using MachineLearningLibrary.Models;
 using MachineLearningLibrary.Services;
 using Microsoft.ML.Data;
@@ -15,14 +16,13 @@ namespace MachineLearningLibraryTests
 		private readonly string _dataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\traindata\glass.csv";
 		private readonly string _testDataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\testdata\glass.csv";
 		private readonly char _separator = ',';
-		private readonly string _predictedColumn = "Type";
 		private readonly string[] _concatenatedColumns = new[] { "IdNumber", "RefractiveIndex", "Sodium", "Magnesium", "Aluminium", "Silicon", "Potassium", "Calcium", "Barium", "Iron" };
 
 		[Test]
 		public void GlassDataClusteringTest()
 		{
 			var pipelineParameters = GetPipelineParameters(_dataPath);
-			var pipelineTestParameters = GetPipelineParameters(_testDataPath);
+			var pipelineTestParameters = new Pipeline<GlassData>(_testDataPath, _separator);
 
 			var pipelineTransformer = pipelineParameters.Train(AlgorithmType.NaiveBayesMultiClassifier);
 			var result = pipelineTransformer.EvaluateClustering(pipelineTestParameters.DataView);
@@ -46,8 +46,11 @@ namespace MachineLearningLibraryTests
 			Console.WriteLine($"------------- {algorithm} - END EVALUATION -------------");
 		}
 
-		private Pipeline<GlassData> GetPipelineParameters(string dataPath) {
-			return new Pipeline<GlassData>(dataPath, _separator);
+		private ITrain GetPipelineParameters(string dataPath)
+		{
+			return (new Pipeline<CarData>(dataPath, _separator))
+				.CopyColumn("Label", "Type")
+				.ConcatenateColumns(_concatenatedColumns);
 		}
 	}
 }

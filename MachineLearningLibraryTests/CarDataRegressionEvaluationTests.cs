@@ -61,7 +61,10 @@ namespace MachineLearningLibraryTests
 
 		private ITrain GetPipelineParameters(string dataPath)
 		{
-			return (new Pipeline<CarData>(dataPath, _separator)).CopyColumn("Label", "Price").ConvertAlphanumericColumns(_alphanumericColumns).ConcatenateColumns(_concatenatedColumns);
+			return (new Pipeline<CarData>(dataPath, _separator))
+				.CopyColumn("Label", "Price")
+				.ConvertAlphanumericColumns(_alphanumericColumns)
+				.ConcatenateColumns(_concatenatedColumns);
 		}
 	}
 }

@@ -14,6 +14,7 @@ namespace MachineLearningLibrary.Interfaces
 	{
 		IAlphanumericColumnsConversionPipeline CopyColumn(string outputColumnName, string inputColumnName);
 		IConcatenateColumns ConvertAlphanumericColumns(string[] columns);
+		ITrain ConcatenateColumns(string[] columns);
 	}
 
 	public interface IConcatenateColumns
