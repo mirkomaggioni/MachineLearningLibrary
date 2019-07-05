@@ -25,32 +25,30 @@ namespace MachineLearningLibraryTests
 		public void CarDataRegressionEvaluationTest()
 		{
 			var pipelineParameters = GetPipelineParameters(_dataPath);
-			var pipelineTestParameters = GetPipelineParameters(_testDataPath);
-			var model = pipelineParameters.Train(AlgorithmType.StochasticDualCoordinateAscentRegressor);
+			var pipelineTestParameters = new Pipeline<CarData>(_testDataPath, _separator);
+			var pipelineTransformer = pipelineParameters.Train(AlgorithmType.StochasticDualCoordinateAscentRegressor);
+			var result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
+			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentRegressor), result);
 
-			//var model = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscentRegressor);
-			//var result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
-			//LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentRegressor), result);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.FastTreeRegressor);
+			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
+			LogResult(nameof(AlgorithmType.FastTreeRegressor), result);
 
-			//model = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.FastTreeRegressor);
-			//result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
-			//LogResult(nameof(AlgorithmType.FastTreeRegressor), result);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.FastTreeTweedieRegressor);
+			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
+			LogResult(nameof(AlgorithmType.FastTreeTweedieRegressor), result);
 
-			//model = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.FastTreeTweedieRegressor);
-			//result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
-			//LogResult(nameof(AlgorithmType.FastTreeTweedieRegressor), result);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.FastForestRegressor);
+			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
+			LogResult(nameof(AlgorithmType.FastForestRegressor), result);
 
-			//model = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.FastForestRegressor);
-			//result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
-			//LogResult(nameof(AlgorithmType.FastForestRegressor), result);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.OnlineGradientDescentRegressor);
+			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
+			LogResult(nameof(AlgorithmType.OnlineGradientDescentRegressor), result);
 
-			//model = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.OnlineGradientDescentRegressor);
-			//result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
-			//LogResult(nameof(AlgorithmType.OnlineGradientDescentRegressor), result);
-
-			//model = predictionService.Train<CarData, CarPricePrediction>(pipelineParameters, AlgorithmType.PoissonRegressor);
-			//result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
-			//LogResult(nameof(AlgorithmType.PoissonRegressor), result);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.PoissonRegressor);
+			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
+			LogResult(nameof(AlgorithmType.PoissonRegressor), result);
 		}
 
 		private void LogResult(string algorithm, RegressionMetrics regressionMetrics)

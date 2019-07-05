@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace MachineLearningLibrary.Models
 {
-	public class Pipeline<T> : IPredictedColumnPipeline, IAlphanumericColumnsConversionPipeline, IConcatenateColumns, ITrain where T : class
+	public class Pipeline<T> : IPredictedColumnPipeline, IAlphanumericColumnsConversionPipeline, IConcatenateColumns, ITrain, IPipelineTransformer where T : class
 	{
 		public readonly MLContext MlContext;
 		public readonly IDataView DataView;
@@ -19,6 +19,7 @@ namespace MachineLearningLibrary.Models
 		private EstimatorChain<ColumnCopyingTransformer> estimatorChainCopy;
 		private EstimatorChain<OneHotEncodingTransformer> estimatorChainEncoding;
 		private EstimatorChain<ColumnConcatenatingTransformer> estimatorChainTransformer;
+		private ITransformer _model;
 		private string[] _concatenatedColumns;
 		private string _modelsRootPath;
 
@@ -84,17 +85,31 @@ namespace MachineLearningLibrary.Models
 			return this;
 		}
 
-		public ITransformer Train(AlgorithmType algorithmType)
+		public IPipelineTransformer Train(AlgorithmType algorithmType)
 		{
 			var modelPath = $@"{_modelsRootPath}\{Guid.NewGuid()}.zip";
-			var model = GetModel(algorithmType);
+			_model = GetModel(algorithmType);
 
 			using (var fileStream = new FileStream(modelPath, FileMode.Create, FileAccess.Write, FileShare.Write))
 			{
-				MlContext.Model.Save(model, DataView.Schema, fileStream);
+				MlContext.Model.Save(_model, DataView.Schema, fileStream);
 			}
+			return this;
+		}
 
-			return model;
+		public RegressionMetrics EvaluateRegression(IDataView dataView)
+		{
+			return MlContext.Regression.Evaluate(_model.Transform(dataView));
+		}
+
+		public BinaryClassificationMetrics EvaluateBinaryClassification(IDataView dataView)
+		{
+			return MlContext.BinaryClassification.Evaluate(_model.Transform(dataView));
+		}
+
+		public ClusteringMetrics EvaluateClustering(IDataView dataView)
+		{
+			return MlContext.Clustering.Evaluate(_model.Transform(dataView));
 		}
 
 		private ITransformer GetModel(AlgorithmType algorithmType)

@@ -1,5 +1,6 @@
 ﻿using MachineLearningLibrary.Services;
 using Microsoft.ML;
+using Microsoft.ML.Data;
 
 namespace MachineLearningLibrary.Interfaces
 {
@@ -22,6 +23,13 @@ namespace MachineLearningLibrary.Interfaces
 
 	public interface ITrain
 	{
-		ITransformer Train(AlgorithmType algorithmType);
+		IPipelineTransformer Train(AlgorithmType algorithmType);
+	}
+
+	public interface IPipelineTransformer
+	{
+		RegressionMetrics EvaluateRegression(IDataView dataView);
+		BinaryClassificationMetrics EvaluateBinaryClassification(IDataView dataView);
+		ClusteringMetrics EvaluateClustering(IDataView dataView);
 	}
 }
