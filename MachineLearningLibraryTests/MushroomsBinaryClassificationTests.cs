@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using MachineLearningLibrary.Interfaces;
 using MachineLearningLibrary.Models;
 using MachineLearningLibrary.Services;
 using Microsoft.ML.Data;
@@ -22,46 +23,42 @@ namespace MachineLearningLibraryTests
 		public void MushroomsBinaryClassificationTest()
 		{
 			var pipelineParameters = GetPipelineParameters(_dataPath);
-			var pipelineTestParameters = GetPipelineParameters(_testDataPath);
+			var pipelineTestParameters = new Pipeline<MushroomData>(_testDataPath, _separator);
 
-			var model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.FastForestBinaryClassifier);
-			var result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
+			var pipelineTransformer = pipelineParameters.Train(AlgorithmType.FastForestBinaryClassifier);
+			var result = pipelineTransformer.EvaluateBinaryClassification(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.FastForestBinaryClassifier), result);
 
-			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.AveragedPerceptronBinaryClassifier);
-			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.AveragedPerceptronBinaryClassifier);
+			result = pipelineTransformer.EvaluateBinaryClassification(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.AveragedPerceptronBinaryClassifier), result);
 
-			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.AveragedPerceptronBinaryClassifier);
-			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
-			LogResult(nameof(AlgorithmType.AveragedPerceptronBinaryClassifier), result);
-
-			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.FastTreeBinaryClassifier);
-			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.FastTreeBinaryClassifier);
+			result = pipelineTransformer.EvaluateBinaryClassification(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.FastTreeBinaryClassifier), result);
 
-			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.FieldAwareFactorizationMachineBinaryClassifier);
-			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.FieldAwareFactorizationMachineBinaryClassifier);
+			result = pipelineTransformer.EvaluateBinaryClassification(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.FieldAwareFactorizationMachineBinaryClassifier), result);
 
-			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.GamBinaryClassifier);
-			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.GamBinaryClassifier);
+			result = pipelineTransformer.EvaluateBinaryClassification(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.GamBinaryClassifier), result);
 
-			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.LinearSvmBinaryClassifier);
-			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.LinearSvmBinaryClassifier);
+			result = pipelineTransformer.EvaluateBinaryClassification(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.LinearSvmBinaryClassifier), result);
 
-			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.LbfgsBinaryClassifier);
-			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.LbfgsBinaryClassifier);
+			result = pipelineTransformer.EvaluateBinaryClassification(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.LbfgsBinaryClassifier), result);
 
-			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscentBinaryClassifier);
-			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.StochasticDualCoordinateAscentBinaryClassifier);
+			result = pipelineTransformer.EvaluateBinaryClassification(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentBinaryClassifier), result);
 
-			model = predictionService.Train<MushroomData, MushroomEdiblePrediction>(pipelineParameters, AlgorithmType.StochasticGradientDescentBinaryClassifier);
-			result = predictionService.EvaluateBinaryClassification(model, pipelineParameters, pipelineTestParameters);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.StochasticGradientDescentBinaryClassifier);
+			result = pipelineTransformer.EvaluateBinaryClassification(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.StochasticGradientDescentBinaryClassifier), result);
 		}
 
@@ -74,9 +71,11 @@ namespace MachineLearningLibraryTests
 			Console.WriteLine($"------------- {algorithm} - END EVALUATION -------------");
 		}
 
-		private Pipeline<MushroomData> GetPipelineParameters(string dataPath)
+		private ITrain GetPipelineParameters(string dataPath)
 		{
-			return new Pipeline<MushroomData>(dataPath, _separator);
+			return (new Pipeline<CarData>(dataPath, _separator))
+				.CopyColumn("Label", "Edible")
+				.ConcatenateColumns(_concatenatedColumns);
 		}
 	}
 }

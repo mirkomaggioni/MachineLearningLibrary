@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using MachineLearningLibrary.Interfaces;
 using MachineLearningLibrary.Models;
 using MachineLearningLibrary.Services;
 using Microsoft.ML.Data;
@@ -15,37 +16,36 @@ namespace MachineLearningLibraryTests
 		private readonly string _dataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\traindata\taxi.csv";
 		private readonly string _testDataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\testdata\taxi.csv";
 		private readonly char _separator = ',';
-		private readonly string _predictedColumn = "FareAmount";
 		private readonly string[] _concatenatedColumns = new[] { "VendorId", "RateCode", "PassengerCount", "TripDistance", "PaymentType" };
 
 		[Test]
 		public void TaxyDataRegressionEvaluationTest()
 		{
 			var pipelineParameters = GetPipelineParameters(_dataPath);
-			var pipelineTestParameters = GetPipelineParameters(_testDataPath);
+			var pipelineTestParameters = new Pipeline<TaxyData>(_testDataPath, _separator);
 
-			var model = predictionService.Train<TaxyData, TaxyTripFarePrediction>(pipelineParameters, AlgorithmType.StochasticDualCoordinateAscentRegressor);
-			var result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
+			var pipelineTransformer = pipelineParameters.Train(AlgorithmType.StochasticDualCoordinateAscentRegressor);
+			var result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentRegressor), result);
 
-			model = predictionService.Train<TaxyData, TaxyTripFarePrediction>(pipelineParameters, AlgorithmType.FastTreeRegressor);
-			result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.FastTreeRegressor);
+			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.FastTreeRegressor), result);
 
-			model = predictionService.Train<TaxyData, TaxyTripFarePrediction>(pipelineParameters, AlgorithmType.FastTreeTweedieRegressor);
-			result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.FastTreeTweedieRegressor);
+			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.FastTreeTweedieRegressor), result);
 
-			model = predictionService.Train<TaxyData, TaxyTripFarePrediction>(pipelineParameters, AlgorithmType.FastForestRegressor);
-			result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.FastForestRegressor);
+			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.FastForestRegressor), result);
 
-			model = predictionService.Train<TaxyData, TaxyTripFarePrediction>(pipelineParameters, AlgorithmType.OnlineGradientDescentRegressor);
-			result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.OnlineGradientDescentRegressor);
+			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.OnlineGradientDescentRegressor), result);
 
-			model = predictionService.Train<TaxyData, TaxyTripFarePrediction>(pipelineParameters, AlgorithmType.PoissonRegressor);
-			result = predictionService.EvaluateRegression(model, pipelineParameters, pipelineTestParameters);
+			pipelineTransformer = pipelineParameters.Train(AlgorithmType.PoissonRegressor);
+			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
 			LogResult(nameof(AlgorithmType.PoissonRegressor), result);
 		}
 
@@ -58,9 +58,11 @@ namespace MachineLearningLibraryTests
 			Console.WriteLine($"------------- {algorithm} - END EVALUATION -------------");
 		}
 
-		private Pipeline<TaxyData> GetPipelineParameters(string dataPath)
+		private ITrain GetPipelineParameters(string dataPath)
 		{
-			return new Pipeline<TaxyData>(dataPath, _separator);
+			return (new Pipeline<CarData>(dataPath, _separator))
+				.CopyColumn("Label", "FareAmount")
+				.ConcatenateColumns(_concatenatedColumns);
 		}
 	}
 }
