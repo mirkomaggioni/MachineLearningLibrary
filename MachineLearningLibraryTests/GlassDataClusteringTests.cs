@@ -21,6 +21,18 @@ namespace MachineLearningLibraryTests
 		[Test]
 		public void GlassDataClusteringTest()
 		{
+			//var MlContext = new MLContext();
+			//var DataView = MlContext.Data.LoadFromTextFile<GlassData>(_dataPath, _separator, hasHeader: false);
+
+			//var res = MlContext.Transforms.Conversion.MapValueToKey(_predictedColumn)
+			//				.Append(MlContext.Transforms.CopyColumns("Label", _predictedColumn))
+			//				.Append(MlContext.Transforms.Concatenate("Features", _concatenatedColumns))
+			//				.Append(MlContext.MulticlassClassification.Trainers.NaiveBayes()).Fit(DataView);
+
+			var pipeline = new Pipeline2<GlassData>(_dataPath, _separator, AlgorithmType.NaiveBayesMultiClassifier, ("Type", true), _concatenatedColumns);
+			pipeline.BuildModel();
+
+
 			var pipelineParameters = GetPipelineParameters(_dataPath);
 			var pipelineTestParameters = new Pipeline<GlassData>(_testDataPath, _separator);
 
