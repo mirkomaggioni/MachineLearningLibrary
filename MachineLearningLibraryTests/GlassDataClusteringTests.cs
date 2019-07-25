@@ -2,7 +2,6 @@
 using System.IO;
 using System.Reflection;
 using MachineLearningLibrary.Models;
-using MachineLearningLibrary.Services;
 using Microsoft.ML.Data;
 using NUnit.Framework;
 
@@ -20,19 +19,19 @@ namespace MachineLearningLibraryTests
 		[Test]
 		public void GlassDataClusteringTest()
 		{
-			var pipeline = new Pipeline2<GlassData>(_dataPath, _separator, AlgorithmType.NaiveBayesMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
-			var pipelineTest = new Pipeline2<GlassData>(_testDataPath, _separator);
+			var pipeline = new Pipeline<GlassData>(_dataPath, _separator, AlgorithmType.NaiveBayesMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
+			var pipelineTest = new Pipeline<GlassData>(_testDataPath, _separator);
 			pipeline.BuildModel();
 
 			var result = pipeline.EvaluateClustering(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.NaiveBayesMultiClassifier), result);
 
-			pipeline = new Pipeline2<GlassData>(_dataPath, _separator, AlgorithmType.LbfgsMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
+			pipeline = new Pipeline<GlassData>(_dataPath, _separator, AlgorithmType.LbfgsMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
 			pipeline.BuildModel();
 			result = pipeline.EvaluateClustering(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.LbfgsMultiClassifier), result);
 
-			pipeline = new Pipeline2<GlassData>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
+			pipeline = new Pipeline<GlassData>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
 			pipeline.BuildModel();
 			result = pipeline.EvaluateClustering(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentMultiClassifier), result);

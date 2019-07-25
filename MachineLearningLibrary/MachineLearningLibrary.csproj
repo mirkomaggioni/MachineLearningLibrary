@@ -108,20 +108,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interfaces\IPipeline.cs" />
     <Compile Include="Models\CarData.cs" />
     <Compile Include="Models\GlassData.cs" />
     <Compile Include="Models\IPredictionModel.cs" />
     <Compile Include="Models\IrisData.cs" />
     <Compile Include="Models\MushroomData.cs" />
     <Compile Include="Models\Pipeline.cs" />
-    <Compile Include="Models\Pipeline2.cs" />
     <Compile Include="Models\Scores.cs" />
     <Compile Include="Models\TaxyData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\PredictionService.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
       <SubType>Designer</SubType>
