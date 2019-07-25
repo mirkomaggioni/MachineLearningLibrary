@@ -24,30 +24,36 @@ namespace MachineLearningLibraryTests
 		[Test]
 		public void CarDataRegressionEvaluationTest()
 		{
-			var pipelineParameters = GetPipelineParameters(_dataPath);
-			var pipelineTestParameters = new Pipeline<CarData>(_testDataPath, _separator);
-			var pipelineTransformer = pipelineParameters.Train(AlgorithmType.StochasticDualCoordinateAscentRegressor);
-			var result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
+			var pipeline = new Pipeline2<CarData>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
+			var pipelineTest = new Pipeline2<CarData>(_testDataPath, _separator);
+			pipeline.BuildModel();
+
+			var result = pipeline.EvaluateRegression(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentRegressor), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.FastTreeRegressor);
-			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
+			pipeline = new Pipeline2<CarData>(_dataPath, _separator, AlgorithmType.FastTreeRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
+			pipeline.BuildModel();
+			result = pipeline.EvaluateRegression(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.FastTreeRegressor), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.FastTreeTweedieRegressor);
-			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
+			pipeline = new Pipeline2<CarData>(_dataPath, _separator, AlgorithmType.FastTreeTweedieRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
+			pipeline.BuildModel();
+			result = pipeline.EvaluateRegression(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.FastTreeTweedieRegressor), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.FastForestRegressor);
-			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
+			pipeline = new Pipeline2<CarData>(_dataPath, _separator, AlgorithmType.FastForestRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
+			pipeline.BuildModel();
+			result = pipeline.EvaluateRegression(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.FastForestRegressor), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.OnlineGradientDescentRegressor);
-			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
-			LogResult(nameof(AlgorithmType.OnlineGradientDescentRegressor), result);
+			//pipeline = new Pipeline2<CarData>(_dataPath, _separator, AlgorithmType.OnlineGradientDescentRegressor, (_predictedColumn, false), _concatenatedColumns, _alphanumericColumns);
+			//pipeline.BuildModel();
+			//result = pipeline.EvaluateRegression(pipelineTest.DataView);
+			//LogResult(nameof(AlgorithmType.OnlineGradientDescentRegressor), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.PoissonRegressor);
-			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
+			pipeline = new Pipeline2<CarData>(_dataPath, _separator, AlgorithmType.PoissonRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
+			pipeline.BuildModel();
+			result = pipeline.EvaluateRegression(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.PoissonRegressor), result);
 		}
 
@@ -57,14 +63,6 @@ namespace MachineLearningLibraryTests
 			Console.WriteLine($"RMS = {regressionMetrics.RootMeanSquaredError}");
 			Console.WriteLine($"RSQUARED = {regressionMetrics.RSquared}");
 			Console.WriteLine($"------------- {algorithm} - END EVALUATION -------------");
-		}
-
-		private ITrain GetPipelineParameters(string dataPath)
-		{
-			return (new Pipeline<CarData>(dataPath, _separator))
-				.CopyColumn("Label", "Price")
-				.ConvertAlphanumericColumns(_alphanumericColumns)
-				.ConcatenateColumns(_concatenatedColumns);
 		}
 	}
 }

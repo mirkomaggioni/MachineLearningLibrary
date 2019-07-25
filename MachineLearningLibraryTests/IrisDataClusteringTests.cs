@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using MachineLearningLibrary.Interfaces;
 using MachineLearningLibrary.Models;
 using MachineLearningLibrary.Services;
 using Microsoft.ML.Data;
@@ -12,7 +11,6 @@ namespace MachineLearningLibraryTests
 	[TestFixture]
 	public class IrisDataClusteringTests
 	{
-		private readonly PredictionService predictionService = new PredictionService();
 		private readonly string _dataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\traindata\iris.csv";
 		private readonly string _testDataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\testdata\iris.csv";
 		private readonly char _separator = ',';
@@ -22,19 +20,21 @@ namespace MachineLearningLibraryTests
 		[Test]
 		public void IrisDataClusteringTest()
 		{
-			var pipelineParameters = GetPipelineParameters(_dataPath);
-			var pipelineTestParameters = new Pipeline<IrisData>(_testDataPath, _separator);
+			var pipeline = new Pipeline2<IrisData>(_dataPath, _separator, AlgorithmType.NaiveBayesMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
+			var pipelineTest = new Pipeline2<IrisData>(_testDataPath, _separator);
+			pipeline.BuildModel();
 
-			var pipelineTransformer = pipelineParameters.Train(AlgorithmType.NaiveBayesMultiClassifier);
-			var result = pipelineTransformer.EvaluateClustering(pipelineTestParameters.DataView);
+			var result = pipeline.EvaluateClustering(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.NaiveBayesMultiClassifier), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.LbfgsMultiClassifier);
-			result = pipelineTransformer.EvaluateClustering(pipelineTestParameters.DataView);
+			pipeline = new Pipeline2<IrisData>(_dataPath, _separator, AlgorithmType.LbfgsMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
+			pipeline.BuildModel();
+			result = pipeline.EvaluateClustering(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.LbfgsMultiClassifier), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.StochasticDualCoordinateAscentMultiClassifier);
-			result = pipelineTransformer.EvaluateClustering(pipelineTestParameters.DataView);
+			pipeline = new Pipeline2<IrisData>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
+			pipeline.BuildModel();
+			result = pipeline.EvaluateClustering(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentMultiClassifier), result);
 		}
 
@@ -45,13 +45,6 @@ namespace MachineLearningLibraryTests
 			Console.WriteLine($"DBI = {clusteringMetrics.DaviesBouldinIndex}");
 			Console.WriteLine($"NMI = {clusteringMetrics.NormalizedMutualInformation}");
 			Console.WriteLine($"------------- {algorithm} - END EVALUATION -------------");
-		}
-
-		private ITrain GetPipelineParameters(string dataPath)
-		{
-			return (new Pipeline<CarData>(dataPath, _separator))
-				.CopyColumn("Label", "Type")
-				.ConcatenateColumns(_concatenatedColumns);
 		}
 	}
 }

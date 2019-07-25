@@ -18,6 +18,8 @@ namespace MachineLearningLibrary.Models
 	{
 		[ColumnName("PredictedLabel")]
 		public bool PredictedLabel;
+		public float Probability { get; set; }
+		public float Score { get; set; }
 	}
 
 	public class MultiClassificationPrediction : IPredictionModel

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using MachineLearningLibrary.Interfaces;
 using MachineLearningLibrary.Models;
 using MachineLearningLibrary.Services;
 using Microsoft.ML.Data;
@@ -12,7 +11,6 @@ namespace MachineLearningLibraryTests
 	[TestFixture]
 	public class MushroomsBinaryClassificationTests
 	{
-		private readonly PredictionService predictionService = new PredictionService();
 		private readonly string _dataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\traindata\mushroom.csv";
 		private readonly string _testDataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\testdata\mushroom.csv";
 		private readonly char _separator = ',';
@@ -22,43 +20,51 @@ namespace MachineLearningLibraryTests
 		[Test]
 		public void MushroomsBinaryClassificationTest()
 		{
-			var pipelineParameters = GetPipelineParameters(_dataPath);
-			var pipelineTestParameters = new Pipeline<MushroomData>(_testDataPath, _separator);
+			var pipeline = new Pipeline2<MushroomData>(_dataPath, _separator, AlgorithmType.FastForestBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			var pipelineTest = new Pipeline2<MushroomData>(_testDataPath, _separator);
+			pipeline.BuildModel();
 
-			var pipelineTransformer = pipelineParameters.Train(AlgorithmType.FastForestBinaryClassifier);
-			var result = pipelineTransformer.EvaluateBinaryClassification(pipelineTestParameters.DataView);
+			var result = pipeline.EvaluateBinaryClassification(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.FastForestBinaryClassifier), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.AveragedPerceptronBinaryClassifier);
-			result = pipelineTransformer.EvaluateBinaryClassification(pipelineTestParameters.DataView);
+			pipeline = new Pipeline2<MushroomData>(_dataPath, _separator, AlgorithmType.AveragedPerceptronBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			pipeline.BuildModel();
+			result = pipeline.EvaluateBinaryClassification(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.AveragedPerceptronBinaryClassifier), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.FastTreeBinaryClassifier);
-			result = pipelineTransformer.EvaluateBinaryClassification(pipelineTestParameters.DataView);
+			pipeline = new Pipeline2<MushroomData>(_dataPath, _separator, AlgorithmType.FastTreeBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			pipeline.BuildModel();
+			result = pipeline.EvaluateBinaryClassification(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.FastTreeBinaryClassifier), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.FieldAwareFactorizationMachineBinaryClassifier);
-			result = pipelineTransformer.EvaluateBinaryClassification(pipelineTestParameters.DataView);
+			pipeline = new Pipeline2<MushroomData>(_dataPath, _separator, AlgorithmType.FieldAwareFactorizationMachineBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			pipeline.BuildModel();
+			result = pipeline.EvaluateBinaryClassification(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.FieldAwareFactorizationMachineBinaryClassifier), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.GamBinaryClassifier);
-			result = pipelineTransformer.EvaluateBinaryClassification(pipelineTestParameters.DataView);
+			pipeline = new Pipeline2<MushroomData>(_dataPath, _separator, AlgorithmType.GamBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			pipeline.BuildModel();
+			result = pipeline.EvaluateBinaryClassification(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.GamBinaryClassifier), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.LinearSvmBinaryClassifier);
-			result = pipelineTransformer.EvaluateBinaryClassification(pipelineTestParameters.DataView);
+			pipeline = new Pipeline2<MushroomData>(_dataPath, _separator, AlgorithmType.LinearSvmBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			pipeline.BuildModel();
+			result = pipeline.EvaluateBinaryClassification(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.LinearSvmBinaryClassifier), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.LbfgsBinaryClassifier);
-			result = pipelineTransformer.EvaluateBinaryClassification(pipelineTestParameters.DataView);
+			pipeline = new Pipeline2<MushroomData>(_dataPath, _separator, AlgorithmType.LbfgsBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			pipeline.BuildModel();
+			result = pipeline.EvaluateBinaryClassification(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.LbfgsBinaryClassifier), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.StochasticDualCoordinateAscentBinaryClassifier);
-			result = pipelineTransformer.EvaluateBinaryClassification(pipelineTestParameters.DataView);
+			pipeline = new Pipeline2<MushroomData>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			pipeline.BuildModel();
+			result = pipeline.EvaluateBinaryClassification(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentBinaryClassifier), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.StochasticGradientDescentBinaryClassifier);
-			result = pipelineTransformer.EvaluateBinaryClassification(pipelineTestParameters.DataView);
+			pipeline = new Pipeline2<MushroomData>(_dataPath, _separator, AlgorithmType.StochasticGradientDescentBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			pipeline.BuildModel();
+			result = pipeline.EvaluateBinaryClassification(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.StochasticGradientDescentBinaryClassifier), result);
 		}
 
@@ -69,13 +75,6 @@ namespace MachineLearningLibraryTests
 			Console.WriteLine($"AUC = {binaryClassificationMetrics.AreaUnderRocCurve}");
 			Console.WriteLine($"F1Score = {binaryClassificationMetrics.F1Score}");
 			Console.WriteLine($"------------- {algorithm} - END EVALUATION -------------");
-		}
-
-		private ITrain GetPipelineParameters(string dataPath)
-		{
-			return (new Pipeline<CarData>(dataPath, _separator))
-				.CopyColumn("Label", "Edible")
-				.ConcatenateColumns(_concatenatedColumns);
 		}
 	}
 }

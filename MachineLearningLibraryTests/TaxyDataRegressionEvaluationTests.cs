@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using MachineLearningLibrary.Interfaces;
 using MachineLearningLibrary.Models;
 using MachineLearningLibrary.Services;
 using Microsoft.ML.Data;
@@ -12,40 +11,46 @@ namespace MachineLearningLibraryTests
 	[TestFixture]
 	public class TaxyDataRegressionEvaluationTests
 	{
-		private readonly PredictionService predictionService = new PredictionService();
 		private readonly string _dataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\traindata\taxi.csv";
 		private readonly string _testDataPath = $@"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\testdata\taxi.csv";
 		private readonly char _separator = ',';
 		private readonly string[] _concatenatedColumns = new[] { "VendorId", "RateCode", "PassengerCount", "TripDistance", "PaymentType" };
+		private readonly string[] _alphanumericColumns = new[] { "VendorId", "RateCode", "PaymentType" };
+		private readonly string _predictedColumn = "FareAmount";
 
 		[Test]
 		public void TaxyDataRegressionEvaluationTest()
 		{
-			var pipelineParameters = GetPipelineParameters(_dataPath);
-			var pipelineTestParameters = new Pipeline<TaxyData>(_testDataPath, _separator);
+			var pipeline = new Pipeline2<TaxyData>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
+			var pipelineTest = new Pipeline2<TaxyData>(_testDataPath, _separator);
+			pipeline.BuildModel();
 
-			var pipelineTransformer = pipelineParameters.Train(AlgorithmType.StochasticDualCoordinateAscentRegressor);
-			var result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
+			var result = pipeline.EvaluateRegression(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentRegressor), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.FastTreeRegressor);
-			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
+			pipeline = new Pipeline2<TaxyData>(_dataPath, _separator, AlgorithmType.FastTreeRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
+			pipeline.BuildModel();
+			result = pipeline.EvaluateRegression(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.FastTreeRegressor), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.FastTreeTweedieRegressor);
-			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
+			pipeline = new Pipeline2<TaxyData>(_dataPath, _separator, AlgorithmType.FastTreeTweedieRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
+			pipeline.BuildModel();
+			result = pipeline.EvaluateRegression(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.FastTreeTweedieRegressor), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.FastForestRegressor);
-			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
+			pipeline = new Pipeline2<TaxyData>(_dataPath, _separator, AlgorithmType.FastForestRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
+			pipeline.BuildModel();
+			result = pipeline.EvaluateRegression(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.FastForestRegressor), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.OnlineGradientDescentRegressor);
-			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
+			pipeline = new Pipeline2<TaxyData>(_dataPath, _separator, AlgorithmType.OnlineGradientDescentRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
+			pipeline.BuildModel();
+			result = pipeline.EvaluateRegression(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.OnlineGradientDescentRegressor), result);
 
-			pipelineTransformer = pipelineParameters.Train(AlgorithmType.PoissonRegressor);
-			result = pipelineTransformer.EvaluateRegression(pipelineTestParameters.DataView);
+			pipeline = new Pipeline2<TaxyData>(_dataPath, _separator, AlgorithmType.PoissonRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
+			pipeline.BuildModel();
+			result = pipeline.EvaluateRegression(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.PoissonRegressor), result);
 		}
 
@@ -56,13 +61,6 @@ namespace MachineLearningLibraryTests
 			Console.WriteLine($"Rms = {regressionMetrics.RootMeanSquaredError}");
 			Console.WriteLine($"RSquared = {regressionMetrics.RSquared}");
 			Console.WriteLine($"------------- {algorithm} - END EVALUATION -------------");
-		}
-
-		private ITrain GetPipelineParameters(string dataPath)
-		{
-			return (new Pipeline<CarData>(dataPath, _separator))
-				.CopyColumn("Label", "FareAmount")
-				.ConcatenateColumns(_concatenatedColumns);
 		}
 	}
 }

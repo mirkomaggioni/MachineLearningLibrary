@@ -1,5 +1,4 @@
-﻿using MachineLearningLibrary.Interfaces;
-using MachineLearningLibrary.Services;
+﻿using MachineLearningLibrary.Services;
 using Microsoft.ML;
 using Microsoft.ML.Data;
 using Microsoft.ML.Transforms;
@@ -14,19 +13,15 @@ namespace MachineLearningLibrary.Models
 		public readonly MLContext MlContext;
 		public readonly IDataView DataView;
 
-		private ValueToKeyMappingEstimator valueToKeyMappingEstimator;
-		private ColumnCopyingEstimator columnCopyingEstimator;
-		private EstimatorChain<ColumnCopyingTransformer> estimatorChainCopy;
-		private EstimatorChain<OneHotEncodingTransformer> estimatorChainEncoding;
-		private EstimatorChain<ColumnConcatenatingTransformer> estimatorChainTransformer;
 		private ITransformer _model;
 		private string[] _concatenatedColumns;
 		private string _modelsRootPath;
-		private readonly AlgorithmType _algorithmType;
-		private readonly (string, bool) _predictedColumn;
+		private readonly AlgorithmType? _algorithmType;
+		private readonly (string, bool, DataKind?)? _predictedColumn;
 		private readonly string[] _alphanumericColumns;
+		private readonly string _featureColumn = "Features";
 
-		public Pipeline2(string dataPath, char separator, AlgorithmType algorithmType, (string, bool) predictedColumn, string[] concatenatedColumns, string[] alphanumericColumns = null)
+		public Pipeline2(string dataPath, char separator, AlgorithmType? algorithmType = null, (string, bool, DataKind?)? predictedColumn = null, string[] concatenatedColumns = null, string[] alphanumericColumns = null)
 		{
 			MlContext = new MLContext();
 			DataView = MlContext.Data.LoadFromTextFile<T>(dataPath, separator, hasHeader: false);
@@ -40,28 +35,54 @@ namespace MachineLearningLibrary.Models
 
 		public void BuildModel()
 		{
-			var keyConversion = _predictedColumn.Item2 ? MlContext.Transforms.Conversion.MapValueToKey(_predictedColumn.Item1) : null;
-			var keyColumn = MlContext.Transforms.CopyColumns("Label", _predictedColumn.Item1);
-			var featureColumn = MlContext.Transforms.Concatenate("Features", _concatenatedColumns);
-			var defaultPipeline = _predictedColumn.Item2 ? keyConversion.Append(keyColumn).Append(featureColumn) : keyColumn.Append(featureColumn);
+			if (_predictedColumn == null)
+				throw new ArgumentNullException(nameof(_predictedColumn));
+			if (_algorithmType == null)
+				throw new ArgumentNullException(nameof(_algorithmType));
 
-			EstimatorChain<OneHotEncodingTransformer> oneHotEncodingChain = null;
+			var keyMap = _predictedColumn.Value.Item2 ? MlContext.Transforms.Conversion.MapValueToKey(_predictedColumn.Value.Item1) : null;
+			var keyConversion = _predictedColumn.Value.Item3 != null ? MlContext.Transforms.Conversion.ConvertType(_predictedColumn.Value.Item1, outputKind: _predictedColumn.Value.Item3.Value) : null;
+			var keyColumn = MlContext.Transforms.CopyColumns("Label", _predictedColumn.Value.Item1);
+
 			if (_alphanumericColumns != null)
 			{
-				for (int i = 0; i < _alphanumericColumns.Length; i++)
+				OneHotEncodingEstimator oneHotEncodingTransformer = null;
+				EstimatorChain<OneHotEncodingTransformer> oneHotEncodingTransformerChain = null;
+				if (_alphanumericColumns != null)
 				{
-					if (oneHotEncodingChain == null)
+					for (int i = 0; i < _alphanumericColumns.Length; i++)
 					{
-						oneHotEncodingChain = defaultPipeline.Append(MlContext.Transforms.Categorical.OneHotEncoding(_alphanumericColumns[i]));
-					}
-					else
-					{
-						oneHotEncodingChain = oneHotEncodingChain.Append(MlContext.Transforms.Categorical.OneHotEncoding(_alphanumericColumns[i]));
+						if (oneHotEncodingTransformer == null)
+						{
+							oneHotEncodingTransformer = MlContext.Transforms.Categorical.OneHotEncoding(_alphanumericColumns[i]);
+						}
+						else if (oneHotEncodingTransformerChain == null)
+						{
+							oneHotEncodingTransformerChain = oneHotEncodingTransformer.Append(MlContext.Transforms.Categorical.OneHotEncoding(_alphanumericColumns[i]));
+						}
+						else
+						{
+							oneHotEncodingTransformerChain = oneHotEncodingTransformerChain.Append(MlContext.Transforms.Categorical.OneHotEncoding(_alphanumericColumns[i]));
+						}
 					}
 				}
+
+				var columnConcatenatingTransformer = oneHotEncodingTransformerChain?.Append(MlContext.Transforms.Concatenate(_featureColumn, _concatenatedColumns)) ??
+														oneHotEncodingTransformer.Append(MlContext.Transforms.Concatenate(_featureColumn, _concatenatedColumns));
+				var defaultPipeline = _predictedColumn.Value.Item2 ?
+												keyMap.Append(keyColumn).Append(columnConcatenatingTransformer) :
+												_predictedColumn.Value.Item3 != null ? keyConversion.Append(keyColumn).Append(columnConcatenatingTransformer) : keyColumn.Append(columnConcatenatingTransformer);
+				_model = GetModel(_algorithmType.Value, defaultPipeline);
+			}
+			else
+			{
+				var featureColumn = MlContext.Transforms.Concatenate(_featureColumn, _concatenatedColumns);
+				var defaultPipeline = _predictedColumn.Value.Item2 ? 
+												keyMap.Append(keyColumn).Append(featureColumn) : 
+												_predictedColumn.Value.Item3 != null ? keyConversion.Append(keyColumn).Append(featureColumn) : keyColumn.Append(featureColumn);
+				_model = GetModel(_algorithmType.Value, defaultPipeline);
 			}
 
-			_model = GetModel(_algorithmType, defaultPipeline, oneHotEncodingChain);
 			SaveModel(_model);
 		}
 
@@ -82,7 +103,7 @@ namespace MachineLearningLibrary.Models
 
 		public BinaryClassificationMetrics EvaluateBinaryClassification(IDataView dataView)
 		{
-			return MlContext.BinaryClassification.Evaluate(_model.Transform(dataView));
+			return MlContext.BinaryClassification.EvaluateNonCalibrated(_model.Transform(dataView));
 		}
 
 		public ClusteringMetrics EvaluateClustering(IDataView dataView)
@@ -90,48 +111,58 @@ namespace MachineLearningLibrary.Models
 			return MlContext.Clustering.Evaluate(_model.Transform(dataView));
 		}
 
-		private ITransformer GetModel(AlgorithmType algorithmType, EstimatorChain<ColumnConcatenatingTransformer> pipeline, EstimatorChain<OneHotEncodingTransformer> oneHotEncodingChain)
+		private ITransformer GetModel(AlgorithmType algorithmType, EstimatorChain<ColumnConcatenatingTransformer> pipeline)
+		{
+			return pipeline.Append(GetAlgorithm(algorithmType)).Fit(DataView);
+		}
+
+		private ITransformer GetModel(AlgorithmType algorithmType, EstimatorChain<TransformerChain<ColumnConcatenatingTransformer>> pipeline)
+		{
+			return pipeline.Append(GetAlgorithm(algorithmType)).Fit(DataView);
+		}
+
+		private IEstimator<ITransformer> GetAlgorithm(AlgorithmType algorithmType)
 		{
 			switch (algorithmType)
 			{
 				case AlgorithmType.StochasticDualCoordinateAscentRegressor:
-					return pipeline.Append(MlContext.Regression.Trainers.Sdca()).Fit(DataView);
+					return MlContext.Regression.Trainers.Sdca();
 				case AlgorithmType.FastTreeRegressor:
-					return pipeline.Append(MlContext.Regression.Trainers.FastTree()).Fit(DataView);
+					return MlContext.Regression.Trainers.FastTree();
 				case AlgorithmType.FastTreeTweedieRegressor:
-					return pipeline.Append(MlContext.Regression.Trainers.FastTreeTweedie()).Fit(DataView);
+					return MlContext.Regression.Trainers.FastTreeTweedie();
 				case AlgorithmType.FastForestRegressor:
-					return pipeline.Append(MlContext.Regression.Trainers.FastForest()).Fit(DataView);
+					return MlContext.Regression.Trainers.FastForest();
 				case AlgorithmType.OnlineGradientDescentRegressor:
-					return pipeline.Append(MlContext.Regression.Trainers.OnlineGradientDescent()).Fit(DataView);
+					return MlContext.Regression.Trainers.OnlineGradientDescent();
 				case AlgorithmType.PoissonRegressor:
-					return pipeline.Append(MlContext.Regression.Trainers.LbfgsPoissonRegression()).Fit(DataView);
+					return MlContext.Regression.Trainers.LbfgsPoissonRegression();
 				case AlgorithmType.NaiveBayesMultiClassifier:
-					return pipeline.Append(MlContext.MulticlassClassification.Trainers.NaiveBayes()).Fit(DataView);
+					return MlContext.MulticlassClassification.Trainers.NaiveBayes();
 				case AlgorithmType.StochasticDualCoordinateAscentMultiClassifier:
-					return pipeline.Append(MlContext.MulticlassClassification.Trainers.SdcaNonCalibrated()).Fit(DataView);
+					return MlContext.MulticlassClassification.Trainers.SdcaNonCalibrated();
 				case AlgorithmType.FastForestBinaryClassifier:
-					return pipeline.Append(MlContext.BinaryClassification.Trainers.FastForest(numberOfTrees: 3000)).Fit(DataView);
+					return MlContext.BinaryClassification.Trainers.FastForest(numberOfTrees: 3000);
 				case AlgorithmType.AveragedPerceptronBinaryClassifier:
-					return pipeline.Append(MlContext.BinaryClassification.Trainers.AveragedPerceptron()).Fit(DataView);
+					return MlContext.BinaryClassification.Trainers.AveragedPerceptron();
 				case AlgorithmType.FastTreeBinaryClassifier:
-					return pipeline.Append(MlContext.BinaryClassification.Trainers.FastTree()).Fit(DataView);
+					return MlContext.BinaryClassification.Trainers.FastTree();
 				case AlgorithmType.FieldAwareFactorizationMachineBinaryClassifier:
-					return pipeline.Append(MlContext.BinaryClassification.Trainers.FieldAwareFactorizationMachine(_concatenatedColumns)).Fit(DataView);
+					return MlContext.BinaryClassification.Trainers.FieldAwareFactorizationMachine(_concatenatedColumns);
 				case AlgorithmType.LinearSvmBinaryClassifier:
-					return pipeline.Append(MlContext.BinaryClassification.Trainers.LinearSvm()).Fit(DataView);
+					return MlContext.BinaryClassification.Trainers.LinearSvm();
 				case AlgorithmType.StochasticDualCoordinateAscentBinaryClassifier:
-					return pipeline.Append(MlContext.BinaryClassification.Trainers.SdcaLogisticRegression()).Fit(DataView);
+					return MlContext.BinaryClassification.Trainers.SdcaLogisticRegression();
 				case AlgorithmType.StochasticGradientDescentBinaryClassifier:
-					return pipeline.Append(MlContext.BinaryClassification.Trainers.SgdNonCalibrated()).Fit(DataView);
+					return MlContext.BinaryClassification.Trainers.SgdNonCalibrated();
 				case AlgorithmType.LbfgsMultiClassifier:
-					return pipeline.Append(MlContext.MulticlassClassification.Trainers.LbfgsMaximumEntropy()).Fit(DataView);
+					return MlContext.MulticlassClassification.Trainers.LbfgsMaximumEntropy();
 				case AlgorithmType.GamBinaryClassifier:
-					return pipeline.Append(MlContext.BinaryClassification.Trainers.Gam()).Fit(DataView);
+					return MlContext.BinaryClassification.Trainers.Gam();
 				case AlgorithmType.LbfgsBinaryClassifier:
-					return pipeline.Append(MlContext.BinaryClassification.Trainers.LbfgsLogisticRegression()).Fit(DataView);
+					return MlContext.BinaryClassification.Trainers.LbfgsLogisticRegression();
 				default:
-					return null;
+					throw new ArgumentOutOfRangeException(nameof(algorithmType));
 			}
 		}
 	}
