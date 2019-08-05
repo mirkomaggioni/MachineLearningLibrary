@@ -53,6 +53,21 @@ namespace MachineLearningLibraryTests
 			LogResult(nameof(AlgorithmType.PoissonRegressor), result);
 		}
 
+		[Test]
+		[TestCase(1, "CSH", "1", 1.78f, 1200, "VTS")]
+		[TestCase(1, "CSH", "1", 1.78f, 1200, "VTS")]
+		[TestCase(1, "CSH", "1", 1.9f, 1080, "VTS")]
+		[TestCase(1, "CRD", "1", 2.69f, 660, "VTS")]
+		public void TaxyDataRegressionPredictTest(int passengerCount, string paymentType, string rateCode, float tripDistance, float tripTime, string vendorId)
+		{
+			var pipeline = new Pipeline<TaxyData>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
+			pipeline.BuildModel();
+
+			var prediction = pipeline.PredictScore<TaxyData, TaxyTripFarePrediction>(new TaxyData() { PassengerCount = passengerCount, PaymentType = paymentType, RateCode = rateCode, TripDistance = tripDistance, TripTime = tripTime, VendorId = vendorId });
+
+			Assert.IsTrue(prediction.Score > 0);
+		}
+
 		private void LogResult(string algorithm, RegressionMetrics regressionMetrics)
 		{
 			Console.WriteLine($"------------- {algorithm} - EVALUATION RESULTS -------------");

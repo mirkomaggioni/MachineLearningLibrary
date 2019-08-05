@@ -67,6 +67,20 @@ namespace MachineLearningLibraryTests
 			LogResult(nameof(AlgorithmType.StochasticGradientDescentBinaryClassifier), result);
 		}
 
+		[Test]
+		[TestCase("x", "s", "n", "t", "p", "f", "c", "n", "n", "e", "e", "s", "s", "w", "w", "p", "w", "o", "p", "n", "v", "u", false)]
+		[TestCase("k", "y", "n", "f", "y", "f", "c", "n", "b", "t", "?", "s", "k", "w", "w", "p", "w", "o", "e", "w", "v", "d", false)]
+		[TestCase("k", "s", "n", "f", "f", "f", "c", "n", "b", "t", "?", "k", "s", "w", "p", "p", "w", "o", "e", "w", "v", "l", false)]
+		[TestCase("b", "s", "g", "f", "n", "f", "w", "b", "g", "e", "?", "s", "k", "w", "w", "p", "w", "t", "p", "w", "n", "g", true)]
+		public void TaxyDataRegressionPredictTest(string capShape, string capSurface, string capColor, string bruises, string odor, string gillAttachment, string gillSpacing, string gillSize, string gillColor, string stalkShape, string stalkRoot, string stalkSurfaceAboveRing, string stalkSurfaceBelowRing, string stalkColorAboveRing, string stalkColorBelowRing, string veilType, string veilColor, string ringNumber, string ringType, string sporePrintColor, string population, string habitat, bool edible)
+		{
+			var pipeline = new Pipeline<MushroomData>(_dataPath, _separator, AlgorithmType.FastForestBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			pipeline.BuildModel();
+
+			var prediction = pipeline.PredictScore<MushroomData, MushroomEdiblePrediction>(new MushroomData() { CapShape = capShape, CapSurface = capSurface, CapColor = capColor, Bruises = bruises, Odor = odor, GillAttachment = gillAttachment, GillSpacing = gillSpacing, GillSize = gillSize, GillColor = gillColor, StalkShape = stalkShape, StalkRoot = stalkRoot, StalkSurfaceAboveRing = stalkSurfaceAboveRing, StalkSurfaceBelowRing = stalkSurfaceBelowRing, StalkColorAboveRing = stalkColorAboveRing, StalkColorBelowRing = stalkColorBelowRing, VeilType = veilType, VeilColor = veilColor, RingNumber = ringNumber, RingType = ringType, SporePrintColor = sporePrintColor, Population = population, Habitat = habitat });
+			Assert.That(prediction.PredictedLabel == edible);
+		}
+
 		private void LogResult(string algorithm, BinaryClassificationMetrics binaryClassificationMetrics)
 		{
 			Console.WriteLine($"------------- {algorithm} - EVALUATION RESULTS -------------");
