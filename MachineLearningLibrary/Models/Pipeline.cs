@@ -132,9 +132,9 @@ namespace MachineLearningLibrary.Models
 			return MlContext.Clustering.Evaluate(_model.Transform(dataView));
 		}
 
-		public TPredictionModel PredictScore<TModel, TPredictionModel>(TModel data)
+		public TPredictionModel PredictScore<TModel, TPredictionModel, TPredictionType>(TModel data)
 			where TModel : class
-			where TPredictionModel : class, IPredictionModel, new()
+			where TPredictionModel : class, IPredictionModel<TPredictionType>, new()
 		{
 			var predictionEngine = MlContext.Model.CreatePredictionEngine<TModel, TPredictionModel>(_model);
 			return predictionEngine.Predict(data);

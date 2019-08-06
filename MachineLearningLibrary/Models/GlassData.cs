@@ -28,5 +28,5 @@ namespace MachineLearningLibrary.Models
 		public uint Type;
 	}
 
-	public class GlassTypePrediction : MultiClassificationPrediction { }
+	public class GlassTypePrediction : MultiClassificationPrediction<uint> { }
 }

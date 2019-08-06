@@ -20,5 +20,5 @@ namespace MachineLearningLibrary.Models
 		public string Type;
 	}
 
-	public class IrisTypePrediction : MultiClassificationPrediction {}
+	public class IrisTypePrediction : MultiClassificationPrediction<string> {}
 }

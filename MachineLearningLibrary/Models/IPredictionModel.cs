@@ -1,4 +1,4 @@
 ﻿namespace MachineLearningLibrary.Models
 {
-	public interface IPredictionModel { }
+	public interface IPredictionModel<T> { }
 }

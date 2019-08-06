@@ -8,13 +8,13 @@ namespace MachineLearningLibrary.Models
 		public float Score { get; set; }
 	}
 
-	public class RegressionPrediction : IPredictionModel
+	public class RegressionPrediction : IPredictionModel<float>
 	{
 		[ColumnName("Score")]
 		public float Score;
 	}
 
-	public class BinaryClassificationPrediction : IPredictionModel
+	public class BinaryClassificationPrediction : IPredictionModel<bool>
 	{
 		[ColumnName("PredictedLabel")]
 		public bool PredictedLabel;
@@ -22,10 +22,10 @@ namespace MachineLearningLibrary.Models
 		public float Score { get; set; }
 	}
 
-	public class MultiClassificationPrediction : IPredictionModel
+	public class MultiClassificationPrediction<T> : IPredictionModel<T>
 	{
 		[ColumnName("PredictedLabel")]
-		public string PredictedLabel;
+		public T PredictedLabel;
 		[ColumnName("Score")]
 		public float[] Scores;
 	}
