@@ -37,6 +37,20 @@ namespace MachineLearningLibraryTests
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentMultiClassifier), result);
 		}
 
+		[Test]
+		[TestCase(54f, 1.51837f, 13.14f, 2.84f, 1.28f, 72.85f, 0.55f, 9.07f, 0.00f, 0.00f, 1u)]
+		[TestCase(110f, 1.51818f, 13.72f, 0.00f, 0.56f, 74.45f, 0.00f, 10.99f, 0.00f, 0.00f, 2u)]
+		[TestCase(187f, 1.51838f, 14.32f, 3.26f, 2.22f, 71.25f, 1.46f, 5.79f, 1.63f, 0.00f, 7u)]
+		public void GlassDataClusteringPredictTest(float idNumber, float refractiveIndex, float sodium, float magnesium, float aluminium, float silicon, float potassium, float calcium, float barium, float iron, uint type)
+		{
+			var pipeline = new Pipeline<GlassData>(_dataPath, _separator, AlgorithmType.NaiveBayesMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
+			pipeline.BuildModel();
+
+			var prediction = pipeline.PredictScore<GlassData, GlassTypePrediction, uint>(new GlassData() { IdNumber = idNumber, RefractiveIndex = refractiveIndex, Sodium = sodium, Magnesium = magnesium, Aluminium = aluminium, Silicon = silicon, Potassium = potassium, Calcium = calcium,Barium = barium, Iron = iron });
+
+			Assert.AreEqual(prediction.PredictedLabel, type);
+		}
+
 		private void LogResult(string algorithm, ClusteringMetrics clusteringMetrics)
 		{
 			Console.WriteLine($"------------- {algorithm} - EVALUATION RESULTS -------------");

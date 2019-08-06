@@ -77,7 +77,7 @@ namespace MachineLearningLibraryTests
 			var pipeline = new Pipeline<MushroomData>(_dataPath, _separator, AlgorithmType.FastForestBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
 			pipeline.BuildModel();
 
-			var prediction = pipeline.PredictScore<MushroomData, MushroomEdiblePrediction>(new MushroomData() { CapShape = capShape, CapSurface = capSurface, CapColor = capColor, Bruises = bruises, Odor = odor, GillAttachment = gillAttachment, GillSpacing = gillSpacing, GillSize = gillSize, GillColor = gillColor, StalkShape = stalkShape, StalkRoot = stalkRoot, StalkSurfaceAboveRing = stalkSurfaceAboveRing, StalkSurfaceBelowRing = stalkSurfaceBelowRing, StalkColorAboveRing = stalkColorAboveRing, StalkColorBelowRing = stalkColorBelowRing, VeilType = veilType, VeilColor = veilColor, RingNumber = ringNumber, RingType = ringType, SporePrintColor = sporePrintColor, Population = population, Habitat = habitat });
+			var prediction = pipeline.PredictScore<MushroomData, MushroomEdiblePrediction, bool>(new MushroomData() { CapShape = capShape, CapSurface = capSurface, CapColor = capColor, Bruises = bruises, Odor = odor, GillAttachment = gillAttachment, GillSpacing = gillSpacing, GillSize = gillSize, GillColor = gillColor, StalkShape = stalkShape, StalkRoot = stalkRoot, StalkSurfaceAboveRing = stalkSurfaceAboveRing, StalkSurfaceBelowRing = stalkSurfaceBelowRing, StalkColorAboveRing = stalkColorAboveRing, StalkColorBelowRing = stalkColorBelowRing, VeilType = veilType, VeilColor = veilColor, RingNumber = ringNumber, RingType = ringType, SporePrintColor = sporePrintColor, Population = population, Habitat = habitat });
 			Assert.That(prediction.PredictedLabel == edible);
 		}
 

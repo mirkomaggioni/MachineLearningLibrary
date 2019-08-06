@@ -47,7 +47,7 @@ namespace MachineLearningLibraryTests
 			var pipeline = new Pipeline<IrisData>(_dataPath, _separator, AlgorithmType.NaiveBayesMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
 			pipeline.BuildModel();
 
-			var prediction = pipeline.PredictScore<IrisData, IrisTypePrediction>(new IrisData() { SepalLength = sepalLength, SepalWidth = sepalWidth, PetalLength = petalLength, PetalWidth = petalWidth });
+			var prediction = pipeline.PredictScore<IrisData, IrisTypePrediction, string>(new IrisData() { SepalLength = sepalLength, SepalWidth = sepalWidth, PetalLength = petalLength, PetalWidth = petalWidth });
 
 			Assert.AreEqual(prediction.PredictedLabel, type);
 		}
