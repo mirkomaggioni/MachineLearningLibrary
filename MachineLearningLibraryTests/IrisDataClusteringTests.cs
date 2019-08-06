@@ -37,6 +37,21 @@ namespace MachineLearningLibraryTests
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentMultiClassifier), result);
 		}
 
+		[Test]
+		[TestCase(6.1f, 3.0f, 4.6f, 1.4f, "Iris-versicolor")]
+		[TestCase(5.5f, 3.5f, 1.3f, 0.2f, "Iris-setosa")]
+		[TestCase(5.0f, 2.3f, 3.3f, 1.0f, "Iris-versicolor")]
+		[TestCase(7.9f, 3.8f, 6.4f, 2.0f, "Iris-virginica")]
+		public void IrisDataClusteringPredictTest(float sepalLength, float sepalWidth, float petalLength, float petalWidth, string type)
+		{
+			var pipeline = new Pipeline<IrisData>(_dataPath, _separator, AlgorithmType.NaiveBayesMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
+			pipeline.BuildModel();
+
+			var prediction = pipeline.PredictScore<IrisData, IrisTypePrediction>(new IrisData() { SepalLength = sepalLength, SepalWidth = sepalWidth, PetalLength = petalLength, PetalWidth = petalWidth });
+
+			Assert.AreEqual(prediction.PredictedLabel, type);
+		}
+
 		private void LogResult(string algorithm, ClusteringMetrics clusteringMetrics)
 		{
 			Console.WriteLine($"------------- {algorithm} - EVALUATION RESULTS -------------");
