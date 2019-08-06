@@ -142,11 +142,15 @@ namespace MachineLearningLibrary.Models
 
 		private ITransformer GetModel(AlgorithmType algorithmType, EstimatorChain<ColumnConcatenatingTransformer> pipeline)
 		{
+			if (_predictedColumn.Value.Item2)
+				return pipeline.Append(GetAlgorithm(algorithmType)).Append(MlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel")).Fit(DataView);
 			return pipeline.Append(GetAlgorithm(algorithmType)).Fit(DataView);
 		}
 
 		private ITransformer GetModel(AlgorithmType algorithmType, EstimatorChain<TransformerChain<ColumnConcatenatingTransformer>> pipeline)
 		{
+			if (_predictedColumn.Value.Item2)
+				return pipeline.Append(GetAlgorithm(algorithmType)).Append(MlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel")).Fit(DataView);
 			return pipeline.Append(GetAlgorithm(algorithmType)).Fit(DataView);
 		}
 
