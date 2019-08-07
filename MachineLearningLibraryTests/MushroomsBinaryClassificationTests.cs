@@ -20,49 +20,49 @@ namespace MachineLearningLibraryTests
 		[Test]
 		public void MushroomsBinaryClassificationTest()
 		{
-			var pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.FastForestBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			var pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.FastForestBinaryClassifier, new PredictedColumn(_predictedColumn, dataKind: DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
 			var pipelineTest = new Pipeline<Mushroom>(_testDataPath, _separator);
 			pipeline.BuildModel();
 
 			var result = pipeline.EvaluateBinaryClassification(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.FastForestBinaryClassifier), result);
 
-			pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.AveragedPerceptronBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.AveragedPerceptronBinaryClassifier, new PredictedColumn(_predictedColumn, dataKind: DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
 			pipeline.BuildModel();
 			result = pipeline.EvaluateBinaryClassification(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.AveragedPerceptronBinaryClassifier), result);
 
-			pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.FastTreeBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.FastTreeBinaryClassifier, new PredictedColumn(_predictedColumn, dataKind: DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
 			pipeline.BuildModel();
 			result = pipeline.EvaluateBinaryClassification(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.FastTreeBinaryClassifier), result);
 
-			pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.FieldAwareFactorizationMachineBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.FieldAwareFactorizationMachineBinaryClassifier, new PredictedColumn(_predictedColumn, dataKind: DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
 			pipeline.BuildModel();
 			result = pipeline.EvaluateBinaryClassification(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.FieldAwareFactorizationMachineBinaryClassifier), result);
 
-			pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.GamBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.GamBinaryClassifier, new PredictedColumn(_predictedColumn, dataKind: DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
 			pipeline.BuildModel();
 			result = pipeline.EvaluateBinaryClassification(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.GamBinaryClassifier), result);
 
-			pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.LinearSvmBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.LinearSvmBinaryClassifier, new PredictedColumn(_predictedColumn, dataKind: DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
 			pipeline.BuildModel();
 			result = pipeline.EvaluateBinaryClassification(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.LinearSvmBinaryClassifier), result);
 
-			pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.LbfgsBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.LbfgsBinaryClassifier, new PredictedColumn(_predictedColumn, dataKind: DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
 			pipeline.BuildModel();
 			result = pipeline.EvaluateBinaryClassification(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.LbfgsBinaryClassifier), result);
 
-			pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentBinaryClassifier, new PredictedColumn(_predictedColumn, dataKind: DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
 			pipeline.BuildModel();
 			result = pipeline.EvaluateBinaryClassification(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentBinaryClassifier), result);
 
-			pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.StochasticGradientDescentBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.StochasticGradientDescentBinaryClassifier, new PredictedColumn(_predictedColumn, dataKind: DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
 			pipeline.BuildModel();
 			result = pipeline.EvaluateBinaryClassification(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.StochasticGradientDescentBinaryClassifier), result);
@@ -75,7 +75,7 @@ namespace MachineLearningLibraryTests
 		[TestCase("b", "s", "g", "f", "n", "f", "w", "b", "g", "e", "?", "s", "k", "w", "w", "p", "w", "t", "p", "w", "n", "g", true)]
 		public void TaxyDataRegressionPredictTest(string capShape, string capSurface, string capColor, string bruises, string odor, string gillAttachment, string gillSpacing, string gillSize, string gillColor, string stalkShape, string stalkRoot, string stalkSurfaceAboveRing, string stalkSurfaceBelowRing, string stalkColorAboveRing, string stalkColorBelowRing, string veilType, string veilColor, string ringNumber, string ringType, string sporePrintColor, string population, string habitat, bool edible)
 		{
-			var pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.FastForestBinaryClassifier, (_predictedColumn, false, DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
+			var pipeline = new Pipeline<Mushroom>(_dataPath, _separator, AlgorithmType.FastForestBinaryClassifier, new PredictedColumn(_predictedColumn, dataKind: DataKind.Boolean), _concatenatedColumns, _concatenatedColumns);
 			pipeline.BuildModel();
 
 			var prediction = pipeline.PredictScore<Mushroom, MushroomEdiblePrediction, bool>(new Mushroom() { CapShape = capShape, CapSurface = capSurface, CapColor = capColor, Bruises = bruises, Odor = odor, GillAttachment = gillAttachment, GillSpacing = gillSpacing, GillSize = gillSize, GillColor = gillColor, StalkShape = stalkShape, StalkRoot = stalkRoot, StalkSurfaceAboveRing = stalkSurfaceAboveRing, StalkSurfaceBelowRing = stalkSurfaceBelowRing, StalkColorAboveRing = stalkColorAboveRing, StalkColorBelowRing = stalkColorBelowRing, VeilType = veilType, VeilColor = veilColor, RingNumber = ringNumber, RingType = ringType, SporePrintColor = sporePrintColor, Population = population, Habitat = habitat });

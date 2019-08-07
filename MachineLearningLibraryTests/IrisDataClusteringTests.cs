@@ -20,19 +20,19 @@ namespace MachineLearningLibraryTests
 		[Test]
 		public void IrisDataClusteringTest()
 		{
-			var pipeline = new Pipeline<Iris>(_dataPath, _separator, AlgorithmType.NaiveBayesMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
+			var pipeline = new Pipeline<Iris>(_dataPath, _separator, AlgorithmType.NaiveBayesMultiClassifier, new PredictedColumn(_predictedColumn, true), _concatenatedColumns);
 			var pipelineTest = new Pipeline<Iris>(_testDataPath, _separator);
 			pipeline.BuildModel();
 
 			var result = pipeline.EvaluateClustering(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.NaiveBayesMultiClassifier), result);
 
-			pipeline = new Pipeline<Iris>(_dataPath, _separator, AlgorithmType.LbfgsMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
+			pipeline = new Pipeline<Iris>(_dataPath, _separator, AlgorithmType.LbfgsMultiClassifier, new PredictedColumn(_predictedColumn, true), _concatenatedColumns);
 			pipeline.BuildModel();
 			result = pipeline.EvaluateClustering(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.LbfgsMultiClassifier), result);
 
-			pipeline = new Pipeline<Iris>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
+			pipeline = new Pipeline<Iris>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentMultiClassifier, new PredictedColumn(_predictedColumn, true), _concatenatedColumns);
 			pipeline.BuildModel();
 			result = pipeline.EvaluateClustering(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentMultiClassifier), result);
@@ -45,7 +45,7 @@ namespace MachineLearningLibraryTests
 		[TestCase(7.9f, 3.8f, 6.4f, 2.0f, "Iris-virginica")]
 		public void IrisDataClusteringPredictTest(float sepalLength, float sepalWidth, float petalLength, float petalWidth, string type)
 		{
-			var pipeline = new Pipeline<Iris>(_dataPath, _separator, AlgorithmType.NaiveBayesMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
+			var pipeline = new Pipeline<Iris>(_dataPath, _separator, AlgorithmType.NaiveBayesMultiClassifier, new PredictedColumn(_predictedColumn, true), _concatenatedColumns);
 			pipeline.BuildModel();
 
 			var prediction = pipeline.PredictScore<Iris, IrisTypePrediction, string>(new Iris() { SepalLength = sepalLength, SepalWidth = sepalWidth, PetalLength = petalLength, PetalWidth = petalWidth });

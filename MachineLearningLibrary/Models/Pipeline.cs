@@ -38,11 +38,11 @@ namespace MachineLearningLibrary.Models
 		private string[] _concatenatedColumns;
 		private string _modelsRootPath;
 		private readonly AlgorithmType? _algorithmType;
-		private readonly (string, bool, DataKind?)? _predictedColumn;
+		private readonly PredictedColumn _predictedColumn;
 		private readonly string[] _alphanumericColumns;
 		private readonly string _featureColumn = "Features";
 
-		public Pipeline(string dataPath, char separator, AlgorithmType? algorithmType = null, (string, bool, DataKind?)? predictedColumn = null, string[] concatenatedColumns = null, string[] alphanumericColumns = null)
+		public Pipeline(string dataPath, char separator, AlgorithmType? algorithmType = null, PredictedColumn predictedColumn = null, string[] concatenatedColumns = null, string[] alphanumericColumns = null)
 		{
 			MlContext = new MLContext();
 			DataView = MlContext.Data.LoadFromTextFile<T>(dataPath, separator, hasHeader: false);
@@ -61,9 +61,9 @@ namespace MachineLearningLibrary.Models
 			if (_algorithmType == null)
 				throw new ArgumentNullException(nameof(_algorithmType));
 
-			var keyMap = _predictedColumn.Value.Item2 ? MlContext.Transforms.Conversion.MapValueToKey(_predictedColumn.Value.Item1) : null;
-			var keyConversion = _predictedColumn.Value.Item3 != null ? MlContext.Transforms.Conversion.ConvertType(_predictedColumn.Value.Item1, outputKind: _predictedColumn.Value.Item3.Value) : null;
-			var keyColumn = MlContext.Transforms.CopyColumns("Label", _predictedColumn.Value.Item1);
+			var keyMap = _predictedColumn.IsAlphanumeric ? MlContext.Transforms.Conversion.MapValueToKey(_predictedColumn.ColumnName) : null;
+			var keyConversion = _predictedColumn.DataKind != null ? MlContext.Transforms.Conversion.ConvertType(_predictedColumn.ColumnName, outputKind: _predictedColumn.DataKind.Value) : null;
+			var keyColumn = MlContext.Transforms.CopyColumns("Label", _predictedColumn.ColumnName);
 
 			if (_alphanumericColumns != null)
 			{
@@ -90,17 +90,17 @@ namespace MachineLearningLibrary.Models
 
 				var columnConcatenatingTransformer = oneHotEncodingTransformerChain?.Append(MlContext.Transforms.Concatenate(_featureColumn, _concatenatedColumns)) ??
 														oneHotEncodingTransformer.Append(MlContext.Transforms.Concatenate(_featureColumn, _concatenatedColumns));
-				var defaultPipeline = _predictedColumn.Value.Item2 ?
+				var defaultPipeline = _predictedColumn.IsAlphanumeric ?
 												keyMap.Append(keyColumn).Append(columnConcatenatingTransformer) :
-												_predictedColumn.Value.Item3 != null ? keyConversion.Append(keyColumn).Append(columnConcatenatingTransformer) : keyColumn.Append(columnConcatenatingTransformer);
+												_predictedColumn.DataKind != null ? keyConversion.Append(keyColumn).Append(columnConcatenatingTransformer) : keyColumn.Append(columnConcatenatingTransformer);
 				_model = GetModel(_algorithmType.Value, defaultPipeline);
 			}
 			else
 			{
 				var featureColumn = MlContext.Transforms.Concatenate(_featureColumn, _concatenatedColumns);
-				var defaultPipeline = _predictedColumn.Value.Item2 ? 
+				var defaultPipeline = _predictedColumn.IsAlphanumeric ? 
 												keyMap.Append(keyColumn).Append(featureColumn) : 
-												_predictedColumn.Value.Item3 != null ? keyConversion.Append(keyColumn).Append(featureColumn) : keyColumn.Append(featureColumn);
+												_predictedColumn.DataKind != null ? keyConversion.Append(keyColumn).Append(featureColumn) : keyColumn.Append(featureColumn);
 				_model = GetModel(_algorithmType.Value, defaultPipeline);
 			}
 
@@ -142,14 +142,14 @@ namespace MachineLearningLibrary.Models
 
 		private ITransformer GetModel(AlgorithmType algorithmType, EstimatorChain<ColumnConcatenatingTransformer> pipeline)
 		{
-			if (_predictedColumn.Value.Item2)
+			if (_predictedColumn.IsAlphanumeric)
 				return pipeline.Append(GetAlgorithm(algorithmType)).Append(MlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel")).Fit(DataView);
 			return pipeline.Append(GetAlgorithm(algorithmType)).Fit(DataView);
 		}
 
 		private ITransformer GetModel(AlgorithmType algorithmType, EstimatorChain<TransformerChain<ColumnConcatenatingTransformer>> pipeline)
 		{
-			if (_predictedColumn.Value.Item2)
+			if (_predictedColumn.IsAlphanumeric)
 				return pipeline.Append(GetAlgorithm(algorithmType)).Append(MlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel")).Fit(DataView);
 			return pipeline.Append(GetAlgorithm(algorithmType)).Fit(DataView);
 		}
