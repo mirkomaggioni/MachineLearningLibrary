@@ -1,8 +1,8 @@
 ﻿using Microsoft.ML.Data;
 
-namespace MachineLearningLibrary.Models
+namespace MachineLearningLibrary.Models.Data
 {
-	public class MushroomData
+	public class Mushroom
 	{
 		[LoadColumn(0)]
 		public float Edible;

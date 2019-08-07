@@ -1,8 +1,8 @@
 ﻿using Microsoft.ML.Data;
 
-namespace MachineLearningLibrary.Models
+namespace MachineLearningLibrary.Models.Data
 {
-	public class IrisData
+	public class Iris
 	{
 		[LoadColumn(0)]
 		public float SepalLength;
@@ -20,5 +20,5 @@ namespace MachineLearningLibrary.Models
 		public string Type;
 	}
 
-	public class IrisTypePrediction : MultiClassificationPrediction<string> {}
+	public class IrisTypePrediction : MultiClassificationPrediction<string> { }
 }

@@ -1,8 +1,8 @@
 ﻿using Microsoft.ML.Data;
 
-namespace MachineLearningLibrary.Models
+namespace MachineLearningLibrary.Models.Data
 {
-	public class TaxyData
+	public class Taxy
 	{
 		[LoadColumn(0)]
 		public string VendorId;
@@ -26,5 +26,5 @@ namespace MachineLearningLibrary.Models
 		public float FareAmount;
 	}
 
-	public class TaxyTripFarePrediction : RegressionPrediction {}
+	public class TaxyTripFarePrediction : RegressionPrediction { }
 }

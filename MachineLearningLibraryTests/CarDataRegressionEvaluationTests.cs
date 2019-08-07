@@ -4,6 +4,7 @@ using System.Reflection;
 using MachineLearningLibrary.Models;
 using NUnit.Framework;
 using Microsoft.ML.Data;
+using MachineLearningLibrary.Models.Data;
 
 namespace MachineLearningLibraryTests
 {
@@ -21,24 +22,24 @@ namespace MachineLearningLibraryTests
 		[Test]
 		public void CarDataRegressionEvaluationTest()
 		{
-			var pipeline = new Pipeline<CarData>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
-			var pipelineTest = new Pipeline<CarData>(_testDataPath, _separator);
+			var pipeline = new Pipeline<Car>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
+			var pipelineTest = new Pipeline<Car>(_testDataPath, _separator);
 			pipeline.BuildModel();
 
 			var result = pipeline.EvaluateRegression(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentRegressor), result);
 
-			pipeline = new Pipeline<CarData>(_dataPath, _separator, AlgorithmType.FastTreeRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
+			pipeline = new Pipeline<Car>(_dataPath, _separator, AlgorithmType.FastTreeRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
 			pipeline.BuildModel();
 			result = pipeline.EvaluateRegression(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.FastTreeRegressor), result);
 
-			pipeline = new Pipeline<CarData>(_dataPath, _separator, AlgorithmType.FastTreeTweedieRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
+			pipeline = new Pipeline<Car>(_dataPath, _separator, AlgorithmType.FastTreeTweedieRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
 			pipeline.BuildModel();
 			result = pipeline.EvaluateRegression(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.FastTreeTweedieRegressor), result);
 
-			pipeline = new Pipeline<CarData>(_dataPath, _separator, AlgorithmType.FastForestRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
+			pipeline = new Pipeline<Car>(_dataPath, _separator, AlgorithmType.FastForestRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
 			pipeline.BuildModel();
 			result = pipeline.EvaluateRegression(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.FastForestRegressor), result);
@@ -48,7 +49,7 @@ namespace MachineLearningLibraryTests
 			//result = pipeline.EvaluateRegression(pipelineTest.DataView);
 			//LogResult(nameof(AlgorithmType.OnlineGradientDescentRegressor), result);
 
-			pipeline = new Pipeline<CarData>(_dataPath, _separator, AlgorithmType.PoissonRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
+			pipeline = new Pipeline<Car>(_dataPath, _separator, AlgorithmType.PoissonRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
 			pipeline.BuildModel();
 			result = pipeline.EvaluateRegression(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.PoissonRegressor), result);
@@ -59,10 +60,10 @@ namespace MachineLearningLibraryTests
 		[TestCase(0f, 161f, "peugot", "gas", "std", "four", "sedan", "rwd", "front", 107.90f, 186.70f, 68.40f, 56.70f, 3075f, "l", "four", 120f, "mpfi", 3.46f, 2.19f, 8.40f, 95f, 5000f, 19f, 24f, 15580f)]
 		public void GlassDataClusteringPredictTest(float symboling, float normalizedLosses, string make, string fuelType, string aspiration, string doors, string bodyStyle, string driveWheels, string engineLocation, float wheelBase, float length, float width, float height, float curbWeight, string engineType, string numOfCylinders, float engineSize, string fuelSystem, float bore, float stroke, float compressionRatio, float horsePower, float peakRpm, float cityMpg, float highwayMpg, float price)
 		{
-			var pipeline = new Pipeline<CarData>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
+			var pipeline = new Pipeline<Car>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentRegressor, (_predictedColumn, false, null), _concatenatedColumns, _alphanumericColumns);
 			pipeline.BuildModel();
 
-			var prediction = pipeline.PredictScore<CarData, CarPricePrediction, float>(new CarData() { Symboling = symboling, NormalizedLosses = normalizedLosses, Make = make, FuelType = fuelType, Aspiration = aspiration, Doors = doors, BodyStyle = bodyStyle, DriveWheels = driveWheels, EngineLocation = engineLocation, WheelBase = wheelBase, Length = length, Width = width, Height = height, CurbWeight = curbWeight, EngineType = engineType, NumOfCylinders = numOfCylinders, EngineSize = engineSize, FuelSystem = fuelSystem, Bore = bore, Stroke = stroke, CompressionRatio = compressionRatio, HorsePower = horsePower, PeakRpm = peakRpm, CityMpg = cityMpg, HighwayMpg = highwayMpg });
+			var prediction = pipeline.PredictScore<Car, CarPricePrediction, float>(new Car() { Symboling = symboling, NormalizedLosses = normalizedLosses, Make = make, FuelType = fuelType, Aspiration = aspiration, Doors = doors, BodyStyle = bodyStyle, DriveWheels = driveWheels, EngineLocation = engineLocation, WheelBase = wheelBase, Length = length, Width = width, Height = height, CurbWeight = curbWeight, EngineType = engineType, NumOfCylinders = numOfCylinders, EngineSize = engineSize, FuelSystem = fuelSystem, Bore = bore, Stroke = stroke, CompressionRatio = compressionRatio, HorsePower = horsePower, PeakRpm = peakRpm, CityMpg = cityMpg, HighwayMpg = highwayMpg });
 
 			Assert.AreEqual(prediction.Score, price);
 		}

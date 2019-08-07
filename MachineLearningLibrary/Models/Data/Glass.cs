@@ -1,8 +1,8 @@
 ﻿using Microsoft.ML.Data;
 
-namespace MachineLearningLibrary.Models
+namespace MachineLearningLibrary.Models.Data
 {
-	public class GlassData
+	public class Glass
 	{
 		[LoadColumn(0)]
 		public float IdNumber;

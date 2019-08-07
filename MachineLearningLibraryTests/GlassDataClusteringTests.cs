@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using MachineLearningLibrary.Models;
+using MachineLearningLibrary.Models.Data;
 using Microsoft.ML.Data;
 using NUnit.Framework;
 
@@ -19,19 +20,19 @@ namespace MachineLearningLibraryTests
 		[Test]
 		public void GlassDataClusteringTest()
 		{
-			var pipeline = new Pipeline<GlassData>(_dataPath, _separator, AlgorithmType.NaiveBayesMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
-			var pipelineTest = new Pipeline<GlassData>(_testDataPath, _separator);
+			var pipeline = new Pipeline<Glass>(_dataPath, _separator, AlgorithmType.NaiveBayesMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
+			var pipelineTest = new Pipeline<Glass>(_testDataPath, _separator);
 			pipeline.BuildModel();
 
 			var result = pipeline.EvaluateClustering(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.NaiveBayesMultiClassifier), result);
 
-			pipeline = new Pipeline<GlassData>(_dataPath, _separator, AlgorithmType.LbfgsMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
+			pipeline = new Pipeline<Glass>(_dataPath, _separator, AlgorithmType.LbfgsMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
 			pipeline.BuildModel();
 			result = pipeline.EvaluateClustering(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.LbfgsMultiClassifier), result);
 
-			pipeline = new Pipeline<GlassData>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
+			pipeline = new Pipeline<Glass>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
 			pipeline.BuildModel();
 			result = pipeline.EvaluateClustering(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentMultiClassifier), result);
@@ -43,10 +44,10 @@ namespace MachineLearningLibraryTests
 		[TestCase(187f, 1.51838f, 14.32f, 3.26f, 2.22f, 71.25f, 1.46f, 5.79f, 1.63f, 0.00f, 7u)]
 		public void GlassDataClusteringPredictTest(float idNumber, float refractiveIndex, float sodium, float magnesium, float aluminium, float silicon, float potassium, float calcium, float barium, float iron, uint type)
 		{
-			var pipeline = new Pipeline<GlassData>(_dataPath, _separator, AlgorithmType.NaiveBayesMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
+			var pipeline = new Pipeline<Glass>(_dataPath, _separator, AlgorithmType.NaiveBayesMultiClassifier, (_predictedColumn, true, null), _concatenatedColumns);
 			pipeline.BuildModel();
 
-			var prediction = pipeline.PredictScore<GlassData, GlassTypePrediction, uint>(new GlassData() { IdNumber = idNumber, RefractiveIndex = refractiveIndex, Sodium = sodium, Magnesium = magnesium, Aluminium = aluminium, Silicon = silicon, Potassium = potassium, Calcium = calcium,Barium = barium, Iron = iron });
+			var prediction = pipeline.PredictScore<Glass, GlassTypePrediction, uint>(new Glass() { IdNumber = idNumber, RefractiveIndex = refractiveIndex, Sodium = sodium, Magnesium = magnesium, Aluminium = aluminium, Silicon = silicon, Potassium = potassium, Calcium = calcium,Barium = barium, Iron = iron });
 
 			Assert.AreEqual(prediction.PredictedLabel, type);
 		}
