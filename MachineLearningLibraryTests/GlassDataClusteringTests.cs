@@ -44,7 +44,7 @@ namespace MachineLearningLibraryTests
 		[TestCase(187f, 1.51838f, 14.32f, 3.26f, 2.22f, 71.25f, 1.46f, 5.79f, 1.63f, 0.00f, 7u)]
 		public void GlassDataClusteringPredictTest(float idNumber, float refractiveIndex, float sodium, float magnesium, float aluminium, float silicon, float potassium, float calcium, float barium, float iron, uint type)
 		{
-			var pipeline = new Pipeline<Glass>(_dataPath, _separator, AlgorithmType.NaiveBayesMultiClassifier, new PredictedColumn(_predictedColumn, true), _concatenatedColumns);
+			var pipeline = new Pipeline<Glass>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentMultiClassifier, new PredictedColumn(_predictedColumn, true), _concatenatedColumns);
 			pipeline.BuildModel();
 
 			var prediction = pipeline.PredictScore<Glass, GlassTypePrediction, uint>(new Glass() { IdNumber = idNumber, RefractiveIndex = refractiveIndex, Sodium = sodium, Magnesium = magnesium, Aluminium = aluminium, Silicon = silicon, Potassium = potassium, Calcium = calcium,Barium = barium, Iron = iron });
