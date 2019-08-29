@@ -41,6 +41,8 @@ namespace MachineLearningLibrary.Models
 		private readonly PredictedColumn _predictedColumn;
 		private readonly string[] _alphanumericColumns;
 		private readonly string _featureColumn = "Features";
+		private EstimatorChain<TransformerChain<ColumnConcatenatingTransformer>> _transformerChain = null;
+		private EstimatorChain<ColumnConcatenatingTransformer> _estimatorChain = null;
 
 		public Pipeline(string dataPath, char separator, AlgorithmType? algorithmType = null, PredictedColumn predictedColumn = null, string[] concatenatedColumns = null, string[] alphanumericColumns = null)
 		{
@@ -54,7 +56,7 @@ namespace MachineLearningLibrary.Models
 			_alphanumericColumns = alphanumericColumns;
 		}
 
-		public void BuildModel()
+		public void BuildPipeline()
 		{
 			if (_predictedColumn == null)
 				throw new ArgumentNullException(nameof(_predictedColumn));
@@ -90,20 +92,25 @@ namespace MachineLearningLibrary.Models
 
 				var columnConcatenatingTransformer = oneHotEncodingTransformerChain?.Append(MlContext.Transforms.Concatenate(_featureColumn, _concatenatedColumns)) ??
 														oneHotEncodingTransformer.Append(MlContext.Transforms.Concatenate(_featureColumn, _concatenatedColumns));
-				var defaultPipeline = _predictedColumn.IsAlphanumeric ?
+				_transformerChain = _predictedColumn.IsAlphanumeric ?
 												keyMap.Append(keyColumn).Append(columnConcatenatingTransformer) :
 												_predictedColumn.DataKind != null ? keyConversion.Append(keyColumn).Append(columnConcatenatingTransformer) : keyColumn.Append(columnConcatenatingTransformer);
-				_model = GetModel(_algorithmType.Value, defaultPipeline);
 			}
 			else
 			{
 				var featureColumn = MlContext.Transforms.Concatenate(_featureColumn, _concatenatedColumns);
-				var defaultPipeline = _predictedColumn.IsAlphanumeric ? 
+				_estimatorChain = _predictedColumn.IsAlphanumeric ? 
 												keyMap.Append(keyColumn).Append(featureColumn) : 
 												_predictedColumn.DataKind != null ? keyConversion.Append(keyColumn).Append(featureColumn) : keyColumn.Append(featureColumn);
-				_model = GetModel(_algorithmType.Value, defaultPipeline);
 			}
+		}
 
+		public void BuildModel()
+		{
+			if (_algorithmType != null)
+			{
+				_model = _transformerChain != null ? GetModel(_algorithmType.Value, _transformerChain) : GetModel(_algorithmType.Value, _estimatorChain);
+			}
 			SaveModel(_model);
 		}
 

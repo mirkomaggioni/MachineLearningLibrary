@@ -22,17 +22,20 @@ namespace MachineLearningLibraryTests
 		{
 			var pipeline = new Pipeline<Glass>(_dataPath, _separator, AlgorithmType.NaiveBayesMultiClassifier, new PredictedColumn(_predictedColumn, true), _concatenatedColumns);
 			var pipelineTest = new Pipeline<Glass>(_testDataPath, _separator);
+			pipeline.BuildPipeline();
 			pipeline.BuildModel();
 
 			var result = pipeline.EvaluateClustering(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.NaiveBayesMultiClassifier), result);
 
 			pipeline = new Pipeline<Glass>(_dataPath, _separator, AlgorithmType.LbfgsMultiClassifier, new PredictedColumn(_predictedColumn, true), _concatenatedColumns);
+			pipeline.BuildPipeline();
 			pipeline.BuildModel();
 			result = pipeline.EvaluateClustering(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.LbfgsMultiClassifier), result);
 
 			pipeline = new Pipeline<Glass>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentMultiClassifier, new PredictedColumn(_predictedColumn, true), _concatenatedColumns);
+			pipeline.BuildPipeline();
 			pipeline.BuildModel();
 			result = pipeline.EvaluateClustering(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentMultiClassifier), result);
@@ -45,6 +48,7 @@ namespace MachineLearningLibraryTests
 		public void GlassDataClusteringPredictTest(float idNumber, float refractiveIndex, float sodium, float magnesium, float aluminium, float silicon, float potassium, float calcium, float barium, float iron, uint type)
 		{
 			var pipeline = new Pipeline<Glass>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentMultiClassifier, new PredictedColumn(_predictedColumn, true), _concatenatedColumns);
+			pipeline.BuildPipeline();
 			pipeline.BuildModel();
 
 			var prediction = pipeline.PredictScore<Glass, GlassTypePrediction, uint>(new Glass() { IdNumber = idNumber, RefractiveIndex = refractiveIndex, Sodium = sodium, Magnesium = magnesium, Aluminium = aluminium, Silicon = silicon, Potassium = potassium, Calcium = calcium,Barium = barium, Iron = iron });

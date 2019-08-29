@@ -22,17 +22,20 @@ namespace MachineLearningLibraryTests
 		{
 			var pipeline = new Pipeline<Iris>(_dataPath, _separator, AlgorithmType.NaiveBayesMultiClassifier, new PredictedColumn(_predictedColumn, true), _concatenatedColumns);
 			var pipelineTest = new Pipeline<Iris>(_testDataPath, _separator);
+			pipeline.BuildPipeline();
 			pipeline.BuildModel();
 
 			var result = pipeline.EvaluateClustering(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.NaiveBayesMultiClassifier), result);
 
 			pipeline = new Pipeline<Iris>(_dataPath, _separator, AlgorithmType.LbfgsMultiClassifier, new PredictedColumn(_predictedColumn, true), _concatenatedColumns);
+			pipeline.BuildPipeline();
 			pipeline.BuildModel();
 			result = pipeline.EvaluateClustering(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.LbfgsMultiClassifier), result);
 
 			pipeline = new Pipeline<Iris>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentMultiClassifier, new PredictedColumn(_predictedColumn, true), _concatenatedColumns);
+			pipeline.BuildPipeline();
 			pipeline.BuildModel();
 			result = pipeline.EvaluateClustering(pipelineTest.DataView);
 			LogResult(nameof(AlgorithmType.StochasticDualCoordinateAscentMultiClassifier), result);
@@ -46,6 +49,7 @@ namespace MachineLearningLibraryTests
 		public void IrisDataClusteringPredictTest(float sepalLength, float sepalWidth, float petalLength, float petalWidth, string type)
 		{
 			var pipeline = new Pipeline<Iris>(_dataPath, _separator, AlgorithmType.StochasticDualCoordinateAscentMultiClassifier, new PredictedColumn(_predictedColumn, true), _concatenatedColumns);
+			pipeline.BuildPipeline();
 			pipeline.BuildModel();
 
 			var prediction = pipeline.PredictScore<Iris, IrisTypePrediction, string>(new Iris() { SepalLength = sepalLength, SepalWidth = sepalWidth, PetalLength = petalLength, PetalWidth = petalWidth });
