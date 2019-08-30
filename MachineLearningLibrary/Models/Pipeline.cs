@@ -142,6 +142,11 @@ namespace MachineLearningLibrary.Models
 			return MlContext.Clustering.Evaluate(_model.Transform(dataView));
 		}
 
+		public IDataView Transform()
+		{
+			return _model.Transform(DataView);
+		}
+
 		public TPredictionModel PredictScore<TModel, TPredictionModel, TPredictionType>(TModel data)
 			where TModel : class
 			where TPredictionModel : class, IPredictionModel<TPredictionType>, new()
