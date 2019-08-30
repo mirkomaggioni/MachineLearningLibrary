@@ -1,4 +1,5 @@
-﻿using Microsoft.ML;
+﻿using MachineLearningLibrary.Models.Interfaces;
+using Microsoft.ML;
 using Microsoft.ML.Data;
 using Microsoft.ML.Transforms;
 using System;
@@ -29,7 +30,7 @@ namespace MachineLearningLibrary.Models
 		LbfgsBinaryClassifier
 	}
 
-	public class Pipeline<T>
+	public class Pipeline<T> : IPipeline, IPipelineChain, IPipelineTransformer, IPipelineModel
 	{
 		public readonly MLContext MlContext;
 		public readonly IDataView DataView;
@@ -56,7 +57,7 @@ namespace MachineLearningLibrary.Models
 			_alphanumericColumns = alphanumericColumns;
 		}
 
-		public void BuildPipeline()
+		public IPipelineChain BuildPipeline()
 		{
 			if (_predictedColumn == null)
 				throw new ArgumentNullException(nameof(_predictedColumn));
@@ -103,25 +104,27 @@ namespace MachineLearningLibrary.Models
 												keyMap.Append(keyColumn).Append(featureColumn) : 
 												_predictedColumn.DataKind != null ? keyConversion.Append(keyColumn).Append(featureColumn) : keyColumn.Append(featureColumn);
 			}
+
+			return this;
 		}
 
-		public void BuildModel()
+		public IPipelineTransformer BuildModel()
 		{
-			if (_algorithmType != null)
-			{
-				_model = _transformerChain != null ? GetModel(_algorithmType.Value, _transformerChain) : GetModel(_algorithmType.Value, _estimatorChain);
-			}
+			_model = _transformerChain != null ? GetModel(_algorithmType.Value, _transformerChain) : GetModel(_algorithmType.Value, _estimatorChain);
 			SaveModel(_model);
+			return this;
 		}
 
-		public void SaveModel(ITransformer _model)
+		public IPipelineModel SaveModel(ITransformer model)
 		{
 			var modelPath = $@"{_modelsRootPath}\{Guid.NewGuid()}.zip";
 
 			using (var fileStream = new FileStream(modelPath, FileMode.Create, FileAccess.Write, FileShare.Write))
 			{
-				MlContext.Model.Save(_model, DataView.Schema, fileStream);
+				MlContext.Model.Save(model, DataView.Schema, fileStream);
 			}
+
+			return this;
 		}
 
 		public RegressionMetrics EvaluateRegression(IDataView dataView)
@@ -147,18 +150,30 @@ namespace MachineLearningLibrary.Models
 			return predictionEngine.Predict(data);
 		}
 
-		private ITransformer GetModel(AlgorithmType algorithmType, EstimatorChain<ColumnConcatenatingTransformer> pipeline)
+		private ITransformer GetModel(AlgorithmType? algorithmType, EstimatorChain<ColumnConcatenatingTransformer> pipeline)
 		{
 			if (_predictedColumn.IsAlphanumeric)
-				return pipeline.Append(GetAlgorithm(algorithmType)).Append(MlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel")).Fit(DataView);
-			return pipeline.Append(GetAlgorithm(algorithmType)).Fit(DataView);
+				return algorithmType != null 
+					? pipeline.Append(GetAlgorithm(algorithmType.Value)).Append(MlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel")).Fit(DataView) 
+					: pipeline.Append(MlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel")).Fit(DataView);
+
+			if (algorithmType != null)
+				return pipeline.Append(GetAlgorithm(algorithmType.Value)).Fit(DataView);
+
+			return pipeline.Append(GetAlgorithm(algorithmType.Value)).Fit(DataView);
 		}
 
-		private ITransformer GetModel(AlgorithmType algorithmType, EstimatorChain<TransformerChain<ColumnConcatenatingTransformer>> pipeline)
+		private ITransformer GetModel(AlgorithmType? algorithmType, EstimatorChain<TransformerChain<ColumnConcatenatingTransformer>> pipeline)
 		{
 			if (_predictedColumn.IsAlphanumeric)
-				return pipeline.Append(GetAlgorithm(algorithmType)).Append(MlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel")).Fit(DataView);
-			return pipeline.Append(GetAlgorithm(algorithmType)).Fit(DataView);
+				return algorithmType != null 
+					? pipeline.Append(GetAlgorithm(algorithmType.Value)).Append(MlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel")).Fit(DataView) 
+					: pipeline.Append(MlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel")).Fit(DataView);
+
+			if (algorithmType != null)
+				return pipeline.Append(GetAlgorithm(algorithmType.Value)).Fit(DataView);
+
+			return pipeline.Fit(DataView);
 		}
 
 		private IEstimator<ITransformer> GetAlgorithm(AlgorithmType algorithmType)

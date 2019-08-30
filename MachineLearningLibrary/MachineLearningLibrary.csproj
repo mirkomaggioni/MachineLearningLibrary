@@ -110,6 +110,7 @@
   <ItemGroup>
     <Compile Include="Models\Data\Car.cs" />
     <Compile Include="Models\Data\Glass.cs" />
+    <Compile Include="Models\Interfaces\IPipeline.cs" />
     <Compile Include="Models\PredictedColumn.cs" />
     <Compile Include="Models\IPredictionModel.cs" />
     <Compile Include="Models\Data\Iris.cs" />
