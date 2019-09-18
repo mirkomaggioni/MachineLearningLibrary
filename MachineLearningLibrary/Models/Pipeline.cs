@@ -111,7 +111,6 @@ namespace MachineLearningLibrary.Models
 		public IPipelineTransformer BuildModel()
 		{
 			_model = _transformerChain != null ? GetModel(_algorithmType.Value, _transformerChain) : GetModel(_algorithmType.Value, _estimatorChain);
-			SaveModel(_model);
 			return this;
 		}
 

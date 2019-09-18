@@ -5,6 +5,8 @@ using MachineLearningLibrary.Models;
 using NUnit.Framework;
 using Microsoft.ML.Data;
 using MachineLearningLibrary.Models.Data;
+using Microsoft.ML;
+using System.Linq;
 
 namespace MachineLearningLibraryTests
 {
@@ -16,8 +18,7 @@ namespace MachineLearningLibraryTests
 		private readonly char _separator = ',';
 		private readonly string _predictedColumn = "Price";
 		private readonly string[] _alphanumericColumns = new[] { "Make", "FuelType", "Aspiration", "Doors", "BodyStyle", "DriveWheels", "EngineLocation", "EngineType", "NumOfCylinders", "FuelSystem" };
-		private readonly string[] _concatenatedColumns = new[] { "Symboling", "NormalizedLosses", "Make", "FuelType", "Aspiration", "Doors", "BodyStyle", "DriveWheels", "EngineLocation", "WheelBase", "Length", "Width", "Height", "CurbWeight", "EngineType", "NumOfCylinders", "EngineSize", "FuelSystem",
-												"Bore", "Stroke", "CompressionRatio", "HorsePower", "PeakRpm", "CityMpg", "HighwayMpg"};
+		private readonly string[] _concatenatedColumns = new[] { "Symboling", "NormalizedLosses", "Make", "FuelType", "Aspiration", "Doors", "BodyStyle", "DriveWheels", "EngineLocation", "WheelBase", "Length", "Width", "Height", "CurbWeight", "EngineType", "NumOfCylinders", "EngineSize", "FuelSystem","Bore", "Stroke", "CompressionRatio", "HorsePower", "PeakRpm", "CityMpg", "HighwayMpg"};
 
 		[Test]
 		public void CarDataRegressionEvaluationTest()
@@ -72,6 +73,26 @@ namespace MachineLearningLibraryTests
 
 			var abs = Math.Abs(prediction.Score - price);
 			Assert.IsTrue(abs < (price / 100 * 7));
+		}
+
+		[Test]
+		public void PFITest()
+		{
+			var pipeline = new Pipeline<Car>(_dataPath, _separator, AlgorithmType.PoissonRegressor, new PredictedColumn(_predictedColumn), _concatenatedColumns, _alphanumericColumns);
+			var transformedData = pipeline.BuildPipeline().BuildModel().Transform();
+			var transformer = pipeline.MlContext.Regression.Trainers.LbfgsPoissonRegression().Fit(transformedData);
+
+			var permutationMetrics = pipeline.MlContext.Regression.PermutationFeatureImportance(transformer, transformedData, permutationCount: 3);
+			var regressionMetrics = permutationMetrics.Select((metric, index) => new { index, metric.RSquared }).OrderByDescending(features => Math.Abs(features.RSquared.Mean));
+			string[] featureColumnNames = transformedData.Schema.Select(column => column.Name).Where(columnName => columnName != "Label").ToArray();
+
+			foreach (var metric in regressionMetrics)
+			{
+				if (metric.index >= transformedData.Schema.Count || (transformedData.Schema[metric.index].IsHidden || transformedData.Schema[metric.index].Name == "Label" || transformedData.Schema[metric.index].Name == "Features"))
+					continue;
+
+				Console.WriteLine($"{transformedData.Schema[metric.index].Name,-20}|\t{metric.RSquared.Mean:F6}");
+			}
 		}
 
 		private void LogResult(string algorithm, RegressionMetrics regressionMetrics)

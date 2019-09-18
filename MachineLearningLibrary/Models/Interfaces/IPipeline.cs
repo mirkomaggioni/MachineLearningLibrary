@@ -16,6 +16,7 @@ namespace MachineLearningLibrary.Models.Interfaces
 	public interface IPipelineTransformer
 	{
 		IPipelineModel SaveModel(ITransformer model);
+		IDataView Transform();
 	}
 
 	public interface IPipelineModel
@@ -23,7 +24,6 @@ namespace MachineLearningLibrary.Models.Interfaces
 		RegressionMetrics EvaluateRegression(IDataView dataView);
 		BinaryClassificationMetrics EvaluateBinaryClassification(IDataView dataView);
 		ClusteringMetrics EvaluateClustering(IDataView dataView);
-		IDataView Transform();
 		TPredictionModel PredictScore<TModel, TPredictionModel, TPredictionType>(TModel data) where TModel : class where TPredictionModel : class, IPredictionModel<TPredictionType>, new();
 	}
 }
